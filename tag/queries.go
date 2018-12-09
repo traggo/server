@@ -6,6 +6,7 @@ import (
 	"github.com/traggo/server/schema"
 )
 
+// Queries for tags
 func Queries(db *gorm.DB) graphql.Fields {
 	return graphql.Fields{
 		"tags":       getTags(db),
