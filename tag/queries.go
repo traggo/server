@@ -1,14 +1,14 @@
 package tag
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/graphql-go/graphql"
+	"github.com/jinzhu/gorm"
 	"github.com/traggo/server/schema"
 )
 
 func Queries(db *gorm.DB) graphql.Fields {
 	return graphql.Fields{
-		"tags":           getTags(db),
+		"tags":       getTags(db),
 		"suggestTag": suggestTag(db),
 	}
 }

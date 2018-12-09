@@ -1,11 +1,12 @@
 package gql
 
 import (
+	"log"
+
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
-	"log"
-	"github.com/traggo/server/tag"
 	"github.com/jinzhu/gorm"
+	"github.com/traggo/server/tag"
 )
 
 // Handler creates a graphql handler.
