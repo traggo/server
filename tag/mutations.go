@@ -8,6 +8,7 @@ import (
 	"github.com/traggo/server/schema"
 )
 
+// Mutations for tags
 func Mutations(db *gorm.DB) graphql.Fields {
 	return graphql.Fields{
 		"createTag": createTag(db),

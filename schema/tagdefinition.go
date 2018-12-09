@@ -12,13 +12,17 @@ type TagDefinition struct {
 	Owner uint
 }
 
+// TagDefinitionType describes a tag type.
 type TagDefinitionType string
 
 const (
-	TypeNoValue     TagDefinitionType = "novalue"
+	// TypeNoValue used for tags without values
+	TypeNoValue TagDefinitionType = "novalue"
+	// TypeSingleValue used for tags with one value
 	TypeSingleValue TagDefinitionType = "singlevalue"
 )
 
+// TagDefinitionTypeSchema is a gql representation of TagDefinitionType
 var TagDefinitionTypeSchema = graphql.NewEnum(graphql.EnumConfig{
 	Name: "TagDefinitionType",
 	Values: graphql.EnumValueConfigMap{
@@ -31,6 +35,7 @@ var TagDefinitionTypeSchema = graphql.NewEnum(graphql.EnumConfig{
 	},
 })
 
+// TagDefinitionSchema is a gql representation of TagDefinition
 var TagDefinitionSchema = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: "TagDefinition",
