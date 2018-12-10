@@ -27,7 +27,7 @@ func removeTag(db *gorm.DB) *graphql.Field {
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			definition := schema.TagDefinition{Key: p.Args["key"].(string)}
 			if db.Find(&definition).RecordNotFound() {
-				return nil, fmt.Errorf("tag with key %s does not exist", definition.Key)
+				return nil, fmt.Errorf("tag with key '%s' does not exist", definition.Key)
 			}
 
 			remove := db.Delete(&definition)
@@ -58,7 +58,7 @@ func createTag(db *gorm.DB) *graphql.Field {
 			}
 
 			if !db.Find(definition).RecordNotFound() {
-				return nil, fmt.Errorf("tag with key %s does already exist", definition.Key)
+				return nil, fmt.Errorf("tag with key '%s' does already exist", definition.Key)
 			}
 
 			create := db.Create(&definition)
