@@ -15,6 +15,7 @@ type GQLTest struct {
 	queryFields    func(db *gorm.DB) graphql.Fields
 	mutationFields func(db *gorm.DB) graphql.Fields
 	before         func(db *gorm.DB)
+	dbAssert       func(db *gorm.DB)
 }
 
 // NewGQL create a new graphql testing instance.
@@ -28,6 +29,8 @@ func NewGQL(t assert.TestingT) *GQLTest {
 		},
 		before: func(db *gorm.DB) {
 		},
+		dbAssert: func(db *gorm.DB) {
+		},
 	}
 }
 
@@ -35,6 +38,12 @@ func NewGQL(t assert.TestingT) *GQLTest {
 // Use this for filling the db.
 func (g *GQLTest) BeforeExec(f func(db *gorm.DB)) *GQLTest {
 	g.before = f
+	return g
+}
+
+// DBAssert will be executed after execution of the gql query.
+func (g *GQLTest) DBAssert(f func(db *gorm.DB)) *GQLTest {
+	g.dbAssert = f
 	return g
 }
 
@@ -70,6 +79,7 @@ func (g *GQLTest) Exec(query string) *GQLResult {
 		RequestString: query,
 		Schema:        schema,
 	})
+	g.dbAssert(db)
 	return &GQLResult{Result: result, GQLTest: g}
 }
 
