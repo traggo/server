@@ -15,14 +15,7 @@ format-go:
 format: format-go
 
 test-go:
-	echo "" > coverage.txt
-	for d in $(shell go list ./... | grep -v vendor); do \
-		go test -v -coverprofile=profile.out -covermode=atomic $$d ; \
-		if [ -f profile.out ]; then  \
-			cat profile.out >> coverage.txt ; \
-			rm profile.out ; \
-		fi \
-	done
+	go test --race -v -coverprofile=coverage.txt -covermode=atomic ./...
 
 test: test-go
 
