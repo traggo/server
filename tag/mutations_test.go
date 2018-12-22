@@ -31,7 +31,7 @@ mutation {
 
 func Test_createTag_withExistingTag_fails(t *testing.T) {
 	createTag := func(db *gorm.DB) {
-		db.Create(schema.TagDefinition{Key: "existing tag", Color: "#fff", Type: schema.TypeSingleValue})
+		db.Create(&schema.TagDefinition{Key: "existing tag", Color: "#fff", Type: schema.TypeSingleValue})
 	}
 	query := `
 mutation {
@@ -46,7 +46,7 @@ mutation {
 
 func Test_removeTag_withExistingTag_succeeds(t *testing.T) {
 	createTag := func(db *gorm.DB) {
-		db.Create(schema.TagDefinition{Key: "existing tag", Color: "#fff", Type: schema.TypeSingleValue})
+		db.Create(&schema.TagDefinition{Key: "existing tag", Color: "#fff", Type: schema.TypeSingleValue})
 	}
 	query := `
 mutation {
