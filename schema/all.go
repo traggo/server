@@ -4,5 +4,6 @@ package schema
 func All() []interface{} {
 	return []interface{}{
 		new(TagDefinition),
+		new(User),
 	}
 }
