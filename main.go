@@ -15,6 +15,6 @@ func main() {
 		panic(err)
 	}
 
-	http.Handle("/graphql", gql.Handler(db))
+	http.Handle("/graphql", gql.Handler(db, 10))
 	http.ListenAndServe(":3030", nil) // TODO configurable port
 }

@@ -7,12 +7,13 @@ import (
 	"github.com/graphql-go/handler"
 	"github.com/jinzhu/gorm"
 	"github.com/traggo/server/tag"
+	"github.com/traggo/server/user"
 )
 
 // Handler creates a graphql handler.
-func Handler(db *gorm.DB) *handler.Handler {
-	queryFields := merge(tag.Queries(db))
-	mutationFields := merge(tag.Mutations(db))
+func Handler(db *gorm.DB, passwordStrength int) *handler.Handler {
+	queryFields := merge(tag.Queries(db), user.Queries(db))
+	mutationFields := merge(tag.Mutations(db), user.Mutations(db, passwordStrength))
 
 	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: queryFields}
 	rootMutations := graphql.ObjectConfig{Name: "Mutations", Fields: mutationFields}
