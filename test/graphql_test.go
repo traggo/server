@@ -100,6 +100,37 @@ query {
 	test.NewGQL(t).Queries(fields).BeforeExec(before).Exec(query).Succeeds(expect)
 }
 
+func TestGQLTest_executeDBAssert(t *testing.T) {
+	returnValue := "old"
+	fields := func(db *gorm.DB) graphql.Fields {
+		return graphql.Fields{
+			"test": &graphql.Field{
+				Name: "test",
+				Type: graphql.String,
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					return returnValue, nil
+				},
+			},
+		}
+	}
+
+	query := `
+query {
+   test
+}`
+
+	before := func(db *gorm.DB) {
+		returnValue = "new"
+	}
+	expect := `
+{
+  "test": "old"
+}`
+
+	test.NewGQL(t).Queries(fields).DBAssert(before).Exec(query).Succeeds(expect)
+	assert.Equal(t, "new", returnValue)
+}
+
 func TestGQLTest_expectError(t *testing.T) {
 	fields := func(db *gorm.DB) graphql.Fields {
 		return graphql.Fields{
