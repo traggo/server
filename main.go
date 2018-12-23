@@ -1,13 +1,11 @@
 package main
 
 import (
-	"net/http"
-
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/traggo/server/database"
-	"github.com/traggo/server/gql"
 	"github.com/traggo/server/logger"
+	"github.com/traggo/server/server"
 )
 
 func main() {
@@ -18,6 +16,9 @@ func main() {
 		log.Fatal().Err(err).Msg("Failed to connect to the database")
 	}
 
-	http.Handle("/graphql", gql.Handler(db, 10))
-	http.ListenAndServe(":3030", nil) // TODO configurable port
+	port := 3030
+	log.Info().Int("port", port).Msg("Start listening")
+	if err := server.Start(db, 10, port); err != nil {
+		log.Fatal().Err(err).Msg("Server Error")
+	}
 }
