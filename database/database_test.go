@@ -5,8 +5,15 @@ import (
 	"os"
 	"testing"
 
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
+	"github.com/traggo/server/logger"
 )
+
+func TestMain(m *testing.M) {
+	logger.Init(zerolog.WarnLevel)
+	os.Exit(m.Run())
+}
 
 func TestInvalidDialect(t *testing.T) {
 	_, err := New("asdf", "testdb.db")

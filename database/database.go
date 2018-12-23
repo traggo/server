@@ -8,6 +8,8 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"    // enable the mysql dialect
 	_ "github.com/jinzhu/gorm/dialects/postgres" // enable the postgres dialect
 	_ "github.com/jinzhu/gorm/dialects/sqlite"   // enable the sqlite3 dialect
+	"github.com/rs/zerolog/log"
+	"github.com/traggo/server/logger"
 	"github.com/traggo/server/schema"
 )
 
@@ -21,6 +23,8 @@ func New(dialect, connection string) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+	db.LogMode(true)
+	db.SetLogger(&logger.DatabaseLogger{})
 
 	// We normally don't need that much connections, so we limit them. F.ex. mysql complains about
 	// "too many connections".
@@ -34,8 +38,10 @@ func New(dialect, connection string) (*gorm.DB, error) {
 		db.DB().SetMaxOpenConns(1)
 	}
 
+	log.Debug().Msg("Auto migrating schema's")
 	db.AutoMigrate(schema.All()...)
 
+	log.Debug().Msg("Database initialized")
 	return db, nil
 }
 
