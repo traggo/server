@@ -17,7 +17,7 @@ install:
 script:
   - make lint
   - make test
-  - go build
+  - go build -o build/executable
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
