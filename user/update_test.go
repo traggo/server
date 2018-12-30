@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/traggo/server/generated/gqlmodel"
-	"github.com/traggo/server/schema"
+	"github.com/traggo/server/model"
 	"github.com/traggo/server/test"
 )
 
@@ -14,7 +14,7 @@ func TestGQL_UpdateUser_succeeds_updatesUser(t *testing.T) {
 	createPassword = fakePassword
 	db := test.InMemoryDB(t)
 	defer db.Close()
-	db.Create(&schema.User{
+	db.Create(&model.User{
 		Name:  "jmattheis",
 		Pass:  unicornPW,
 		ID:    1,
@@ -32,7 +32,7 @@ func TestGQL_UpdateUser_succeeds_updatesUser(t *testing.T) {
 	}
 	require.Equal(t, expected, user)
 	assertUserCount(t, db, 1)
-	assertUserExist(t, db, schema.User{
+	assertUserExist(t, db, model.User{
 		Name:  "broder",
 		ID:    1,
 		Admin: false,
@@ -44,7 +44,7 @@ func TestGQL_UpdateUser_succeeds_preservesPassword(t *testing.T) {
 	createPassword = fakePassword
 	db := test.InMemoryDB(t)
 	defer db.Close()
-	db.Create(&schema.User{
+	db.Create(&model.User{
 		Name:  "jmattheis",
 		Pass:  unicornPW,
 		ID:    1,
@@ -62,7 +62,7 @@ func TestGQL_UpdateUser_succeeds_preservesPassword(t *testing.T) {
 	}
 	require.Equal(t, expected, user)
 	assertUserCount(t, db, 1)
-	assertUserExist(t, db, schema.User{
+	assertUserExist(t, db, model.User{
 		Name:  "broder",
 		ID:    1,
 		Admin: false,

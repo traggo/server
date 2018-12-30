@@ -1,14 +1,14 @@
-package schema_test
+package model_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/traggo/server/schema"
+	"github.com/traggo/server/model"
 )
 
 func TestAll_NoDuplicateEntries(t *testing.T) {
-	all := schema.All()
+	all := model.All()
 	var checkedItems []interface{}
 	for _, item := range all {
 		assert.NotContains(t, checkedItems, item)

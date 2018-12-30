@@ -1,4 +1,4 @@
-package schema
+package model
 
 // TagDefinition describes a tag.
 type TagDefinition struct {

@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/traggo/server/generated/gqlmodel"
-	"github.com/traggo/server/schema"
+	"github.com/traggo/server/model"
 	"github.com/traggo/server/test"
 )
 
@@ -25,7 +25,7 @@ func TestGQL_CreateUser_succeeds_addsUser(t *testing.T) {
 		ID:    1,
 	}
 	require.Equal(t, expected, user)
-	assertUserExist(t, db, schema.User{
+	assertUserExist(t, db, model.User{
 		Name:  "jmattheis",
 		Pass:  unicornPW,
 		ID:    1,
@@ -38,7 +38,7 @@ func TestGQL_CreateUser_fails_userAlreadyExists(t *testing.T) {
 	createPassword = fakePassword
 	db := test.InMemoryDB(t)
 	defer db.Close()
-	db.Create(&schema.User{
+	db.Create(&model.User{
 		Name:  "jmattheis",
 		Pass:  unicornPW,
 		ID:    1,

@@ -1,4 +1,4 @@
-package schema
+package model
 
 // User holds information about credentials and authorizations.
 type User struct {

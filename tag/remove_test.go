@@ -5,14 +5,14 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/traggo/server/schema"
+	"github.com/traggo/server/model"
 	"github.com/traggo/server/test"
 )
 
 func TestGQL_RemoveTag_succeeds_removesTag(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
-	db.Create(&schema.TagDefinition{Key: "existing tag", Color: "#fff", Type: schema.TypeSingleValue})
+	db.Create(&model.TagDefinition{Key: "existing tag", Color: "#fff", Type: model.TypeSingleValue})
 
 	resolver := ResolverForTag{DB: db}
 	_, err := resolver.RemoveTag(context.Background(), "existing tag")

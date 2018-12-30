@@ -5,7 +5,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/require"
-	"github.com/traggo/server/schema"
+	"github.com/traggo/server/model"
 )
 
 var (
@@ -21,8 +21,8 @@ var (
 	}
 )
 
-func assertUserExist(t *testing.T, db *gorm.DB, expected schema.User) {
-	foundUser := new(schema.User)
+func assertUserExist(t *testing.T, db *gorm.DB, expected model.User) {
+	foundUser := new(model.User)
 	find := db.Find(foundUser, expected.ID)
 	require.Nil(t, find.Error)
 	require.NotNil(t, foundUser)
@@ -31,6 +31,6 @@ func assertUserExist(t *testing.T, db *gorm.DB, expected schema.User) {
 
 func assertUserCount(t *testing.T, db *gorm.DB, expected int) {
 	count := new(int)
-	db.Model(new(schema.User)).Count(count)
+	db.Model(new(model.User)).Count(count)
 	require.Equal(t, expected, *count)
 }

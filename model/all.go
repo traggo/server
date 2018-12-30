@@ -1,4 +1,4 @@
-package schema
+package model
 
 // All returns all schema instances.
 func All() []interface{} {
