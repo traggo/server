@@ -1,5 +1,3 @@
-// +build ignore
-
 package main
 
 import "github.com/99designs/gqlgen/cmd"
