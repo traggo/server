@@ -28,8 +28,6 @@ func (l *DatabaseLogger) Print(values ...interface{}) {
 		)
 
 		if level == "sql" {
-			durationInMS := float64(values[2].(time.Duration).Nanoseconds()/1e4) / 100.0
-
 			for _, value := range values[4].([]interface{}) {
 				indirectValue := reflect.Indirect(reflect.ValueOf(value))
 				if indirectValue.IsValid() {
@@ -54,7 +52,7 @@ func (l *DatabaseLogger) Print(values ...interface{}) {
 				}
 			}
 
-			log.Debug().Float64("tookMS", durationInMS).Int64("rows", values[5].(int64)).Msg("SQL: " + sql)
+			log.Debug().Str("took", values[2].(time.Duration).String()).Int64("rows", values[5].(int64)).Msg("SQL: " + sql)
 		} else if level == "log" {
 			if len(values) > 2 {
 				if err, ok := values[2].(error); ok {

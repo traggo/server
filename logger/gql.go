@@ -8,6 +8,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/rs/zerolog/log"
+	"time"
 )
 
 var (
@@ -17,8 +18,9 @@ var (
 // GQLLog logs graphql queries, mutations and errors.
 func GQLLog() graphql.RequestMiddleware {
 	return func(ctx context.Context, next func(ctx context.Context) []byte) []byte {
+		start := time.Now()
 		result := next(ctx)
-
+		elapsed := time.Now().Sub(start)
 		reqCtx := graphql.GetRequestContext(ctx)
 
 		if len(reqCtx.Errors) > 0 {
@@ -27,9 +29,9 @@ func GQLLog() graphql.RequestMiddleware {
 				errs = append(errs, err.Message)
 			}
 
-			log.Error().Strs("error", errs).Msg("GQL: " + toOneLine(hidePassword(reqCtx.RawQuery)))
+			log.Error().Strs("error", errs).Str("took", elapsed.String()).Msg("GQL: " + toOneLine(hidePassword(reqCtx.RawQuery)))
 		} else if log.Debug().Enabled() {
-			log.Debug().Msg("GQL: " + toOneLine(hidePassword(reqCtx.RawQuery)))
+			log.Debug().Str("took", elapsed.String()).Msg("GQL: " + toOneLine(hidePassword(reqCtx.RawQuery)))
 		}
 
 		return result
