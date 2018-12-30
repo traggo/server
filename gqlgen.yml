@@ -1,0 +1,11 @@
+schema: schema.graphql
+
+exec:
+  filename: generated/gqlschema/generated.go
+  package: gqlschema
+
+model:
+  filename: generated/gqlmodel/generated.go
+  package: gqlmodel
+
+struct_tag: json
