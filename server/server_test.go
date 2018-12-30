@@ -14,8 +14,6 @@ import (
 )
 
 func TestShutdownOnErrorWhileShutdown(t *testing.T) {
-	http.DefaultServeMux = http.NewServeMux()
-
 	db := test.InMemoryDB(t)
 	defer db.Close()
 
@@ -29,7 +27,7 @@ func TestShutdownOnErrorWhileShutdown(t *testing.T) {
 	finished := make(chan error)
 
 	go func() {
-		finished <- Start(db, 4, freeport.GetPort())
+		finished <- Start(http.NewServeMux(), freeport.GetPort())
 	}()
 
 	select {
@@ -41,15 +39,13 @@ func TestShutdownOnErrorWhileShutdown(t *testing.T) {
 }
 
 func TestShutdownAfterError(t *testing.T) {
-	http.DefaultServeMux = http.NewServeMux()
-
 	db := test.InMemoryDB(t)
 	defer db.Close()
 
 	finished := make(chan error)
 
 	go func() {
-		finished <- Start(db, 4, -5)
+		finished <- Start(http.NewServeMux(), -5)
 	}()
 
 	select {
@@ -61,8 +57,6 @@ func TestShutdownAfterError(t *testing.T) {
 }
 
 func TestShutdown(t *testing.T) {
-	http.DefaultServeMux = http.NewServeMux()
-
 	db := test.InMemoryDB(t)
 	defer db.Close()
 
@@ -72,7 +66,7 @@ func TestShutdown(t *testing.T) {
 	finished := make(chan error)
 
 	go func() {
-		finished <- Start(db, 4, freeport.GetPort())
+		finished <- Start(http.NewServeMux(), freeport.GetPort())
 	}()
 
 	select {
