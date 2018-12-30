@@ -1,12 +1,12 @@
 package logger_test
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"testing"
 
-	"github.com/graphql-go/graphql"
-	"github.com/graphql-go/graphql/gqlerrors"
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/rs/zerolog"
 	"github.com/traggo/server/logger"
 	"github.com/traggo/server/test"
@@ -107,6 +107,14 @@ query {
 }
 
 func gqlLog(query string, errs ...error) {
-	formattedErrors := gqlerrors.FormatErrors(errs...)
-	logger.GQLLog(nil, &graphql.Params{RequestString: query}, &graphql.Result{Errors: formattedErrors}, nil)
+	ctx := graphql.WithRequestContext(context.Background(), &graphql.RequestContext{
+		RawQuery:       query,
+		ErrorPresenter: graphql.DefaultErrorPresenter,
+	})
+	for _, err := range errs {
+		graphql.AddError(ctx, err)
+	}
+	logger.GQLLog()(ctx, func(ctx context.Context) []byte {
+		return []byte{}
+	})
 }
