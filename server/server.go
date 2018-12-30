@@ -7,9 +7,6 @@ import (
 	"os"
 	"os/signal"
 	"time"
-
-	"github.com/jinzhu/gorm"
-	"github.com/traggo/server/gql"
 )
 
 var notifySignal = signal.Notify
@@ -18,18 +15,19 @@ var serverShutdown = func(server *http.Server, ctx context.Context) error {
 }
 
 // Start starts the http server
-func Start(db *gorm.DB, passwordStrength, port int) error {
-	server, shutdown := startServer(db, passwordStrength, port)
+func Start(mux *http.ServeMux, port int) error {
+	server, shutdown := startServer(mux, port)
 	shutdownOnInterruptSignal(server, 2*time.Second, shutdown)
 	return waitForServerToClose(shutdown)
 }
 
-func startServer(db *gorm.DB, passwordStrength, port int) (*http.Server, chan error) {
-	srv := &http.Server{Addr: fmt.Sprintf(":%d", port)}
-	http.Handle("/graphql", gql.Handler(db, passwordStrength))
+func startServer(mux *http.ServeMux, port int) (*http.Server, chan error) {
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%d", port),
+		Handler: mux,
+	}
 
 	shutdown := make(chan error)
-
 	go func() {
 		err := srv.ListenAndServe()
 		shutdown <- err
