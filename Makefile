@@ -2,6 +2,11 @@ download-tools:
 	GO111MODULE=off go get -u golang.org/x/lint/golint
 	GO111MODULE=off go get -u golang.org/x/tools/cmd/goimports
 
+generate-go:
+	go run hack/gqlgen.go
+
+generate: generate-go
+
 lint-go:
 	go vet ./...
 	golint -set_exit_status $(shell go list ./...)
