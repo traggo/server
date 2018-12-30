@@ -3,11 +3,10 @@ package logger
 import (
 	"context"
 	"regexp"
-
 	"strings"
 	"unicode"
 
-	"github.com/graphql-go/graphql"
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/rs/zerolog/log"
 )
 
@@ -16,18 +15,24 @@ var (
 )
 
 // GQLLog logs graphql queries, mutations and errors.
-func GQLLog(_ context.Context, params *graphql.Params, result *graphql.Result, _ []byte) {
+func GQLLog() graphql.RequestMiddleware {
+	return func(ctx context.Context, next func(ctx context.Context) []byte) []byte {
+		result := next(ctx)
 
-	if result.HasErrors() {
-		logMSG := "GQL: " + toOneLine(hidePassword(params.RequestString))
-		var errs []string
-		for _, err := range result.Errors {
-			errs = append(errs, err.Message)
+		reqCtx := graphql.GetRequestContext(ctx)
+
+		if len(reqCtx.Errors) > 0 {
+			var errs []string
+			for _, err := range reqCtx.Errors {
+				errs = append(errs, err.Message)
+			}
+
+			log.Error().Strs("error", errs).Msg("GQL: " + toOneLine(hidePassword(reqCtx.RawQuery)))
+		} else if log.Debug().Enabled() {
+			log.Debug().Msg("GQL: " + toOneLine(hidePassword(reqCtx.RawQuery)))
 		}
-		log.Error().Strs("error", errs).Msg(logMSG)
-	} else if log.Debug().Enabled() {
-		logMSG := "GQL: " + toOneLine(hidePassword(params.RequestString))
-		log.Debug().Msg(logMSG)
+
+		return result
 	}
 }
 
