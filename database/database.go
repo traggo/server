@@ -10,7 +10,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"   // enable the sqlite3 dialect
 	"github.com/rs/zerolog/log"
 	"github.com/traggo/server/logger"
-	"github.com/traggo/server/schema"
+	"github.com/traggo/server/model"
 )
 
 var mkdirAll = os.MkdirAll
@@ -39,7 +39,7 @@ func New(dialect, connection string) (*gorm.DB, error) {
 	}
 
 	log.Debug().Msg("Auto migrating schema's")
-	db.AutoMigrate(schema.All()...)
+	db.AutoMigrate(model.All()...)
 
 	log.Debug().Msg("Database initialized")
 	return db, nil

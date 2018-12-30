@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/traggo/server/generated/gqlmodel"
-	"github.com/traggo/server/schema"
+	"github.com/traggo/server/model"
 	"github.com/traggo/server/test"
 )
 
@@ -24,10 +24,10 @@ func TestGQL_CreateTag_succeeds_addsTag(t *testing.T) {
 		Type:  gqlmodel.TagDefinitionTypeSinglevalue,
 	}
 	require.Equal(t, expected, tag)
-	assertTagExist(t, db, schema.TagDefinition{
+	assertTagExist(t, db, model.TagDefinition{
 		Key:   "new tag",
 		Color: "#fff",
-		Type:  schema.TypeSingleValue,
+		Type:  model.TypeSingleValue,
 	})
 	assertTagCount(t, db, 1)
 }
@@ -35,7 +35,7 @@ func TestGQL_CreateTag_succeeds_addsTag(t *testing.T) {
 func TestGQL_CreateTag_fails_tagAlreadyExists(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
-	db.Create(&schema.TagDefinition{Key: "existing tag", Color: "#fff", Type: schema.TypeSingleValue})
+	db.Create(&model.TagDefinition{Key: "existing tag", Color: "#fff", Type: model.TypeSingleValue})
 
 	resolver := ResolverForTag{DB: db}
 	_, err := resolver.CreateTag(context.Background(), "existing tag", "#fff", gqlmodel.TagDefinitionTypeSinglevalue)

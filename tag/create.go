@@ -6,15 +6,15 @@ import (
 
 	"github.com/jinzhu/copier"
 	"github.com/traggo/server/generated/gqlmodel"
-	"github.com/traggo/server/schema"
+	"github.com/traggo/server/model"
 )
 
 // CreateTag creates a tag.
 func (r *ResolverForTag) CreateTag(ctx context.Context, key string, color string, typeArg gqlmodel.TagDefinitionType) (*gqlmodel.TagDefinition, error) {
-	definition := &schema.TagDefinition{
+	definition := &model.TagDefinition{
 		Key:   key,
 		Color: color,
-		Type:  schema.TagDefinitionType(typeArg),
+		Type:  model.TagDefinitionType(typeArg),
 	}
 
 	if !r.DB.Find(definition).RecordNotFound() {

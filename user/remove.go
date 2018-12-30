@@ -6,12 +6,12 @@ import (
 
 	"github.com/jinzhu/copier"
 	"github.com/traggo/server/generated/gqlmodel"
-	"github.com/traggo/server/schema"
+	"github.com/traggo/server/model"
 )
 
 // RemoveUser removes a user
 func (r *ResolverForUser) RemoveUser(ctx context.Context, id int) (*gqlmodel.User, error) {
-	user := schema.User{ID: id}
+	user := model.User{ID: id}
 	if r.DB.Find(&user).RecordNotFound() {
 		return nil, fmt.Errorf("user with id %d does not exist", user.ID)
 	}

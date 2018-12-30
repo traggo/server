@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/traggo/server/generated/gqlmodel"
-	"github.com/traggo/server/schema"
+	"github.com/traggo/server/model"
 	"github.com/traggo/server/test"
 )
 
@@ -14,13 +14,13 @@ func TestGQL_Users(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
 	resolver := ResolverForUser{DB: db, PassStrength: 4}
-	db.Create(&schema.User{
+	db.Create(&model.User{
 		Name:  "jmattheis",
 		Pass:  unicornPW,
 		ID:    1,
 		Admin: true,
 	})
-	db.Create(&schema.User{
+	db.Create(&model.User{
 		Name:  "broderpeters",
 		Pass:  ponyPW,
 		ID:    2,

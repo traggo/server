@@ -5,14 +5,14 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/traggo/server/schema"
+	"github.com/traggo/server/model"
 	"github.com/traggo/server/test"
 )
 
 func TestGQL_RemoveUser_succeeds_removesUser(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
-	db.Create(&schema.User{
+	db.Create(&model.User{
 		Name:  "jmattheis",
 		Pass:  unicornPW,
 		ID:    1,
@@ -27,7 +27,7 @@ func TestGQL_RemoveUser_succeeds_removesUser(t *testing.T) {
 func TestGQL_RemoveUser_fails_notExistingUser(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
-	db.Create(&schema.User{
+	db.Create(&model.User{
 		Name:  "jmattheis",
 		Pass:  unicornPW,
 		ID:    1,

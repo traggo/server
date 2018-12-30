@@ -6,18 +6,18 @@ import (
 
 	"github.com/jinzhu/copier"
 	"github.com/traggo/server/generated/gqlmodel"
-	"github.com/traggo/server/schema"
+	"github.com/traggo/server/model"
 )
 
 // CreateUser creates a user.
 func (r *ResolverForUser) CreateUser(ctx context.Context, name string, pass string, admin bool) (*gqlmodel.User, error) {
-	newUser := &schema.User{
+	newUser := &model.User{
 		Name:  name,
 		Pass:  createPassword(pass, r.PassStrength),
 		Admin: admin,
 	}
 
-	if !r.DB.Where("name = ?", newUser.Name).Find(&schema.User{}).RecordNotFound() {
+	if !r.DB.Where("name = ?", newUser.Name).Find(&model.User{}).RecordNotFound() {
 		return nil, fmt.Errorf("user with name '%s' does already exist", newUser.Name)
 	}
 
