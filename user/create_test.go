@@ -15,7 +15,7 @@ func TestGQL_CreateUser_succeeds_addsUser(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
 
-	resolver := ResolverForUser{DB: db, PassStrength: 4}
+	resolver := ResolverForUser{DB: db.DB, PassStrength: 4}
 	user, err := resolver.CreateUser(context.Background(), "jmattheis", "unicorn", true)
 
 	require.Nil(t, err)
@@ -45,7 +45,7 @@ func TestGQL_CreateUser_fails_userAlreadyExists(t *testing.T) {
 		Admin: true,
 	})
 
-	resolver := ResolverForUser{DB: db, PassStrength: 4}
+	resolver := ResolverForUser{DB: db.DB, PassStrength: 4}
 	_, err := resolver.CreateUser(context.Background(), "jmattheis", "unicorn", true)
 	require.EqualError(t, err, "user with name 'jmattheis' does already exist")
 	assertUserCount(t, db, 1)
