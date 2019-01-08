@@ -14,14 +14,9 @@ func TestGQL_UpdateUser_succeeds_updatesUser(t *testing.T) {
 	createPassword = fakePassword
 	db := test.InMemoryDB(t)
 	defer db.Close()
-	db.Create(&model.User{
-		Name:  "jmattheis",
-		Pass:  unicornPW,
-		ID:    1,
-		Admin: true,
-	})
+	db.NewUserPass(1, "jmattheis", unicornPW, true)
 
-	resolver := ResolverForUser{DB: db, PassStrength: 4}
+	resolver := ResolverForUser{DB: db.DB, PassStrength: 4}
 	user, err := resolver.UpdateUser(context.Background(), 1, "broder", pointer("pony"), false)
 	require.Nil(t, err)
 
@@ -44,14 +39,9 @@ func TestGQL_UpdateUser_succeeds_preservesPassword(t *testing.T) {
 	createPassword = fakePassword
 	db := test.InMemoryDB(t)
 	defer db.Close()
-	db.Create(&model.User{
-		Name:  "jmattheis",
-		Pass:  unicornPW,
-		ID:    1,
-		Admin: true,
-	})
+	db.NewUserPass(1, "jmattheis", unicornPW, true)
 
-	resolver := ResolverForUser{DB: db, PassStrength: 4}
+	resolver := ResolverForUser{DB: db.DB, PassStrength: 4}
 	user, err := resolver.UpdateUser(context.Background(), 1, "broder", nil, false)
 	require.Nil(t, err)
 
@@ -75,7 +65,7 @@ func TestGQL_UpdateUser_fails_notExistingUser(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
 
-	resolver := ResolverForUser{DB: db, PassStrength: 4}
+	resolver := ResolverForUser{DB: db.DB, PassStrength: 4}
 	_, err := resolver.UpdateUser(context.Background(), 1, "broder", nil, false)
 	require.EqualError(t, err, "user with id 1 does not exist")
 
