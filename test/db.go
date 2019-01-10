@@ -22,8 +22,33 @@ type Database struct {
 }
 
 // User creates a user
-func (d *Database) User(id int) {
-	d.NewUser(id, fmt.Sprint("test", id), false)
+func (d *Database) User(id int) *UserWithDatabase {
+	user := d.NewUser(id, fmt.Sprint("test", id), false)
+	return &UserWithDatabase{
+		User: user,
+		DB:   d.DB,
+	}
+}
+
+// UserWithDatabase wraps gorm.DB and provides helper methods
+type UserWithDatabase struct {
+	User model.User
+	*gorm.DB
+}
+
+// NewDevice creates a device.
+func (d *UserWithDatabase) NewDevice(id int, token string, name string) model.Device {
+	device := model.Device{
+		ID:        id,
+		Token:     token,
+		UserID:    d.User.ID,
+		Name:      name,
+		ExpiresAt: Time("2009-06-30T18:30:00+02:00"),
+		ActiveAt:  Time("2009-06-30T18:30:00+02:00"),
+		CreatedAt: Time("2009-06-30T18:30:00+02:00"),
+	}
+	d.Create(&device)
+	return device
 }
 
 // NewUser creates a user
@@ -31,7 +56,7 @@ func (d *Database) NewUser(id int, name string, admin bool) model.User {
 	return d.NewUserPass(id, name, []byte{1, 2, 3}, admin)
 }
 
-// NewUser creates a user
+// NewUserPass creates a user
 func (d *Database) NewUserPass(id int, name string, pass []byte, admin bool) model.User {
 	user := model.User{
 		ID:    id,
