@@ -13,16 +13,16 @@ import (
 func TestHandler_jsonOverHtml(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
-	resolver := NewResolver(db, 4)
-	handler := Handler("/gql", resolver)
-	req := httptest.NewRequest("GET", "/gql?query="+url.QueryEscape("query {tags {key}}"), strings.NewReader(""))
+	resolver := NewResolver(db.DB, 4)
+	handler := Handler("/gql", resolver, NewDirective())
+	req := httptest.NewRequest("GET", "/gql?query="+url.QueryEscape("query {currentUser {name}}"), strings.NewReader(""))
 	req.Header.Set("Accept", "text/html;application/json")
 	recorder := httptest.NewRecorder()
 	handler.ServeHTTP(recorder, req)
 	require.Equal(t, "application/json", recorder.Header().Get("Content-Type"))
 	require.JSONEq(t, `
 {
-   "data": { "tags": [] }
+   "data": { "currentUser": null }
 }
 `, recorder.Body.String())
 }
@@ -30,8 +30,8 @@ func TestHandler_jsonOverHtml(t *testing.T) {
 func TestHandler_htmlIfNotJson(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
-	resolver := NewResolver(db, 4)
-	handler := Handler("/gql", resolver)
+	resolver := NewResolver(db.DB, 4)
+	handler := Handler("/gql", resolver, NewDirective())
 	req := httptest.NewRequest("get", "/gql", strings.NewReader(""))
 	req.Header.Set("Accept", "text/html;application/xml")
 	recorder := httptest.NewRecorder()
