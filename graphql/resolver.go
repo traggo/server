@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"github.com/jinzhu/gorm"
+	"github.com/traggo/server/device"
 	"github.com/traggo/server/generated/gqlschema"
 	"github.com/traggo/server/tag"
 	"github.com/traggo/server/user"
@@ -17,12 +18,16 @@ func NewResolver(db *gorm.DB, passStrength int) gqlschema.ResolverRoot {
 		tag.ResolverForTag{
 			DB: db,
 		},
+		device.ResolverForDevice{
+			DB: db,
+		},
 	}
 }
 
 type resolver struct {
 	user.ResolverForUser
 	tag.ResolverForTag
+	device.ResolverForDevice
 }
 
 func (r *resolver) RootMutation() gqlschema.RootMutationResolver {
