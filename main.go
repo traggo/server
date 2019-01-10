@@ -23,6 +23,7 @@ func main() {
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to connect to the database")
 	}
+	db.Create(&model.User{Name: "admin", Pass: password.CreatePassword("admin", 10), Admin: true})
 
 	stopCleanUp := make(chan bool)
 	go auth.CleanUp(db, time.Hour, stopCleanUp)
