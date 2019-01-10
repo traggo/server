@@ -8,4 +8,8 @@ model:
   filename: generated/gqlmodel/generated.go
   package: gqlmodel
 
+models:
+  Time:
+    model: github.com/traggo/server/model.Time
+
 struct_tag: json
