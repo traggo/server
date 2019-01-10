@@ -1,22 +1,52 @@
+enum Role {
+    ADMIN
+    USER
+}
+directive @hasRole(role: Role!) on FIELD_DEFINITION
+
 schema {
     query: RootQuery
     mutation: RootMutation
 }
 
 type RootMutation {
-    createTag(key: String!, color: String!, type: TagDefinitionType!): TagDefinition
-    removeTag(key: String!): TagDefinition
+    createTag(key: String!, color: String!, type: TagDefinitionType!): TagDefinition @hasRole(role: USER)
+    removeTag(key: String!): TagDefinition @hasRole(role: USER)
 
-    createUser(name: String!, pass: String!, admin: Boolean!): User
-    removeUser(id: Int!): User
-    updateUser(id: Int!, name: String!, pass: String, admin: Boolean!): User
+    createUser(name: String!, pass: String!, admin: Boolean!): User @hasRole(role: ADMIN)
+    removeUser(id: Int!): User @hasRole(role: ADMIN)
+    updateUser(id: Int!, name: String!, pass: String, admin: Boolean!): User @hasRole(role: ADMIN)
+
+    createDevice(username: String!, pass: String!, deviceName: String! expiresAt: Time!, cookie: Boolean!): Login
+    updateDevice(id: Int!, name: String!): Device
+    removeDevice(id: Int!): Device @hasRole(role: USER)
+    removeCurrentDevice: Device! @hasRole(role: USER)
 }
 
 type RootQuery {
-    suggestTag(query: String!): [TagDefinition!]
-    tags: [TagDefinition!]
-    users: [User!]
+    suggestTag(query: String!): [TagDefinition!] @hasRole(role: USER)
+    tags: [TagDefinition!] @hasRole(role: USER)
+    users: [User!] @hasRole(role: ADMIN)
+    currentUser: User
+    currentDevice: Device
+    devices: [Device!] @hasRole(role: USER)
 }
+
+type Login {
+    token: String!
+    user: User!
+    device: Device!
+}
+
+type Device {
+    id: Int!
+    name: String!
+    expiresAt: Time!
+    createdAt: Time!
+    activeAt: Time!
+}
+
+scalar Time
 
 type TagDefinition {
     color: String!
