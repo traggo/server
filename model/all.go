@@ -5,5 +5,6 @@ func All() []interface{} {
 	return []interface{}{
 		new(TagDefinition),
 		new(User),
+		new(Device),
 	}
 }
