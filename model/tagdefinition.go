@@ -2,10 +2,10 @@ package model
 
 // TagDefinition describes a tag.
 type TagDefinition struct {
-	Key   string `gorm:"primary_key;unique_index"`
-	Color string
-	Type  TagDefinitionType
-	Owner uint
+	Key    string
+	UserID int
+	Color  string
+	Type   TagDefinitionType
 }
 
 // TagDefinitionType describes a tag type.
