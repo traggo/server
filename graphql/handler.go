@@ -10,9 +10,10 @@ import (
 )
 
 // Handler combines graphql handler and playground handler.
-func Handler(endpoint string, resolvers gqlschema.ResolverRoot) http.HandlerFunc {
+func Handler(endpoint string, resolvers gqlschema.ResolverRoot, directives gqlschema.DirectiveRoot) http.HandlerFunc {
 	gqlHandler := handler.GraphQL(gqlschema.NewExecutableSchema(gqlschema.Config{
-		Resolvers: resolvers,
+		Resolvers:  resolvers,
+		Directives: directives,
 	}), handler.RequestMiddleware(logger.GQLLog()))
 	playground := handler.Playground("Traggo Playground", endpoint)
 
