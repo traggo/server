@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/phayes/freeport"
 	"github.com/stretchr/testify/assert"
 	"github.com/traggo/server/test"
@@ -27,7 +28,7 @@ func TestShutdownOnErrorWhileShutdown(t *testing.T) {
 	finished := make(chan error)
 
 	go func() {
-		finished <- Start(http.NewServeMux(), freeport.GetPort())
+		finished <- Start(mux.NewRouter(), freeport.GetPort())
 	}()
 
 	select {
@@ -45,7 +46,7 @@ func TestShutdownAfterError(t *testing.T) {
 	finished := make(chan error)
 
 	go func() {
-		finished <- Start(http.NewServeMux(), -5)
+		finished <- Start(mux.NewRouter(), -5)
 	}()
 
 	select {
@@ -66,7 +67,7 @@ func TestShutdown(t *testing.T) {
 	finished := make(chan error)
 
 	go func() {
-		finished <- Start(http.NewServeMux(), freeport.GetPort())
+		finished <- Start(mux.NewRouter(), freeport.GetPort())
 	}()
 
 	select {
