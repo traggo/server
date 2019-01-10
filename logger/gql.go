@@ -4,11 +4,11 @@ import (
 	"context"
 	"regexp"
 	"strings"
+	"time"
 	"unicode"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/rs/zerolog/log"
-	"time"
 )
 
 var (
