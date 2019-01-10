@@ -11,6 +11,8 @@ require (
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
 	github.com/gofrs/uuid v3.1.0+incompatible // indirect
 	github.com/google/go-cmp v0.2.0 // indirect
+	github.com/gorilla/context v1.1.1 // indirect
+	github.com/gorilla/mux v1.6.2
 	github.com/gorilla/websocket v1.4.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.0 // indirect
 	github.com/jinzhu/copier v0.0.0-20180308034124-7e38e58719c3
