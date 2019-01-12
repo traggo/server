@@ -3,3 +3,5 @@ build
 vendor
 coverage.txt
 generated
+.env.development.local
+.env
