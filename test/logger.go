@@ -4,6 +4,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/assert"
+	"github.com/traggo/server/logger"
 )
 
 // Logger the test logger with util methods
@@ -51,4 +52,9 @@ type noop struct {
 
 func (*noop) Write(p []byte) (n int, err error) {
 	return len(p), nil
+}
+
+// LogDebug enables debug log
+func LogDebug() {
+	logger.Init(zerolog.DebugLevel)
 }
