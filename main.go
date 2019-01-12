@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -8,6 +9,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/traggo/server/auth"
+	"github.com/traggo/server/config"
 	"github.com/traggo/server/config/mode"
 	"github.com/traggo/server/database"
 	"github.com/traggo/server/graphql"
@@ -24,35 +26,60 @@ var (
 
 func main() {
 	mode.Set(Mode)
-	// TODO configurable
-	logger.Init(zerolog.DebugLevel)
-	db, err := database.New("sqlite3", "file::memory:?mode=memory&cache=shared")
-	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to connect to the database")
+
+	conf, errs := config.Get()
+	logger.Init(conf.LogLevel.AsZeroLogLevel())
+
+	exit := false
+	for _, err := range errs {
+		log.WithLevel(err.Level).Msg(err.Msg)
+		exit = exit || err.Level == zerolog.FatalLevel || err.Level == zerolog.PanicLevel
 	}
-	db.Create(&model.User{Name: "admin", Pass: password.CreatePassword("admin", 10), Admin: true})
+	if exit {
+		os.Exit(1)
+	}
+	log.Debug().Interface("config", conf).Msg("Using")
 
-	stopCleanUp := make(chan bool)
-	go auth.CleanUp(db, time.Hour, stopCleanUp)
+	db := initDatabase(conf)
 
-	router := initRouter(db)
+	stopCleanUp := initCleanUp(db)
 
-	port := 3030
-	log.Info().Int("port", port).Msg("Start listening")
-	if err := server.Start(router, port); err != nil {
+	router := initRouter(db, conf)
+
+	log.Info().Int("port", conf.Port).Msg("Start listening")
+	if err := server.Start(router, conf.Port); err != nil {
 		log.Fatal().Err(err).Msg("Server Error")
 	}
 	stopCleanUp <- true
 }
 
-func initRouter(db *gorm.DB) *mux.Router {
+func initRouter(db *gorm.DB, conf config.Config) *mux.Router {
 	gqlHandler := graphql.Handler(
 		"/graphql",
-		graphql.NewResolver(db, 10),
+		graphql.NewResolver(db, conf.PassStrength),
 		graphql.NewDirective())
 
 	router := mux.NewRouter()
 	router.Use(auth.Middleware(db))
 	router.HandleFunc("/graphql", gqlHandler)
 	return router
+}
+
+func initDatabase(conf config.Config) *gorm.DB {
+	db, err := database.New(conf.DatabaseDialect, "file::memory:?mode=memory&cache=shared")
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to connect to the database")
+	}
+	db.Create(&model.User{
+		Name:  conf.DefaultUserName,
+		Pass:  password.CreatePassword(conf.DefaultUserPass, conf.PassStrength),
+		Admin: true})
+
+	return db
+}
+
+func initCleanUp(db *gorm.DB) chan<- bool {
+	stopCleanUp := make(chan bool)
+	go auth.CleanUp(db, time.Hour, stopCleanUp)
+	return stopCleanUp
 }
