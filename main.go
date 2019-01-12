@@ -8,6 +8,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/traggo/server/auth"
+	"github.com/traggo/server/config/mode"
 	"github.com/traggo/server/database"
 	"github.com/traggo/server/graphql"
 	"github.com/traggo/server/logger"
@@ -16,7 +17,13 @@ import (
 	"github.com/traggo/server/user/password"
 )
 
+var (
+	// Mode the build mode
+	Mode = mode.Dev
+)
+
 func main() {
+	mode.Set(Mode)
 	// TODO configurable
 	logger.Init(zerolog.DebugLevel)
 	db, err := database.New("sqlite3", "file::memory:?mode=memory&cache=shared")
