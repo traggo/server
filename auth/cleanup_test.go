@@ -106,7 +106,7 @@ func TestCleanUp_removeExpiredDevices(t *testing.T) {
 	var devices []model.Device
 	db.Find(&devices)
 	assert.Equal(t, expected, devices)
-	stopCleanUp<-true
+	stopCleanUp <- true
 }
 
 func fakeTime(t time.Time) func() {
