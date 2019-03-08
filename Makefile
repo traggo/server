@@ -3,9 +3,7 @@ download-tools:
 	GO111MODULE=off go get -u golang.org/x/tools/cmd/goimports
 
 generate-go:
-# this is a workaround as gqlgen currently does not support go modules
-# https://github.com/99designs/gqlgen/issues/226
-	GO111MODULE=off go run hack/gqlgen.go
+	go run hack/gqlgen.go
 
 generate: generate-go
 
