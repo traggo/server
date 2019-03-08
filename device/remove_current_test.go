@@ -28,7 +28,7 @@ func TestGQL_RemoveCurrentDevice_succeeds_removesDevice(t *testing.T) {
 	gqlDevice, err := resolver.RemoveCurrentDevice(fake.Device(device))
 	require.Nil(t, err)
 
-	expected := gqlmodel.Device{
+	expected := &gqlmodel.Device{
 		ID:        55,
 		Name:      "Android",
 		CreatedAt: test.ModelTime("2009-06-30T18:30:00+02:00"),
