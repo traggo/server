@@ -65,3 +65,22 @@ type User {
     id: Int!
     name: String!
 }
+
+type TimeSpan {
+    id: Int!
+    startUTC: Time!
+    endUTC: Time
+    startUserTime: Time!
+    endUserTime: Time
+    tags: [TimeSpanTag!]
+}
+
+type TimeSpanTag {
+    key: String!
+    stringValue: String
+}
+
+input InputTimeSpanTag {
+    key: String!
+    stringValue: String
+}

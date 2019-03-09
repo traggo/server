@@ -6,5 +6,7 @@ func All() []interface{} {
 		new(TagDefinition),
 		new(User),
 		new(Device),
+		new(TimeSpan),
+		new(TimeSpanTag),
 	}
 }
