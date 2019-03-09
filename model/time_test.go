@@ -32,6 +32,28 @@ func TestTime_UnmarshalGQL_success(t *testing.T) {
 	assert.Equal(t, expected, *actual)
 }
 
+func TestTime_OmitTimeZone(t *testing.T) {
+	date := "2009-06-30T18:30:00+02:00"
+	tzDate, err := time.Parse(time.RFC3339, date)
+	assert.Nil(t, err)
+	utcDate := "2009-06-30T18:30:00Z"
+	withoutTz, err := time.Parse(time.RFC3339, utcDate)
+	assert.Nil(t, err)
+
+	assert.Equal(t, withoutTz, Time(tzDate).OmitTimeZone())
+}
+
+func TestTime_UTC(t *testing.T) {
+	date := "2009-06-30T18:30:00+02:00"
+	parse, err := time.Parse(time.RFC3339, date)
+	assert.Nil(t, err)
+	without := "2009-06-30T16:30:00Z"
+	withoutTz, err := time.Parse(time.RFC3339, without)
+	assert.Nil(t, err)
+
+	assert.Equal(t, withoutTz, Time(parse).UTC())
+}
+
 func TestTime_UnmarshalGQL_failInvalidType(t *testing.T) {
 	actual := &Time{}
 	err := actual.UnmarshalGQL(1)

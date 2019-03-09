@@ -14,6 +14,17 @@ func (t Time) Time() time.Time {
 	return time.Time(t)
 }
 
+// OmitTimeZone omits the time zone and removes a utc date.
+func (t Time) OmitTimeZone() time.Time {
+	x := t.Time()
+	return time.Date(x.Year(), x.Month(), x.Day(), x.Hour(), x.Minute(), x.Second(), x.Nanosecond(), time.UTC)
+}
+
+// UTC changes the timezone to utc.
+func (t Time) UTC() time.Time {
+	return t.Time().UTC()
+}
+
 // MarshalGQL implements the graphql.Marshaler interface
 func (t Time) MarshalGQL(w io.Writer) {
 	w.Write([]byte(t.Time().Format(time.RFC3339)))
