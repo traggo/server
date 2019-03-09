@@ -15,7 +15,19 @@ func Time(value string) time.Time {
 	return parse
 }
 
+// TimeP parses a time panics if not valid
+func TimeP(value string) *time.Time {
+	t := Time(value)
+	return &t
+}
+
 // ModelTime parses a model.Time panics if not valid
 func ModelTime(value string) model.Time {
 	return model.Time(Time(value))
+}
+
+// ModelTimeP parses a model.Time panics if not valid
+func ModelTimeP(value string) *model.Time {
+	modelTime := ModelTime(value)
+	return &modelTime
 }
