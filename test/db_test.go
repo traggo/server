@@ -35,9 +35,9 @@ func TestDatabase(t *testing.T) {
 		Token:     "lol",
 		Name:      "test device",
 		UserID:    1,
-		ExpiresAt: test.Time("2009-06-30T18:30:00+02:00"),
-		ActiveAt:  test.Time("2009-06-30T18:30:00+02:00"),
-		CreatedAt: test.Time("2009-06-30T18:30:00+02:00")}}
+		ExpiresAt: test.Time("2009-06-30T18:30:00Z"),
+		ActiveAt:  test.Time("2009-06-30T18:30:00Z"),
+		CreatedAt: test.Time("2009-06-30T18:30:00Z")}}
 
 	var devices []model.Device
 	db.Find(&devices)

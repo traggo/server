@@ -32,7 +32,7 @@ func TestCleanUp_stops(t *testing.T) {
 }
 
 func TestCleanUp_removeExpiredDevices(t *testing.T) {
-	now := test.Time("2018-06-30T18:30:00+02:00")
+	now := test.Time("2018-06-30T18:30:00Z")
 	timeDispose := fakeTime(now)
 	defer timeDispose()
 
@@ -44,36 +44,36 @@ func TestCleanUp_removeExpiredDevices(t *testing.T) {
 		Token:     "abc",
 		UserID:    2,
 		Name:      "android 1",
-		ExpiresAt: test.Time("2018-07-30T18:30:01+02:00"),
-		ActiveAt:  test.Time("2009-06-30T18:30:00+02:00"),
-		CreatedAt: test.Time("2009-06-30T18:30:00+02:00"),
+		ExpiresAt: test.Time("2018-07-30T18:30:01Z"),
+		ActiveAt:  test.Time("2009-06-30T18:30:00Z"),
+		CreatedAt: test.Time("2009-06-30T18:30:00Z"),
 	})
 	db.Create(&model.Device{
 		ID:        2,
 		Token:     "abc2",
 		UserID:    2,
 		Name:      "android 2",
-		ExpiresAt: test.Time("2018-06-29T18:30:00+02:00"),
-		ActiveAt:  test.Time("2009-06-30T18:30:00+02:00"),
-		CreatedAt: test.Time("2009-06-30T18:30:00+02:00"),
+		ExpiresAt: test.Time("2018-06-29T18:30:00Z"),
+		ActiveAt:  test.Time("2009-06-30T18:30:00Z"),
+		CreatedAt: test.Time("2009-06-30T18:30:00Z"),
 	})
 	db.Create(&model.Device{
 		ID:        3,
 		Token:     "abc3",
 		UserID:    2,
 		Name:      "android 3",
-		ExpiresAt: test.Time("2009-06-29T18:30:00+02:00"),
-		ActiveAt:  test.Time("2009-06-30T18:30:00+02:00"),
-		CreatedAt: test.Time("2009-06-30T18:30:00+02:00"),
+		ExpiresAt: test.Time("2009-06-29T18:30:00Z"),
+		ActiveAt:  test.Time("2009-06-30T18:30:00Z"),
+		CreatedAt: test.Time("2009-06-30T18:30:00Z"),
 	})
 	db.Create(&model.Device{
 		ID:        4,
 		Token:     "abc4",
 		UserID:    2,
 		Name:      "android 4",
-		ExpiresAt: test.Time("2025-06-29T18:30:00+02:00"),
-		ActiveAt:  test.Time("2009-06-30T18:30:00+02:00"),
-		CreatedAt: test.Time("2009-06-30T18:30:00+02:00"),
+		ExpiresAt: test.Time("2025-06-29T18:30:00Z"),
+		ActiveAt:  test.Time("2009-06-30T18:30:00Z"),
+		CreatedAt: test.Time("2009-06-30T18:30:00Z"),
 	})
 
 	stopCleanUp := make(chan bool)
@@ -88,18 +88,18 @@ func TestCleanUp_removeExpiredDevices(t *testing.T) {
 			Token:     "abc",
 			UserID:    2,
 			Name:      "android 1",
-			ExpiresAt: test.Time("2018-07-30T18:30:01+02:00"),
-			ActiveAt:  test.Time("2009-06-30T18:30:00+02:00"),
-			CreatedAt: test.Time("2009-06-30T18:30:00+02:00"),
+			ExpiresAt: test.Time("2018-07-30T18:30:01Z"),
+			ActiveAt:  test.Time("2009-06-30T18:30:00Z"),
+			CreatedAt: test.Time("2009-06-30T18:30:00Z"),
 		},
 		{
 			ID:        4,
 			Token:     "abc4",
 			UserID:    2,
 			Name:      "android 4",
-			ExpiresAt: test.Time("2025-06-29T18:30:00+02:00"),
-			ActiveAt:  test.Time("2009-06-30T18:30:00+02:00"),
-			CreatedAt: test.Time("2009-06-30T18:30:00+02:00"),
+			ExpiresAt: test.Time("2025-06-29T18:30:00Z"),
+			ActiveAt:  test.Time("2009-06-30T18:30:00Z"),
+			CreatedAt: test.Time("2009-06-30T18:30:00Z"),
 		},
 	}
 
