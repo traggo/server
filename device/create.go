@@ -46,9 +46,9 @@ func (r *ResolverForDevice) CreateDevice(ctx context.Context, username string, p
 		Token:     token,
 		UserID:    user.ID,
 		Name:      deviceName,
-		ExpiresAt: expiresAt.Time(),
-		CreatedAt: timeNow(),
-		ActiveAt:  timeNow(),
+		ExpiresAt: expiresAt.Time().UTC(),
+		CreatedAt: timeNow().UTC(),
+		ActiveAt:  timeNow().UTC(),
 	}
 
 	if cookie {

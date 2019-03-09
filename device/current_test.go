@@ -20,9 +20,9 @@ func TestGQL_CurrentDevice_withDevice(t *testing.T) {
 		Name:      "Browser",
 		Token:     "abcd",
 		UserID:    2,
-		CreatedAt: test.Time("2004-06-30T18:30:00+02:00"),
-		ActiveAt:  test.Time("2015-06-30T18:30:00+02:00"),
-		ExpiresAt: test.Time("2026-06-30T18:30:00+02:00"),
+		CreatedAt: test.Time("2004-06-30T18:30:00Z"),
+		ActiveAt:  test.Time("2015-06-30T18:30:00Z"),
+		ExpiresAt: test.Time("2026-06-30T18:30:00Z"),
 	}
 
 	resolver := ResolverForDevice{DB: db.DB}
@@ -32,9 +32,9 @@ func TestGQL_CurrentDevice_withDevice(t *testing.T) {
 	expected := &gqlmodel.Device{
 		ID:        2,
 		Name:      "Browser",
-		CreatedAt: test.ModelTime("2004-06-30T18:30:00+02:00"),
-		ActiveAt:  test.ModelTime("2015-06-30T18:30:00+02:00"),
-		ExpiresAt: test.ModelTime("2026-06-30T18:30:00+02:00"),
+		CreatedAt: test.ModelTime("2004-06-30T18:30:00Z"),
+		ActiveAt:  test.ModelTime("2015-06-30T18:30:00Z"),
+		ExpiresAt: test.ModelTime("2026-06-30T18:30:00Z"),
 	}
 
 	require.Equal(t, expected, result)

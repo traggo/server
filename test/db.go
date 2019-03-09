@@ -43,9 +43,9 @@ func (d *UserWithDatabase) NewDevice(id int, token string, name string) model.De
 		Token:     token,
 		UserID:    d.User.ID,
 		Name:      name,
-		ExpiresAt: Time("2009-06-30T18:30:00+02:00"),
-		ActiveAt:  Time("2009-06-30T18:30:00+02:00"),
-		CreatedAt: Time("2009-06-30T18:30:00+02:00"),
+		ExpiresAt: Time("2009-06-30T18:30:00Z"),
+		ActiveAt:  Time("2009-06-30T18:30:00Z"),
+		CreatedAt: Time("2009-06-30T18:30:00Z"),
 	}
 	d.Create(&device)
 	return device

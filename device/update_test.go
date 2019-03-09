@@ -22,9 +22,9 @@ func TestGQL_UpdateDevice_succeeds_updatesDevice(t *testing.T) {
 		Name:      "old name",
 		ID:        1,
 		UserID:    1,
-		CreatedAt: test.Time("2009-06-30T18:30:00+02:00"),
-		ActiveAt:  test.Time("2018-06-30T18:30:00+02:00"),
-		ExpiresAt: test.Time("2022-06-30T18:30:00+02:00"),
+		CreatedAt: test.Time("2009-06-30T18:30:00Z"),
+		ActiveAt:  test.Time("2018-06-30T18:30:00Z"),
+		ExpiresAt: test.Time("2022-06-30T18:30:00Z"),
 	})
 
 	resolver := ResolverForDevice{DB: db.DB}
@@ -34,9 +34,9 @@ func TestGQL_UpdateDevice_succeeds_updatesDevice(t *testing.T) {
 	expected := &gqlmodel.Device{
 		Name:      "updated name",
 		ID:        1,
-		CreatedAt: test.ModelTime("2009-06-30T18:30:00+02:00"),
-		ActiveAt:  test.ModelTime("2018-06-30T18:30:00+02:00"),
-		ExpiresAt: test.ModelTime("2022-06-30T18:30:00+02:00"),
+		CreatedAt: test.ModelTime("2009-06-30T18:30:00Z"),
+		ActiveAt:  test.ModelTime("2018-06-30T18:30:00Z"),
+		ExpiresAt: test.ModelTime("2022-06-30T18:30:00Z"),
 	}
 	require.Equal(t, expected, device)
 	assertDeviceCount(t, db, 1)
@@ -44,9 +44,9 @@ func TestGQL_UpdateDevice_succeeds_updatesDevice(t *testing.T) {
 		Name:      "updated name",
 		ID:        1,
 		UserID:    1,
-		CreatedAt: test.Time("2009-06-30T18:30:00+02:00"),
-		ActiveAt:  test.Time("2018-06-30T18:30:00+02:00"),
-		ExpiresAt: test.Time("2022-06-30T18:30:00+02:00"),
+		CreatedAt: test.Time("2009-06-30T18:30:00Z"),
+		ActiveAt:  test.Time("2018-06-30T18:30:00Z"),
+		ExpiresAt: test.Time("2022-06-30T18:30:00Z"),
 	})
 }
 
@@ -82,9 +82,9 @@ func TestGQL_UpdateDevice_fails_noPermissions(t *testing.T) {
 		Name:      "old name",
 		ID:        66,
 		UserID:    2,
-		CreatedAt: test.Time("2009-06-30T18:30:00+02:00"),
-		ActiveAt:  test.Time("2018-06-30T18:30:00+02:00"),
-		ExpiresAt: test.Time("2022-06-30T18:30:00+02:00"),
+		CreatedAt: test.Time("2009-06-30T18:30:00Z"),
+		ActiveAt:  test.Time("2018-06-30T18:30:00Z"),
+		ExpiresAt: test.Time("2022-06-30T18:30:00Z"),
 	})
 	resolver := ResolverForDevice{DB: db.DB}
 	_, err := resolver.UpdateDevice(fake.User(1), 66, "tst")

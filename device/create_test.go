@@ -129,9 +129,9 @@ func TestGQL_CreateDevice_succeeds(t *testing.T) {
 		Device: gqlmodel.Device{
 			ID:        1,
 			Name:      "test",
-			ExpiresAt: model.Time(expireDate),
-			CreatedAt: model.Time(now),
-			ActiveAt:  model.Time(now),
+			ExpiresAt: model.Time(expireDate.UTC()),
+			CreatedAt: model.Time(now.UTC()),
+			ActiveAt:  model.Time(now.UTC()),
 		},
 	}
 	assert.Equal(t, expected, login)

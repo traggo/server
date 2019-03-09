@@ -19,9 +19,9 @@ func TestGQL_RemoveCurrentDevice_succeeds_removesDevice(t *testing.T) {
 		Name:      "Android",
 		Token:     "abc",
 		UserID:    1,
-		CreatedAt: test.Time("2009-06-30T18:30:00+02:00"),
-		ActiveAt:  test.Time("2018-06-30T18:30:00+02:00"),
-		ExpiresAt: test.Time("2022-06-30T18:30:00+02:00"),
+		CreatedAt: test.Time("2009-06-30T18:30:00Z"),
+		ActiveAt:  test.Time("2018-06-30T18:30:00Z"),
+		ExpiresAt: test.Time("2022-06-30T18:30:00Z"),
 	}
 	db.Create(device)
 	resolver := ResolverForDevice{DB: db.DB}
@@ -31,9 +31,9 @@ func TestGQL_RemoveCurrentDevice_succeeds_removesDevice(t *testing.T) {
 	expected := &gqlmodel.Device{
 		ID:        55,
 		Name:      "Android",
-		CreatedAt: test.ModelTime("2009-06-30T18:30:00+02:00"),
-		ActiveAt:  test.ModelTime("2018-06-30T18:30:00+02:00"),
-		ExpiresAt: test.ModelTime("2022-06-30T18:30:00+02:00"),
+		CreatedAt: test.ModelTime("2009-06-30T18:30:00Z"),
+		ActiveAt:  test.ModelTime("2018-06-30T18:30:00Z"),
+		ExpiresAt: test.ModelTime("2022-06-30T18:30:00Z"),
 	}
 
 	require.Equal(t, expected, gqlDevice)
