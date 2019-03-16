@@ -25,6 +25,7 @@ type RootMutation {
     createTimeSpan(start: Time!, end: Time, tags: [InputTimeSpanTag!]): TimeSpan @hasRole(role: USER)
     updateTimeSpan(id: Int!, start: Time!, end: Time, tags: [InputTimeSpanTag!]): TimeSpan @hasRole(role: USER)
     removeTimeSpan(id: Int!): TimeSpan @hasRole(role: USER)
+    copyTimeSpan(id: Int!, start: Time!, end: Time): TimeSpan @hasRole(role: USER)
 }
 
 type RootQuery {
