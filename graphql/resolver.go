@@ -5,6 +5,7 @@ import (
 	"github.com/traggo/server/device"
 	"github.com/traggo/server/generated/gqlschema"
 	"github.com/traggo/server/tag"
+	"github.com/traggo/server/timespan"
 	"github.com/traggo/server/user"
 )
 
@@ -21,6 +22,9 @@ func NewResolver(db *gorm.DB, passStrength int) gqlschema.ResolverRoot {
 		device.ResolverForDevice{
 			DB: db,
 		},
+		timespan.ResolverForTimeSpan{
+			DB: db,
+		},
 	}
 }
 
@@ -28,6 +32,7 @@ type resolver struct {
 	user.ResolverForUser
 	tag.ResolverForTag
 	device.ResolverForDevice
+	timespan.ResolverForTimeSpan
 }
 
 func (r *resolver) RootMutation() gqlschema.RootMutationResolver {
