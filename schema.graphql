@@ -23,6 +23,7 @@ type RootMutation {
     removeCurrentDevice: Device! @hasRole(role: USER)
 
     createTimeSpan(start: Time!, end: Time, tags: [InputTimeSpanTag!]): TimeSpan @hasRole(role: USER)
+    removeTimeSpan(id: Int!): TimeSpan @hasRole(role: USER)
 }
 
 type RootQuery {
