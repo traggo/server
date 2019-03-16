@@ -35,6 +35,7 @@ type RootQuery {
     currentDevice: Device
     devices: [Device!] @hasRole(role: USER)
     timeSpans(fromInclusive: Time, toInclusive: Time): [TimeSpan!] @hasRole(role: USER)
+    timers: [TimeSpan!] @hasRole(role: USER)
 }
 
 type Login {
