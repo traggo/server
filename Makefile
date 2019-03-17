@@ -5,19 +5,29 @@ download-tools:
 generate-go:
 	go run hack/gqlgen.go
 
-generate: generate-go
+generate-js:
+	(cd ui && yarn generate)
+
+generate: generate-go generate-js
 
 lint-go:
 	go vet ./...
 	golint -set_exit_status $(shell go list ./...)
 	goimports -l $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
-lint: lint-go
+lint-js:
+	(cd ui && yarn format:check)
+	(cd ui && yarn lint:check)
+
+lint: lint-go lint-js
 
 format-go:
 	goimports -w $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
-format: format-go
+format-js:
+	(cd ui && yarn format)
+
+format: format-go format-js
 
 test-go:
 	go test --race -v -coverprofile=coverage.txt -covermode=atomic ./...
@@ -25,6 +35,9 @@ test-go:
 test: test-go
 
 install-go:
-	go mod vendor
+	go mod download
 
-install: install-go
+install-js:
+	(cd ui && yarn)
+
+install: install-go install-js
