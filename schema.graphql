@@ -38,6 +38,7 @@ type RootQuery {
     devices: [Device!] @hasRole(role: USER)
     timeSpans(fromInclusive: Time, toInclusive: Time): [TimeSpan!] @hasRole(role: USER)
     timers: [TimeSpan!] @hasRole(role: USER)
+    timeSpanSummary(fromExclusive: Time!, toInclusive: Time!, stat: StatInput!): [StatisticsEntry!] @hasRole(role: USER)
 }
 
 type Login {
@@ -91,4 +92,16 @@ type TimeSpanTag {
 input InputTimeSpanTag {
     key: String!
     stringValue: String
+}
+
+input StatInput {
+    key: String!
+    mustHave: [InputTimeSpanTag!]
+    mustNotHave: [InputTimeSpanTag!]
+}
+
+type StatisticsEntry {
+    key: String!
+    stringValue: String
+    timeSpendInSeconds: Int!
 }
