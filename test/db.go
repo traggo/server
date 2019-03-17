@@ -67,3 +67,50 @@ func (d *Database) NewUserPass(id int, name string, pass []byte, admin bool) mod
 	d.Create(&user)
 	return user
 }
+
+// RunningTimeSpan adds a time span without end.
+func (d *UserWithDatabase) RunningTimeSpan(from string) *TimeSpanWithDatabase {
+	timeSpan := model.TimeSpan{
+		UserID:        d.User.ID,
+		StartUserTime: ModelTime(from).OmitTimeZone(),
+		StartUTC:      ModelTime(from).UTC(),
+	}
+
+	d.DB.Create(&timeSpan)
+
+	return &TimeSpanWithDatabase{
+		User:     d.User,
+		TimeSpan: timeSpan,
+		DB:       d.DB,
+	}
+}
+
+// TimeSpan adds a time span.
+func (d *UserWithDatabase) TimeSpan(from string, to string) *TimeSpanWithDatabase {
+	wrapper := d.RunningTimeSpan(from)
+	userTime := ModelTime(to).OmitTimeZone()
+	wrapper.TimeSpan.EndUserTime = &userTime
+	utc := ModelTime(to).UTC()
+	wrapper.TimeSpan.EndUTC = &utc
+	d.DB.Save(&wrapper.TimeSpan)
+	return wrapper
+}
+
+// TimeSpanWithDatabase wraps gorm.DB and provides helper methods
+type TimeSpanWithDatabase struct {
+	User     model.User
+	TimeSpan model.TimeSpan
+	*gorm.DB
+}
+
+// Tag adds a tag to the time span.
+func (d *TimeSpanWithDatabase) Tag(key string, stringValue string) *TimeSpanWithDatabase {
+	tag := model.TimeSpanTag{
+		TimeSpanID:  d.TimeSpan.ID,
+		Key:         key,
+		StringValue: &stringValue,
+	}
+	d.TimeSpan.Tags = append(d.TimeSpan.Tags, tag)
+	d.DB.Save(tag)
+	return d
+}
