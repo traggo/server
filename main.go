@@ -66,7 +66,7 @@ func initRouter(db *gorm.DB, conf config.Config) *mux.Router {
 }
 
 func initDatabase(conf config.Config) *gorm.DB {
-	db, err := database.New(conf.DatabaseDialect, "file::memory:?mode=memory&cache=shared")
+	db, err := database.New(conf.DatabaseDialect, conf.DatabaseConnection)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to connect to the database")
 	}
