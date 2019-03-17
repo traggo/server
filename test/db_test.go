@@ -17,7 +17,9 @@ func TestInMemoryDB(t *testing.T) {
 func TestDatabase(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
-	db.User(1).NewDevice(1, "lol", "test device")
+	user := db.User(1)
+	user.NewDevice(1, "lol", "test device")
+	user.TimeSpan("2009-06-30T18:30:00Z", "2009-06-30T18:40:00Z").Tag("abc", "def")
 	db.NewUser(2, "abc", true)
 	db.NewUserPass(3, "xxx", []byte{5, 5}, true)
 
@@ -42,4 +44,23 @@ func TestDatabase(t *testing.T) {
 	var devices []model.Device
 	db.Find(&devices)
 	assert.Equal(t, expectedDevices, devices)
+
+	value := "def"
+	expectedTimeSpans := []model.TimeSpan{{
+		ID:            1,
+		UserID:        1,
+		StartUserTime: test.Time("2009-06-30T18:30:00Z"),
+		StartUTC:      test.Time("2009-06-30T18:30:00Z"),
+		EndUserTime:   test.TimeP("2009-06-30T18:40:00Z"),
+		EndUTC:        test.TimeP("2009-06-30T18:40:00Z"),
+		Tags: []model.TimeSpanTag{{
+			Key:         "abc",
+			StringValue: &value,
+			TimeSpanID:  1,
+		}},
+	}}
+
+	var timeSpans []model.TimeSpan
+	db.Preload("Tags").Find(&timeSpans)
+	assert.Equal(t, expectedTimeSpans, timeSpans)
 }
