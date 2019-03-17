@@ -1,0 +1,47 @@
+{
+  "name": "ui",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@material-ui/core": "^3.9.2",
+    "apollo-boost": "^0.3.1",
+    "graphql": "^14.1.1",
+    "notistack": "^0.5.1",
+    "react": "^16.8.4",
+    "react-apollo": "^2.5.2",
+    "react-dom": "^16.8.4",
+    "react-scripts": "2.1.8",
+    "typeface-roboto": "^0.0.54",
+    "typescript": "3.3.3333"
+  },
+  "devDependencies": {
+    "@types/graphql": "^14.0.7",
+    "@types/jest": "24.0.11",
+    "@types/node": "11.11.3",
+    "@types/react": "16.8.8",
+    "@types/react-dom": "16.8.2",
+    "apollo": "^2.6.2",
+    "prettier": "^1.16.4",
+    "tslint": "^5.14.0",
+    "tslint-sonarts": "^1.9.0"
+  },
+  "scripts": {
+    "lint": "tslint --fix --project .",
+    "lint:check": "tslint --project .",
+    "generate": "apollo client:codegen --target typescript --localSchemaFile ../schema.graphql --excludes **/*local.ts",
+    "format": "prettier \"**/*.{html,ts,tsx,css}\" --write",
+    "format:check": "prettier \"**/*.{html,ts,tsx,css}\" --list-different",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "postbuild": "rimraf build/**/*.map",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "proxy": "http://localhost:3030"
+}
