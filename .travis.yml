@@ -9,6 +9,7 @@ env:
   - GO111MODULE=on
 
 before_install:
+  - nvm install 11.11.0
   - make download-tools
 
 install:
