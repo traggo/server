@@ -18,6 +18,7 @@ script:
   - make generate
   - make lint
   - make test
+  - make build-js
   - go build -o build/executable
 
 after_success:

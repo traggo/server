@@ -40,4 +40,7 @@ install-go:
 install-js:
 	(cd ui && yarn)
 
+build-js:
+	(cd ui && yarn build)
+
 install: install-go install-js
