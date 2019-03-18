@@ -1,21 +1,13 @@
 import * as React from 'react';
 import {Grid, StyleRulesCallback, WithStyles} from '@material-ui/core';
-import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import {LoginForm} from './LoginForm';
 import {ToggleTheme} from '../common/ToggleTheme';
 import Link from '@material-ui/core/Link';
+import {DefaultPaper} from '../common/DefaultPaper';
 
-const styles: StyleRulesCallback = (theme) => ({
-    root: {
-        ...theme.mixins.gutters(),
-        paddingTop: theme.spacing.unit * 4,
-        paddingBottom: theme.spacing.unit * 3,
-        textAlign: 'center',
-        maxWidth: 400,
-        borderTop: `5px solid ${theme.palette.primary.main}`,
-    },
+const styles: StyleRulesCallback = () => ({
     footerLink: {
         margin: '0 2px',
     },
@@ -33,12 +25,12 @@ export const LoginPage = withStyles(styles, {withTheme: true})(
             return (
                 <Grid container={true} direction="row" alignItems="center" justify="center" style={{height: '95%'}}>
                     <Grid item>
-                        <Paper elevation={10} square={true} className={classes.root}>
+                        <DefaultPaper>
                             <Typography variant="h1" component="h1" gutterBottom={true}>
                                 traggo
                             </Typography>
                             <LoginForm />
-                        </Paper>
+                        </DefaultPaper>
                     </Grid>
                     <div style={{position: 'absolute', bottom: 10, display: 'flex'}}>
                         <Typography variant="subtitle1" component="span" className={classes.footerLink}>
