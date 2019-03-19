@@ -20,7 +20,7 @@ func (r *ResolverForTag) CreateTag(ctx context.Context, key string, color string
 		UserID: userID,
 	}
 
-	if !r.DB.Where("user_id = ?", userID).Find(definition).RecordNotFound() {
+	if !r.DB.Where("user_id = ?", userID).Where("key = ?", key).Find(definition).RecordNotFound() {
 		return nil, fmt.Errorf("tag with key '%s' does already exist", definition.Key)
 	}
 
