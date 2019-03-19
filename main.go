@@ -70,10 +70,14 @@ func initDatabase(conf config.Config) *gorm.DB {
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to connect to the database")
 	}
-	db.Create(&model.User{
-		Name:  conf.DefaultUserName,
-		Pass:  password.CreatePassword(conf.DefaultUserPass, conf.PassStrength),
-		Admin: true})
+	c := new(int)
+	if db.Model(new(model.User)).Count(c); *c == 0 {
+		log.Info().Msg("Creating default user.")
+		db.Create(&model.User{
+			Name:  conf.DefaultUserName,
+			Pass:  password.CreatePassword(conf.DefaultUserPass, conf.PassStrength),
+			Admin: true})
+	}
 
 	return db
 }
