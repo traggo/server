@@ -31,6 +31,7 @@ type RootMutation {
 
 type RootQuery {
     suggestTag(query: String!): [TagDefinition!] @hasRole(role: USER)
+    suggestTagValue(key: String!, query: String!): [String!] @hasRole(role: USER)
     tags: [TagDefinition!] @hasRole(role: USER)
     users: [User!] @hasRole(role: ADMIN)
     currentUser: User
