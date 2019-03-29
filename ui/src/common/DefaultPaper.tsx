@@ -1,6 +1,6 @@
 import withStyles from '@material-ui/core/styles/withStyles';
-import {Paper} from '@material-ui/core';
-import {StyleRulesCallback, WithStyles} from '@material-ui/core/es';
+import Paper from '@material-ui/core/Paper';
+import {StyleRulesCallback, WithStyles} from '@material-ui/core/styles';
 import * as React from 'react';
 
 const styles: StyleRulesCallback = (theme) => ({

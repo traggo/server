@@ -1,6 +1,7 @@
 import * as React from 'react';
-import {Grid, StyleRulesCallback, WithStyles} from '@material-ui/core';
+import {StyleRulesCallback, WithStyles} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
 import withStyles from '@material-ui/core/styles/withStyles';
 import {LoginForm} from './LoginForm';
 import {ToggleTheme} from '../common/ToggleTheme';
