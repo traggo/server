@@ -5,7 +5,7 @@ import Mutation, {MutationFn} from 'react-apollo/Mutation';
 import {withSnackbar, withSnackbarProps} from 'notistack';
 import {handleError} from '../utils/errors';
 import * as gqlUser from '../gql/user';
-import {StyleRulesCallback, WithStyles} from '@material-ui/core';
+import {StyleRulesCallback, WithStyles} from '@material-ui/core/styles';
 import withStyles from '@material-ui/core/styles/withStyles';
 import {Login, LoginVariables} from '../gql/__generated__/Login';
 

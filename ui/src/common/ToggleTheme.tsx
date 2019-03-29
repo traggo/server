@@ -2,7 +2,7 @@ import withApollo from 'react-apollo/withApollo';
 import {Preferences, UserPreferences} from '../gql/preferences.local';
 import {setPreferences} from '../user/preferences';
 import * as React from 'react';
-import {Button} from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 
 export const ToggleTheme = withApollo<{className?: string}>(({client, className}) => {
     return (
