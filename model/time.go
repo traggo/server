@@ -27,7 +27,9 @@ func (t Time) UTC() time.Time {
 
 // MarshalGQL implements the graphql.Marshaler interface
 func (t Time) MarshalGQL(w io.Writer) {
-	w.Write([]byte(t.Time().Format(time.RFC3339)))
+	if _, err := w.Write([]byte(fmt.Sprintf(`"%s"`, t.Time().Format(time.RFC3339)))); err != nil {
+		panic(err)
+	}
 }
 
 // UnmarshalGQL implements the graphql.Unmarshaler interface

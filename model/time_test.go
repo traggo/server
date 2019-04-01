@@ -10,13 +10,13 @@ import (
 
 func TestTime_MarshalGQL(t *testing.T) {
 	var buffer bytes.Buffer
-	expected := "2009-06-30T18:30:00+02:00"
+	expected := `2009-06-30T18:30:00+02:00`
 	parse, err := time.Parse(time.RFC3339, expected)
 	assert.Nil(t, err)
 	toTest := Time(parse)
 	toTest.MarshalGQL(&buffer)
 	actual := buffer.String()
-	assert.Equal(t, expected, actual)
+	assert.Equal(t, `"` + expected + `"`, actual)
 }
 
 func TestTime_UnmarshalGQL_success(t *testing.T) {
