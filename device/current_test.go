@@ -32,9 +32,9 @@ func TestGQL_CurrentDevice_withDevice(t *testing.T) {
 	expected := &gqlmodel.Device{
 		ID:        2,
 		Name:      "Browser",
-		CreatedAt: test.ModelTime("2004-06-30T18:30:00Z"),
-		ActiveAt:  test.ModelTime("2015-06-30T18:30:00Z"),
-		ExpiresAt: test.ModelTime("2026-06-30T18:30:00Z"),
+		CreatedAt: test.ModelTimeUTC("2004-06-30T18:30:00Z"),
+		ActiveAt:  test.ModelTimeUTC("2015-06-30T18:30:00Z"),
+		ExpiresAt: test.ModelTimeUTC("2026-06-30T18:30:00Z"),
 	}
 
 	require.Equal(t, expected, result)

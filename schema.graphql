@@ -78,10 +78,8 @@ type User {
 
 type TimeSpan {
     id: Int!
-    startUTC: Time!
-    endUTC: Time
-    startUserTime: Time!
-    endUserTime: Time
+    start: Time!
+    end: Time
     tags: [TimeSpanTag!]
 }
 

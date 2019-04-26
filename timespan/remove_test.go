@@ -16,15 +16,21 @@ func TestRemoveTimeSpan_succeeds_removesTimeSpan(t *testing.T) {
 	defer db.Close()
 	db.User(5)
 	db.Create(&model.TimeSpan{
-		ID:     1,
-		UserID: 3,
+		ID:            1,
+		StartUserTime: test.Time("2019-06-11T18:00:00Z"),
+		StartUTC:      test.Time("2019-06-11T18:00:00Z"),
+		EndUserTime:   nil,
+		EndUTC:        nil,
+		OffsetUTC:     0,
+		UserID:        3,
 	})
 
 	resolver := ResolverForTimeSpan{DB: db.DB}
 	actual, err := resolver.RemoveTimeSpan(fake.User(3), 1)
 	require.NoError(t, err)
 	expected := &gqlmodel.TimeSpan{
-		ID: 1,
+		ID:    1,
+		Start: test.ModelTime("2019-06-11T18:00:00Z"),
 	}
 	require.Equal(t, expected, actual)
 	assertTimeSpanCount(t, db, 0)
@@ -46,8 +52,13 @@ func TestRemoveTimeSpan_fails_noPermission(t *testing.T) {
 	db.User(3)
 	db.User(5)
 	db.Create(&model.TimeSpan{
-		ID:     1,
-		UserID: 3,
+		StartUserTime: test.Time("2019-06-11T18:00:00Z"),
+		StartUTC:      test.Time("2019-06-11T18:00:00Z"),
+		EndUserTime:   nil,
+		EndUTC:        nil,
+		OffsetUTC:     0,
+		ID:            1,
+		UserID:        3,
 	})
 
 	resolver := ResolverForTimeSpan{DB: db.DB}

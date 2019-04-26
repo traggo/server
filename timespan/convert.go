@@ -2,17 +2,20 @@ package timespan
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/traggo/server/generated/gqlmodel"
 	"github.com/traggo/server/model"
 )
 
 func timespanToInternal(userID int, start model.Time, end *model.Time, tags []gqlmodel.InputTimeSpanTag) (model.TimeSpan, error) {
+	_, offset := start.Time().Zone()
 	span := model.TimeSpan{
 		StartUserTime: start.OmitTimeZone(),
 		StartUTC:      start.UTC(),
 		UserID:        userID,
 		Tags:          tagsToInternal(tags),
+		OffsetUTC:     offset,
 	}
 
 	if end != nil {
@@ -29,19 +32,18 @@ func timespanToInternal(userID int, start model.Time, end *model.Time, tags []gq
 }
 
 func timeSpanToExternal(span model.TimeSpan) gqlmodel.TimeSpan {
+	location := time.FixedZone("unknown", span.OffsetUTC)
+
 	result := gqlmodel.TimeSpan{
-		StartUserTime: model.Time(span.StartUserTime),
-		StartUtc:      model.Time(span.StartUTC),
-		EndUserTime:   nil,
-		EndUtc:        nil,
-		ID:            span.ID,
-		Tags:          tagsToExternal(span.Tags),
+		Start: model.Time(span.StartUTC.In(location)),
+		End:   nil,
+		ID:    span.ID,
+		Tags:  tagsToExternal(span.Tags),
 	}
 	if span.EndUTC != nil && !span.EndUTC.IsZero() {
-		user := model.Time(*span.EndUserTime)
-		result.EndUserTime = &user
-		utc := model.Time(*span.EndUTC)
-		result.EndUtc = &utc
+		end := *span.EndUTC
+		endModel := model.Time(end.In(location))
+		result.End = &endModel
 	}
 
 	return result

@@ -19,6 +19,7 @@ func Test_Update_withoutEnd(t *testing.T) {
 		UserID:        3,
 		StartUserTime: test.Time("2019-06-10T18:30:00Z"),
 		StartUTC:      test.Time("2019-06-10T16:30:00Z"),
+		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
 	})
 	defer db.Close()
@@ -28,9 +29,8 @@ func Test_Update_withoutEnd(t *testing.T) {
 
 	require.Nil(t, err)
 	expected := &gqlmodel.TimeSpan{
-		ID:            1,
-		StartUserTime: test.ModelTime("2019-06-10T19:30:00Z"),
-		StartUtc:      test.ModelTime("2019-06-10T17:30:00Z"),
+		ID:    1,
+		Start: test.ModelTime("2019-06-10T19:30:00+02:00"),
 	}
 	require.Equal(t, expected, timeSpan)
 	assertTimeSpanCount(t, db, 1)
@@ -39,6 +39,7 @@ func Test_Update_withoutEnd(t *testing.T) {
 		UserID:        3,
 		StartUserTime: test.Time("2019-06-10T19:30:00Z"),
 		StartUTC:      test.Time("2019-06-10T17:30:00Z"),
+		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
 	})
 }
@@ -50,6 +51,7 @@ func Test_Update(t *testing.T) {
 		UserID:        5,
 		StartUserTime: test.Time("2019-06-10T18:30:00Z"),
 		StartUTC:      test.Time("2019-06-10T16:30:00Z"),
+		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
 	})
 	defer db.Close()
@@ -60,11 +62,9 @@ func Test_Update(t *testing.T) {
 	log.Debug().Msg("oops")
 	require.Nil(t, err)
 	expected := &gqlmodel.TimeSpan{
-		ID:            3,
-		StartUserTime: test.ModelTime("2019-06-10T18:30:00Z"),
-		StartUtc:      test.ModelTime("2019-06-10T16:30:00Z"),
-		EndUserTime:   test.ModelTimeP("2019-06-10T20:30:00Z"),
-		EndUtc:        test.ModelTimeP("2019-06-10T18:30:00Z"),
+		ID:    3,
+		Start: test.ModelTime("2019-06-10T18:30:00+02:00"),
+		End:   test.ModelTimeP("2019-06-10T20:30:00+02:00"),
 	}
 	require.Equal(t, expected, timeSpan)
 	assertTimeSpanCount(t, db, 1)
@@ -75,6 +75,7 @@ func Test_Update(t *testing.T) {
 		StartUTC:      test.Time("2019-06-10T16:30:00Z"),
 		EndUserTime:   test.TimeP("2019-06-10T20:30:00Z"),
 		EndUTC:        test.TimeP("2019-06-10T18:30:00Z"),
+		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
 	})
 }
@@ -88,6 +89,7 @@ func Test_Update_fail_endBeforeStart(t *testing.T) {
 		StartUTC:      test.Time("2019-06-10T16:30:00Z"),
 		EndUserTime:   test.TimeP("2019-06-10T18:30:00Z"),
 		EndUTC:        test.TimeP("2019-06-10T16:30:00Z"),
+		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
 	})
 	defer db.Close()
@@ -109,6 +111,7 @@ func Test_Update_fail_notExistingTag(t *testing.T) {
 		StartUTC:      test.Time("2019-06-10T16:30:00Z"),
 		EndUserTime:   test.TimeP("2019-06-10T18:30:00Z"),
 		EndUTC:        test.TimeP("2019-06-10T16:30:00Z"),
+		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
 	})
 	defer db.Close()
@@ -126,6 +129,7 @@ func Test_Update_fail_notExistingTag(t *testing.T) {
 		StartUTC:      test.Time("2019-06-10T16:30:00Z"),
 		EndUserTime:   test.TimeP("2019-06-10T18:30:00Z"),
 		EndUTC:        test.TimeP("2019-06-10T16:30:00Z"),
+		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
 	})
 }
@@ -139,6 +143,7 @@ func Test_Update_withTag(t *testing.T) {
 		StartUTC:      test.Time("2019-06-10T16:30:00Z"),
 		EndUserTime:   test.TimeP("2019-06-10T19:30:00Z"),
 		EndUTC:        test.TimeP("2019-06-10T17:30:00Z"),
+		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
 	})
 	defer db.Close()
@@ -157,6 +162,7 @@ func Test_Update_withTag(t *testing.T) {
 		StartUTC:      test.Time("2019-06-10T16:30:00Z"),
 		EndUserTime:   test.TimeP("2019-06-10T19:30:00Z"),
 		EndUTC:        test.TimeP("2019-06-10T17:30:00Z"),
+		OffsetUTC:     7200,
 		Tags: []model.TimeSpanTag{
 			{Key: "test", TimeSpanID: 3},
 		},
@@ -172,6 +178,7 @@ func Test_Update_fail_tagAddedMultipleTimes(t *testing.T) {
 		StartUTC:      test.Time("2019-06-10T16:30:00Z"),
 		EndUserTime:   test.TimeP("2019-06-10T18:30:00Z"),
 		EndUTC:        test.TimeP("2019-06-10T16:30:00Z"),
+		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
 	})
 	defer db.Close()
@@ -209,6 +216,7 @@ func Test_Update_fail_noPermission(t *testing.T) {
 		StartUTC:      test.Time("2019-06-10T16:30:00Z"),
 		EndUserTime:   test.TimeP("2019-06-10T18:30:00Z"),
 		EndUTC:        test.TimeP("2019-06-10T16:30:00Z"),
+		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
 	})
 	defer db.Close()

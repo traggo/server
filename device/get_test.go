@@ -40,9 +40,9 @@ func TestGQL_Devices(t *testing.T) {
 		{
 			ID:        1,
 			Name:      "Android",
-			CreatedAt: test.ModelTime("2009-06-30T18:30:00Z"),
-			ActiveAt:  test.ModelTime("2018-06-30T18:30:00Z"),
-			ExpiresAt: test.ModelTime("2022-06-30T18:30:00Z"),
+			CreatedAt: test.ModelTimeUTC("2009-06-30T18:30:00Z"),
+			ActiveAt:  test.ModelTimeUTC("2018-06-30T18:30:00Z"),
+			ExpiresAt: test.ModelTimeUTC("2022-06-30T18:30:00Z"),
 		},
 	}
 	require.Equal(t, expected, devices)

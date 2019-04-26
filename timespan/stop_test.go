@@ -31,6 +31,7 @@ func Test_Stop_fail_noPermission(t *testing.T) {
 		UserID:        3,
 		StartUserTime: test.Time("2019-06-10T18:30:00Z"),
 		StartUTC:      test.Time("2019-06-10T16:30:00Z"),
+		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
 	})
 	defer db.Close()
@@ -53,6 +54,7 @@ func Test_Stop_fail_alreadyFinished(t *testing.T) {
 		StartUTC:      test.Time("2019-06-10T16:30:00Z"),
 		EndUserTime:   test.TimeP("2019-06-10T19:30:00Z"),
 		EndUTC:        test.TimeP("2019-06-10T17:30:00Z"),
+		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
 	})
 	defer db.Close()
@@ -73,6 +75,7 @@ func Test_Stop(t *testing.T) {
 		UserID:        2,
 		StartUserTime: test.Time("2019-06-10T18:30:00Z"),
 		StartUTC:      test.Time("2019-06-10T16:30:00Z"),
+		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
 	})
 	defer db.Close()
@@ -83,11 +86,9 @@ func Test_Stop(t *testing.T) {
 	require.NoError(t, err)
 
 	expected := &gqlmodel.TimeSpan{
-		ID:            3,
-		StartUserTime: test.ModelTime("2019-06-10T18:30:00Z"),
-		StartUtc:      test.ModelTime("2019-06-10T16:30:00Z"),
-		EndUserTime:   test.ModelTimeP("2019-06-10T18:35:00Z"),
-		EndUtc:        test.ModelTimeP("2019-06-10T16:35:00Z"),
+		ID:    3,
+		Start: test.ModelTime("2019-06-10T18:30:00+02:00"),
+		End:   test.ModelTimeP("2019-06-10T18:35:00+02:00"),
 	}
 	require.Equal(t, expected, timeSpan)
 
@@ -99,6 +100,7 @@ func Test_Stop(t *testing.T) {
 		StartUTC:      test.Time("2019-06-10T16:30:00Z"),
 		EndUserTime:   test.TimeP("2019-06-10T18:35:00Z"),
 		EndUTC:        test.TimeP("2019-06-10T16:35:00Z"),
+		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
 	})
 }

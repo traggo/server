@@ -20,17 +20,16 @@ var (
 		EndUserTime:   test.TimeP("2019-06-10T18:40:00Z"),
 		StartUTC:      test.Time("2019-06-10T18:30:00Z"),
 		EndUTC:        test.TimeP("2019-06-10T18:40:00Z"),
+		OffsetUTC:     0,
 		Tags: []model.TimeSpanTag{
 			{Key: "test"},
 			{Key: "test2"},
 		},
 	}
 	modelTimeSpan1 = gqlmodel.TimeSpan{
-		ID:            1,
-		StartUserTime: test.ModelTime("2019-06-10T18:30:00Z"),
-		EndUserTime:   test.ModelTimeP("2019-06-10T18:40:00Z"),
-		StartUtc:      test.ModelTime("2019-06-10T18:30:00Z"),
-		EndUtc:        test.ModelTimeP("2019-06-10T18:40:00Z"),
+		ID:    1,
+		Start: test.ModelTime("2019-06-10T18:30:00Z"),
+		End:   test.ModelTimeP("2019-06-10T18:40:00Z"),
 		Tags: []gqlmodel.TimeSpanTag{
 			{Key: "test"},
 			{Key: "test2"},
@@ -43,17 +42,16 @@ var (
 		EndUserTime:   test.TimeP("2019-06-10T18:50:00Z"),
 		StartUTC:      test.Time("2019-06-10T18:40:00Z"),
 		EndUTC:        test.TimeP("2019-06-10T18:50:00Z"),
+		OffsetUTC:     0,
 		Tags: []model.TimeSpanTag{
 			{Key: "test"},
 			{Key: "test2"},
 		},
 	}
 	modelTimeSpan2 = gqlmodel.TimeSpan{
-		ID:            2,
-		StartUserTime: test.ModelTime("2019-06-10T18:40:00Z"),
-		EndUserTime:   test.ModelTimeP("2019-06-10T18:50:00Z"),
-		StartUtc:      test.ModelTime("2019-06-10T18:40:00Z"),
-		EndUtc:        test.ModelTimeP("2019-06-10T18:50:00Z"),
+		ID:    2,
+		Start: test.ModelTime("2019-06-10T18:40:00Z"),
+		End:   test.ModelTimeP("2019-06-10T18:50:00Z"),
 		Tags: []gqlmodel.TimeSpanTag{
 			{Key: "test"},
 			{Key: "test2"},
@@ -66,17 +64,16 @@ var (
 		EndUserTime:   test.TimeP("2019-06-10T19:00:00Z"),
 		StartUTC:      test.Time("2019-06-10T18:50:00Z"),
 		EndUTC:        test.TimeP("2019-06-10T19:00:00Z"),
+		OffsetUTC:     0,
 		Tags: []model.TimeSpanTag{
 			{Key: "test"},
 			{Key: "test2"},
 		},
 	}
 	modelTimeSpan3 = gqlmodel.TimeSpan{
-		ID:            3,
-		StartUserTime: test.ModelTime("2019-06-10T18:50:00Z"),
-		EndUserTime:   test.ModelTimeP("2019-06-10T19:00:00Z"),
-		StartUtc:      test.ModelTime("2019-06-10T18:50:00Z"),
-		EndUtc:        test.ModelTimeP("2019-06-10T19:00:00Z"),
+		ID:    3,
+		Start: test.ModelTime("2019-06-10T18:50:00Z"),
+		End:   test.ModelTimeP("2019-06-10T19:00:00Z"),
 		Tags: []gqlmodel.TimeSpanTag{
 			{Key: "test"},
 			{Key: "test2"},
@@ -89,17 +86,16 @@ var (
 		EndUserTime:   test.TimeP("2019-06-10T19:00:00Z"),
 		StartUTC:      test.Time("2019-06-10T18:00:00Z"),
 		EndUTC:        test.TimeP("2019-06-10T19:00:00Z"),
+		OffsetUTC:     0,
 		Tags: []model.TimeSpanTag{
 			{Key: "test"},
 			{Key: "test2"},
 		},
 	}
 	modelTimeSpan4 = gqlmodel.TimeSpan{
-		ID:            4,
-		StartUserTime: test.ModelTime("2019-06-10T18:00:00Z"),
-		EndUserTime:   test.ModelTimeP("2019-06-10T19:00:00Z"),
-		StartUtc:      test.ModelTime("2019-06-10T18:00:00Z"),
-		EndUtc:        test.ModelTimeP("2019-06-10T19:00:00Z"),
+		ID:    4,
+		Start: test.ModelTime("2019-06-10T18:00:00Z"),
+		End:   test.ModelTimeP("2019-06-10T19:00:00Z"),
 		Tags: []gqlmodel.TimeSpanTag{
 			{Key: "test"},
 			{Key: "test2"},
@@ -112,17 +108,16 @@ var (
 		StartUTC:      test.Time("2019-06-11T18:00:00Z"),
 		EndUserTime:   nil,
 		EndUTC:        nil,
+		OffsetUTC:     0,
 		Tags: []model.TimeSpanTag{
 			{Key: "test"},
 			{Key: "test2"},
 		},
 	}
 	modelRunningTimeSpan = gqlmodel.TimeSpan{
-		ID:            5,
-		StartUserTime: test.ModelTime("2019-06-11T18:00:00Z"),
-		EndUserTime:   nil,
-		StartUtc:      test.ModelTime("2019-06-11T18:00:00Z"),
-		EndUtc:        nil,
+		ID:    5,
+		Start: test.ModelTime("2019-06-11T18:00:00Z"),
+		End:   nil,
 		Tags: []gqlmodel.TimeSpanTag{
 			{Key: "test"},
 			{Key: "test2"},
@@ -135,6 +130,7 @@ var (
 		EndUserTime:   test.TimeP("2019-06-10T18:40:00Z"),
 		StartUTC:      test.Time("2019-06-10T18:30:00Z"),
 		EndUTC:        test.TimeP("2019-06-10T18:40:00Z"),
+		OffsetUTC:     0,
 		Tags: []model.TimeSpanTag{
 			{Key: "test"},
 			{Key: "test2"},
