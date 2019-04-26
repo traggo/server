@@ -26,6 +26,7 @@ func (r *ResolverForTimeSpan) UpdateTimeSpan(ctx context.Context, id int, start 
 
 	timeSpan.ID = id
 
+	r.DB.Where("time_span_id = ?", timeSpan.ID).Delete(new(model.TimeSpanTag))
 	r.DB.Save(&timeSpan)
 
 	external := timeSpanToExternal(timeSpan)
