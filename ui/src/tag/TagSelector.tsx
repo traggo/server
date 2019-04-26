@@ -1,5 +1,4 @@
 import * as React from 'react';
-import {TextField} from '@material-ui/core';
 import {Tags} from '../gql/__generated__/Tags';
 import Chip from '@material-ui/core/Chip';
 import {TagDefinitionType} from '../gql/__generated__/globalTypes';
@@ -14,15 +13,23 @@ import {TagSelectorEntry, itemLabel, label, addValues} from './tagSelectorEntry'
 import {useSuggest} from './suggest';
 import Paper from '@material-ui/core/Paper';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+// @ts-ignore
+import bestContrast from 'get-best-contrast-color';
+import Input from '@material-ui/core/Input';
 
-export const TagSelector = () => {
+export interface TagSelectorProps {
+    onSelectedEntriesChanged: (entries: TagSelectorEntry[]) => void;
+    selectedEntries: TagSelectorEntry[];
+}
+
+export const TagSelector: React.FC<TagSelectorProps> = ({selectedEntries, onSelectedEntriesChanged: setSelectedEntries}) => {
     const [tooltipErrorActive, tooltipError, showTooltipError] = useError(4000);
     const [open, setOpen] = React.useState(false);
     const [currentValue, setCurrentValueInternal] = React.useState('');
     const [highlightedIndex, setHighlightedIndex] = React.useState<number>(0);
     const [addDialogOpen, setAddDialogOpen] = React.useState(false);
-    const [selectedEntries, setSelectedEntries] = React.useState<TagSelectorEntry[]>([]);
     const input = React.useRef<null | HTMLDivElement>(null);
+    const container = React.useRef<null | HTMLDivElement>(null);
 
     const tagsResult = useQuery<Tags>(gqlTags.Tags);
     const suggestions = useSuggest(tagsResult, currentValue, selectedEntries);
@@ -58,6 +65,12 @@ export const TagSelector = () => {
         setCurrentValueInternal(newValue);
     };
 
+    const focusInput = () => {
+        if (input.current) {
+            input.current.focus();
+        }
+    };
+
     const trySubmit = (entry: TagSelectorEntry) => {
         if (entry.tag.alreadyUsed) {
             return;
@@ -67,9 +80,8 @@ export const TagSelector = () => {
             return;
         }
 
-        if (input.current !== null) {
-            input.current.focus();
-        }
+        focusInput();
+
         if (entry.tag.type === TagDefinitionType.singlevalue && !entry.value) {
             const newValue = entry.tag.key + ':';
             if (currentValue !== newValue) {
@@ -105,6 +117,11 @@ export const TagSelector = () => {
             event.preventDefault();
             trySubmit(suggestions[highlightedIndex]);
         }
+        if (event.key === 'Escape' && input.current) {
+            event.preventDefault();
+            input.current.blur();
+            setOpen(false);
+        }
     };
 
     return (
@@ -121,24 +138,32 @@ export const TagSelector = () => {
                             {tooltipError}
                         </Typography>
                     }>
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        variant="outlined"
-                        value={currentValue}
-                        onChange={(e) => setCurrentValue(e.target.value)}
-                        InputProps={{
-                            inputRef: (ref) => (input.current = ref),
-                            onFocus: () => setOpen(true),
-                            onKeyDown,
-                            startAdornment: toChips(selectedEntries),
-                        }}
-                        label="Tags"
-                    />
+                    <div
+                        ref={(ref) => (container.current = ref)}
+                        style={{display: 'flex', flexWrap: 'wrap', cursor: 'text'}}
+                        onClick={focusInput}>
+                        {toChips(selectedEntries)}
+                        <Input
+                            margin="none"
+                            value={currentValue}
+                            inputRef={(ref) => (input.current = ref)}
+                            onFocus={() => setOpen(true)}
+                            onKeyDown={onKeyDown}
+                            disableUnderline={true}
+                            onChange={(e) => setCurrentValue(e.target.value)}
+                            placeholder="Enter Tags"
+                            style={{height: 40, minWidth: 150, flexGrow: 1}}
+                        />
+                    </div>
                 </Tooltip>
 
                 {open ? (
-                    <Paper>
+                    <Paper
+                        style={{
+                            position: 'absolute',
+                            width: (container.current && container.current.clientWidth) || 300,
+                            zIndex: 1000,
+                        }}>
                         {suggestions.map((entry, index) => (
                             <Item key={label(entry)} entry={entry} onClick={trySubmit} selected={index === highlightedIndex} />
                         ))}
@@ -149,7 +174,10 @@ export const TagSelector = () => {
                         onAdded={(tag) => trySubmit({tag})}
                         open={true}
                         initialName={currentValue.split(':')[0]}
-                        close={() => setAddDialogOpen(false)}
+                        close={() => {
+                            setTimeout(focusInput, 50);
+                            setAddDialogOpen(false);
+                        }}
                     />
                 )}
             </div>
@@ -184,5 +212,13 @@ const toChips = (entries: TagSelectorEntry[]) => {
 };
 
 const TagChip = ({entry}: {entry: TagSelectorEntry}) => {
-    return <Chip tabIndex={-1} style={{background: entry.tag.color, marginRight: 10}} label={label(entry)} />;
+    const color = bestContrast(entry.tag.color, ['#fff', '#000']);
+    return (
+        <Chip
+            tabIndex={-1}
+            variant="outlined"
+            style={{background: entry.tag.color, margin: '5px', color, cursor: 'text'}}
+            label={label(entry)}
+        />
+    );
 };
