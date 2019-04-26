@@ -25,6 +25,7 @@ func (r *ResolverForTimeSpan) StopTimeSpan(ctx context.Context, id int, end mode
 	old.EndUTC = &utc
 	userTime := end.OmitTimeZone()
 	old.EndUserTime = &userTime
+	r.DB.Where("time_span_id = ?", old.ID).Delete(new(model.TimeSpanTag))
 	r.DB.Save(old)
 
 	external := timeSpanToExternal(*old)
