@@ -45,6 +45,7 @@ func TestCopy(t *testing.T) {
 		StartUTC:      test.Time("2019-06-10T16:30:00Z"),
 		EndUserTime:   test.TimeP("2019-06-10T18:30:00Z"),
 		EndUTC:        test.TimeP("2019-06-10T16:30:00Z"),
+		OffsetUTC:     7200,
 		Tags: []model.TimeSpanTag{
 			{Key: "test", TimeSpanID: 3},
 		},
@@ -56,11 +57,9 @@ func TestCopy(t *testing.T) {
 	require.NoError(t, err)
 
 	expected := &gqlmodel.TimeSpan{
-		ID:            4,
-		StartUserTime: test.ModelTime("2019-06-15T10:30:00Z"),
-		StartUtc:      test.ModelTime("2019-06-15T08:30:00Z"),
-		EndUserTime:   nil,
-		EndUtc:        nil,
+		ID:    4,
+		Start: test.ModelTime("2019-06-15T10:30:00+02:00"),
+		End:   nil,
 		Tags: []gqlmodel.TimeSpanTag{
 			{Key: "test"},
 		},
@@ -76,6 +75,7 @@ func TestCopy(t *testing.T) {
 		StartUTC:      test.Time("2019-06-15T08:30:00Z"),
 		EndUserTime:   nil,
 		EndUTC:        nil,
+		OffsetUTC:     7200,
 		Tags: []model.TimeSpanTag{
 			{Key: "test", TimeSpanID: 4},
 		},

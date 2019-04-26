@@ -16,7 +16,7 @@ func TestTime_MarshalGQL(t *testing.T) {
 	toTest := Time(parse)
 	toTest.MarshalGQL(&buffer)
 	actual := buffer.String()
-	assert.Equal(t, `"` + expected + `"`, actual)
+	assert.Equal(t, `"`+expected+`"`, actual)
 }
 
 func TestTime_UnmarshalGQL_success(t *testing.T) {

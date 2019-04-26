@@ -9,7 +9,7 @@ type TimeSpan struct {
 	EndUTC        *time.Time
 	StartUserTime time.Time
 	EndUserTime   *time.Time
-	UserTimeZone  string
+	OffsetUTC     int
 	UserID        int
 	Tags          []TimeSpanTag
 }
