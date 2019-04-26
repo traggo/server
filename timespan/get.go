@@ -13,16 +13,16 @@ import (
 func (r *ResolverForTimeSpan) TimeSpans(ctx context.Context, fromInclusive *model.Time, toInclusive *model.Time) ([]gqlmodel.TimeSpan, error) {
 	user := auth.GetUser(ctx)
 
-	call := r.DB.Preload("Tags").Where("user_id = ?", user.ID)
+	call := r.DB.Preload("Tags").Where("user_id = ?", user.ID).Not("end_user_time is NULL").Order("start_user_time DESC")
 	if fromInclusive != nil {
 		if toInclusive != nil {
 			if fromInclusive.Time().After(toInclusive.Time()) {
 				return nil, errors.New("fromInclusive must be before toInclusive")
 			}
 
-			call = call.Where("start_user_time <= ? AND (end_user_time >= ? OR end_user_time is null)", toInclusive.OmitTimeZone(), fromInclusive.OmitTimeZone())
+			call = call.Where("start_user_time <= ? AND end_user_time >= ?", toInclusive.OmitTimeZone(), fromInclusive.OmitTimeZone())
 		} else {
-			call = call.Where("start_user_time >= ? OR (end_user_time >= ? OR end_user_time is null)", fromInclusive.OmitTimeZone(), fromInclusive.OmitTimeZone())
+			call = call.Where("start_user_time >= ? OR end_user_time >= ?", fromInclusive.OmitTimeZone(), fromInclusive.OmitTimeZone())
 		}
 	} else if toInclusive != nil {
 		call = call.Where("end_user_time <= ? OR start_user_time <= ?", toInclusive.OmitTimeZone(), toInclusive.OmitTimeZone())
