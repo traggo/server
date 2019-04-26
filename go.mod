@@ -20,7 +20,6 @@ require (
 	github.com/lib/pq v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.0
 	github.com/mattn/go-sqlite3 v1.10.0 // indirect
-	github.com/mitchellh/mapstructure v1.1.2 // indirect
 	github.com/phayes/freeport v0.0.0-20180830031419-95f893ade6f2
 	github.com/rs/zerolog v1.11.0
 	github.com/stretchr/testify v1.3.0
