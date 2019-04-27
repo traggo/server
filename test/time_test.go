@@ -45,3 +45,7 @@ func TestModelTimeP_panics(t *testing.T) {
 func TestModelTimeP_succeeds(t *testing.T) {
 	ModelTimeP("2009-06-30T18:30:00+02:00")
 }
+
+func TestModelTimeUTC_succeeds(t *testing.T) {
+	ModelTimeUTC("2009-06-30T18:30:00+02:00")
+}
