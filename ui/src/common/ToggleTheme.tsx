@@ -1,22 +1,13 @@
-import withApollo from 'react-apollo/withApollo';
-import {Preferences, UserPreferences} from '../gql/preferences.local';
-import {setPreferences} from '../user/preferences';
+import {Preferences} from '../gql/preferences.local';
 import * as React from 'react';
 import Button from '@material-ui/core/Button';
+import {useMutation} from 'react-apollo-hooks';
 
-export const ToggleTheme = withApollo<{className?: string}>(({client, className}) => {
+export const ToggleTheme = ({className}: {className: string}) => {
+    const toggle = useMutation(Preferences);
     return (
-        <Button
-            className={className}
-            onClick={() => {
-                const data = client.readQuery<UserPreferences>({query: Preferences});
-                if (data === null) {
-                    throw new Error('illegal state');
-                }
-                data.theme = data.theme === 'light' ? 'dark' : 'light';
-                setPreferences(client, data);
-            }}>
+        <Button className={className} onClick={() => toggle()}>
             Toggle Theme
         </Button>
     );
-});
+};
