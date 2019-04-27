@@ -2,6 +2,7 @@ package model
 
 import (
 	"bytes"
+	"errors"
 	"testing"
 	"time"
 
@@ -17,6 +18,20 @@ func TestTime_MarshalGQL(t *testing.T) {
 	toTest.MarshalGQL(&buffer)
 	actual := buffer.String()
 	assert.Equal(t, `"`+expected+`"`, actual)
+}
+
+func TestTime_MarshalGQL_fails(t *testing.T) {
+	toTest := &Time{}
+	assert.Panics(t, func() {
+		toTest.MarshalGQL(&failWriter{})
+	})
+}
+
+type failWriter struct {
+}
+
+func (*failWriter) Write(p []byte) (n int, err error) {
+	return 0, errors.New("uff")
 }
 
 func TestTime_UnmarshalGQL_success(t *testing.T) {
