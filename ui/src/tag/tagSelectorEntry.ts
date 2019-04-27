@@ -12,6 +12,27 @@ export interface TagSelectorEntry {
     value?: string;
 }
 
+export interface InputTag {
+    key: string;
+    stringValue: string | null;
+}
+
+export const toInputTags = (entries: TagSelectorEntry[]): InputTag[] => {
+    return entries.map((entry) => ({key: entry.tag.key, stringValue: entry.value || null}));
+};
+
+export const toTagSelectorEntry = (tags: Array<TagSelectorEntry['tag']>, entries: InputTag[]): TagSelectorEntry[] => {
+    return entries.map(
+        (timerTag): TagSelectorEntry => {
+            const definition = tags.find((tag) => tag.key === timerTag.key) || specialTag(timerTag.key, 'new');
+            return {
+                tag: definition,
+                value: timerTag.stringValue || undefined,
+            };
+        }
+    );
+};
+
 export const specialTag = (name: string, state: 'used' | 'new'): TagSelectorEntry['tag'] => {
     return {
         key: name,
