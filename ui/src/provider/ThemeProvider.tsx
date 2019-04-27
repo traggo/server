@@ -9,9 +9,16 @@ const dark = createMuiTheme({
     typography: {
         useNextVariants: true,
     },
+    overrides: {
+        MuiLink: {
+            root: {
+                color: '#3498db',
+            },
+        },
+    },
     palette: {
         primary: {
-            main: '#78909c',
+            main: '#455a64',
         },
         secondary: {
             main: '#f44336',
@@ -23,6 +30,13 @@ const dark = createMuiTheme({
 const light = createMuiTheme({
     typography: {
         useNextVariants: true,
+    },
+    overrides: {
+        MuiLink: {
+            root: {
+                color: '#2980b9',
+            },
+        },
     },
     palette: {
         background: {default: '#eeeeee'},
