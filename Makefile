@@ -1,6 +1,7 @@
 download-tools:
 	GO111MODULE=off go get -u golang.org/x/lint/golint
 	GO111MODULE=off go get -u golang.org/x/tools/cmd/goimports
+	GO111MODULE=off go get -u github.com/gobuffalo/packr/v2/packr2
 
 generate-go:
 	go run hack/gqlgen.go

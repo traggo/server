@@ -16,6 +16,7 @@ import (
 	"github.com/traggo/server/logger"
 	"github.com/traggo/server/model"
 	"github.com/traggo/server/server"
+	"github.com/traggo/server/ui"
 	"github.com/traggo/server/user/password"
 )
 
@@ -62,6 +63,7 @@ func initRouter(db *gorm.DB, conf config.Config) *mux.Router {
 	router := mux.NewRouter()
 	router.Use(auth.Middleware(db))
 	router.HandleFunc("/graphql", gqlHandler)
+	ui.Register(router)
 	return router
 }
 
