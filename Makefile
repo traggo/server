@@ -1,5 +1,5 @@
 TAGS=netgo osusergo sqlite_omit_load_extension
-VERSION=$(shell git describe --tags --abbrev=0)
+VERSION=$(shell git describe --tags --abbrev=0 | cut -c 2-)
 COMMIT=$(shell git rev-parse --verify HEAD)
 DATE=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 LD_FLAGS=-s -w -linkmode external -extldflags "-static" -X main.BuildDate="$(DATE)" -X main.BuildMode="prod" -X main.BuildCommit="$(COMMIT)" -X main.BuildVersion="$(VERSION)"
