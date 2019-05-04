@@ -72,6 +72,9 @@ build-docker:
 	cp ${BIN_NAME} docker/traggo
 	(cd docker && docker build -t traggo/server:amd64-${VERSION} -t traggo/server:amd64-latest .)
 
+docker-login-ci:
+	docker login -u "$$DOCKER_USER" -p "$$DOCKER_PASS";
+
 docker-push:
 	docker push traggo/server:amd64-${VERSION} traggo/server:amd64-latest
 
