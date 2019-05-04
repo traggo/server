@@ -7,6 +7,11 @@ language: go
 go:
   - "1.12"
 
+addons:
+  apt:
+    packages:
+      - docker-ce
+
 cache:
   - yarn
 
@@ -23,6 +28,7 @@ before_install:
   - curl -fSL https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz -o ~/upx.tar.xz && tar -xf ~/upx.tar.xz -C ~ && mv ~/upx-${UPX_VERSION}-amd64_linux/upx ~/bin
   - nvm install 11.11.0
   - make download-tools
+  - docker version
 
 install:
   - make install
