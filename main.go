@@ -21,12 +21,18 @@ import (
 )
 
 var (
-	// Mode the build mode
-	Mode = mode.Dev
+	// BuildMode will be set via ldflags
+	BuildMode = mode.Dev
+	// BuildCommit will be set via ldflags
+	BuildCommit = "-"
+	// BuildVersion will be set via ldflags
+	BuildVersion = "develop"
+	// BuildDate will be set via ldflags
+	BuildDate = "unknown"
 )
 
 func main() {
-	mode.Set(Mode)
+	mode.Set(BuildMode)
 
 	conf, errs := config.Get()
 	logger.Init(conf.LogLevel.AsZeroLogLevel())
