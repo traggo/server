@@ -5,7 +5,7 @@ import moment from 'moment';
 import Paper from '@material-ui/core/Paper';
 import {DateTimeSelector} from '../common/DateTimeSelector';
 import {Button} from '@material-ui/core';
-import {timeRunning} from './timeutils';
+import {inUserTz, timeRunning} from './timeutils';
 import {useMutation} from 'react-apollo-hooks';
 import {StopTimer, StopTimerVariables} from '../gql/__generated__/StopTimer';
 import * as gqlTimeSpan from '../gql/timeSpan';
@@ -52,8 +52,8 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({range: {from, to}, id, initia
                         updateTimeSpan({
                             variables: {
                                 id,
-                                start: from,
-                                end: to,
+                                start: inUserTz(from).format(),
+                                end: to && inUserTz(to).format(),
                                 tags: toInputTags(entries),
                             },
                         });
@@ -68,8 +68,8 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({range: {from, to}, id, initia
                         updateTimeSpan({
                             variables: {
                                 id,
-                                start: newFrom.format(),
-                                end: newTo.format(),
+                                start: inUserTz(newFrom).format(),
+                                end: inUserTz(newTo).format(),
                                 tags: toInputTags(selectedEntries),
                             },
                         });
@@ -77,8 +77,8 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({range: {from, to}, id, initia
                         updateTimeSpan({
                             variables: {
                                 id,
-                                start: newFrom.format(),
-                                end: to && to.format(),
+                                start: inUserTz(newFrom).format(),
+                                end: to && inUserTz(to).format(),
                                 tags: toInputTags(selectedEntries),
                             },
                         });
@@ -96,8 +96,8 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({range: {from, to}, id, initia
                             updateTimeSpan({
                                 variables: {
                                     id,
-                                    start: newFrom.format(),
-                                    end: newTo.format(),
+                                    start: inUserTz(newFrom).format(),
+                                    end: inUserTz(newTo).format(),
                                     tags: toInputTags(selectedEntries),
                                 },
                             });
@@ -105,8 +105,8 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({range: {from, to}, id, initia
                             updateTimeSpan({
                                 variables: {
                                     id,
-                                    start: from.format(),
-                                    end: newTo.format(),
+                                    start: inUserTz(from).format(),
+                                    end: inUserTz(newTo).format(),
                                     tags: toInputTags(selectedEntries),
                                 },
                             });
@@ -116,15 +116,13 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({range: {from, to}, id, initia
                     label="end"
                 />
             ) : (
-                <>
-                    <Button
-                        style={{minWidth: 120}}
-                        onClick={() => {
-                            stopTimer({variables: {id, end: now}});
-                        }}>
-                        Stop {timeRunning(from, require(now))}
-                    </Button>
-                </>
+                <Button
+                    style={{minWidth: 120}}
+                    onClick={() => {
+                        stopTimer({variables: {id, end: inUserTz(require(now)).format()}});
+                    }}>
+                    Stop {timeRunning(from, require(now))}
+                </Button>
             )}
         </Paper>
     );
