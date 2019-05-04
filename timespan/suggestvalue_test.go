@@ -22,7 +22,6 @@ func TestGQL_SuggestTagValue(t *testing.T) {
 	other.TimeSpan(date, date).Tag("proj", "secret").Tag("issue", "3")
 	resolver := ResolverForTimeSpan{DB: db.DB}
 
-	test.LogDebug()
 	tags, err := resolver.SuggestTagValue(fake.User(1), "proj", "")
 
 	require.Nil(t, err)
