@@ -77,3 +77,10 @@ export const UpdateTimeSpan = gql`
         }
     }
 `;
+export const RemoveTimeSpan = gql`
+    mutation RemoveTimeSpan($id: Int!) {
+        removeTimeSpan(id: $id) {
+            id
+        }
+    }
+`;
