@@ -6,9 +6,13 @@ notifications:
   email: false
 
 env:
-  - GO111MODULE=on
+  global:
+    - UPX_VERSION="3.95"
+    - GO111MODULE=on
 
 before_install:
+  - mkdir -p ~/bin/ && export PATH="~/bin/:$PATH"
+  - curl -fSL https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz -o ~/upx.tar.xz && tar -xf ~/upx.tar.xz -C ~ && mv ~/upx-${UPX_VERSION}-amd64_linux/upx ~/bin
   - nvm install 11.11.0
   - make download-tools
 
@@ -19,8 +23,7 @@ script:
   - make generate
   - make lint
   - make test
-  - make build-js
-  - go build -o build/executable
+  - make build-bin
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
