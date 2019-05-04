@@ -53,7 +53,7 @@ format-js:
 format: format-go format-js
 
 test-go:
-	go test --race -v -coverprofile=coverage.txt -covermode=atomic ./...
+	go test --race -coverprofile=coverage.txt -covermode=atomic ./...
 
 test: test-go
 
