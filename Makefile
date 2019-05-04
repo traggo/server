@@ -1,3 +1,10 @@
+TAGS=netgo osusergo sqlite_omit_load_extension
+VERSION=$(shell git describe --tags)
+COMMIT=$(shell git rev-parse --verify HEAD)
+DATE=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
+LD_FLAGS=-s -w -linkmode external -extldflags "-static" -X main.BuildDate="$(DATE)" -X main.BuildMode="prod" -X main.BuildCommit="$(COMMIT)" -X main.BuildVersion="$(VERSION)"
+BIN_NAME=build/traggo
+
 download-tools:
 	GO111MODULE=off go get -u golang.org/x/lint/golint
 	GO111MODULE=off go get -u golang.org/x/tools/cmd/goimports
@@ -41,7 +48,26 @@ install-go:
 install-js:
 	(cd ui && yarn)
 
-build-js:
+build-bin-js:
 	(cd ui && yarn build)
+
+packr:
+	packr2
+
+packr-clean:
+	packr2 clean
+
+build-bin-go:
+	CGO_ENABLED=1 go build -a -ldflags '${LD_FLAGS}' -tags '${TAGS}' -o ${BIN_NAME}
+	upx ${BIN_NAME} || true
+
+build-bin: build-bin-js packr build-bin-go packr-clean
+
+build-docker:
+	cp ${BIN_NAME} docker/traggo
+	(cd docker && docker build -t traggo/server:amd64-${VERSION} -t traggo/server:amd64-latest .)
+
+docker-push:
+	docker push traggo/server:amd64-${VERSION} traggo/server:amd64-latest
 
 install: install-go install-js
