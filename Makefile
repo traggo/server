@@ -4,6 +4,11 @@ COMMIT=$(shell git rev-parse --verify HEAD)
 DATE=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 LD_FLAGS=-s -w -linkmode external -extldflags "-static" -X main.BuildDate="$(DATE)" -X main.BuildMode="prod" -X main.BuildCommit="$(COMMIT)" -X main.BuildVersion="$(VERSION)"
 BIN_NAME=build/traggo
+BUILD_LICENSE=build/license/3RD_PARTY_LICENSES
+UI_BUILD_LICENSE=build/license/UI_3RD_PARTY_LICENSES
+
+license-dir:
+	mkdir -p build/license || true
 
 download-tools:
 	GO111MODULE=off go get -u golang.org/x/lint/golint
@@ -69,5 +74,19 @@ build-docker:
 
 docker-push:
 	docker push traggo/server:amd64-${VERSION} traggo/server:amd64-latest
+
+licenses-ui: license-dir
+	(cd ui && yarn -s licenses generate-disclaimer --prod > ../${UI_BUILD_LICENSE})
+
+licenses-go: license-dir
+	go mod vendor
+	echo "THE FOLLOWING SETS FORTH ATTRIBUTION NOTICES FOR THIRD PARTY SOFTWARE THAT MAY BE CONTAINED IN PORTIONS OF THE TRAGGO PRODUCT" > ${BUILD_LICENSE}
+	echo >> ${BUILD_LICENSE}
+	echo ------- >> ${BUILD_LICENSE}
+	echo >> ${BUILD_LICENSE}
+	(cd vendor && find . -type f \( -iname "LICENSE*" -o -iname "NOTICE*" \) -exec echo The following software may be included in this product {} \; -exec echo  \; -exec cat {} \; -exec echo \; -exec echo -------- \; -exec echo \;) >> ${BUILD_LICENSE}
+
+package-zip: licenses-ui licenses-go
+	find build/* -maxdepth 0 -type f -exec zip -9 -j {}.zip {} build/license/3RD_PARTY_LICENSES build/license/UI_3RD_PARTY_LICENSES \;
 
 install: install-go install-js
