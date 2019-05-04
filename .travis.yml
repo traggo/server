@@ -1,6 +1,8 @@
 services:
   - docker
 
+sudo: required
+
 language: go
 go:
   - "1.12"
@@ -26,7 +28,7 @@ script:
   - make generate
   - make lint
   - make test
-  - make build-bin
+  - make build-js
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
@@ -36,9 +38,7 @@ before_deploy:
     if ! [ "$BEFORE_DEPLOY_RUN" ]; then
       export BEFORE_DEPLOY_RUN=1;
       if [[ $TRAVIS_TAG != "v"* ]]; then exit 1; fi;
-      make package-zip;
-      make docker-login-ci;
-      make build-docker;
+      make build-bin fix-build-owner build-compress package-zip docker-build;
     fi
 
 deploy:
@@ -50,7 +50,7 @@ deploy:
     on:
       tags: true
   - provider: script
-    script: make docker-push
+    script: make docker-login-ci docker-push docker-push-manifest
     skip_cleanup: true
     on:
       tags: true
