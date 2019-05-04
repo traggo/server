@@ -10,6 +10,12 @@ import {useMutation} from 'react-apollo-hooks';
 import {StopTimer, StopTimerVariables} from '../gql/__generated__/StopTimer';
 import * as gqlTimeSpan from '../gql/timeSpan';
 import {UpdateTimeSpan, UpdateTimeSpanVariables} from '../gql/__generated__/UpdateTimeSpan';
+import IconButton from '@material-ui/core/IconButton';
+import {MoreVert} from '@material-ui/icons';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import {RemoveTimeSpan, RemoveTimeSpanVariables} from '../gql/__generated__/RemoveTimeSpan';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
 export const calcShowDate = (from: moment.Moment, to?: moment.Moment): boolean => {
     const fromString = from.format('YYYYMMDD');
@@ -26,18 +32,35 @@ export interface TimeSpanProps {
     range: Range;
     initialTags: TagSelectorEntry[];
     now?: moment.Moment;
+    dateSelectorOpen?: (open: boolean) => void;
+    deleted?: () => void;
 }
 
-export const TimeSpan: React.FC<TimeSpanProps> = ({range: {from, to}, id, initialTags, now}) => {
+export const TimeSpan: React.FC<TimeSpanProps> = ({
+    range: {from, to},
+    id,
+    initialTags,
+    now,
+    dateSelectorOpen = () => {},
+    deleted = () => {},
+}) => {
     if (!to && !now) {
         throw new Error('now must be set when to is not set');
     }
 
     const [selectedEntries, setSelectedEntries] = React.useState<TagSelectorEntry[]>(initialTags);
+    const [openMenu, setOpenMenuX] = React.useState<null | HTMLElement>(null);
+    const setOpenMenu = (o: null | HTMLElement) => {
+        setOpenMenuX(o);
+        dateSelectorOpen(!!o);
+    };
     const stopTimer = useMutation<StopTimer, StopTimerVariables>(gqlTimeSpan.StopTimer, {
         refetchQueries: [{query: gqlTimeSpan.Trackers}, {query: gqlTimeSpan.TimeSpans}],
     });
     const updateTimeSpan = useMutation<UpdateTimeSpan, UpdateTimeSpanVariables>(gqlTimeSpan.UpdateTimeSpan, {
+        refetchQueries: [{query: gqlTimeSpan.Trackers}, {query: gqlTimeSpan.TimeSpans}],
+    });
+    const removeTimeSpan = useMutation<RemoveTimeSpan, RemoveTimeSpanVariables>(gqlTimeSpan.RemoveTimeSpan, {
         refetchQueries: [{query: gqlTimeSpan.Trackers}, {query: gqlTimeSpan.TimeSpans}],
     });
 
@@ -61,6 +84,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({range: {from, to}, id, initia
                 />
             </div>
             <DateTimeSelector
+                popoverOpen={dateSelectorOpen}
                 selectedDate={from}
                 onSelectDate={(newFrom) => {
                     if (to && moment(newFrom).isAfter(to)) {
@@ -89,6 +113,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({range: {from, to}, id, initia
             />
             {to !== undefined ? (
                 <DateTimeSelector
+                    popoverOpen={dateSelectorOpen}
                     selectedDate={to}
                     onSelectDate={(newTo) => {
                         if (moment(newTo).isBefore(from)) {
@@ -124,6 +149,23 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({range: {from, to}, id, initia
                     Stop {timeRunning(from, require(now))}
                 </Button>
             )}
+            <ClickAwayListener onClickAway={() => setOpenMenu(null)}>
+                <>
+                    <IconButton onClick={(e: React.MouseEvent<HTMLElement>) => setOpenMenu(e.currentTarget)}>
+                        <MoreVert />
+                    </IconButton>
+                    <Menu aria-haspopup="true" anchorEl={openMenu} open={openMenu !== null}>
+                        <MenuItem
+                            onClick={() => {
+                                setOpenMenu(null);
+                                removeTimeSpan({variables: {id}});
+                                deleted();
+                            }}>
+                            Delete
+                        </MenuItem>
+                    </Menu>
+                </>
+            </ClickAwayListener>
         </Paper>
     );
 };
