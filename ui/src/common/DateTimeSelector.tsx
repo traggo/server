@@ -9,6 +9,7 @@ interface DateTimeSelectorProps {
     onSelectDate: (date: moment.Moment) => void;
     showDate: boolean;
     label: string;
+    popoverOpen?: (open: boolean) => void;
 }
 
 const TextFieldWithoutUnderline: React.FC<TextFieldProps> = ({InputProps, ...other}) => {
@@ -16,12 +17,19 @@ const TextFieldWithoutUnderline: React.FC<TextFieldProps> = ({InputProps, ...oth
     return <TextField {...other} InputProps={o} />;
 };
 
-export const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({selectedDate, onSelectDate, showDate, label}) => {
+export const DateTimeSelector: React.FC<DateTimeSelectorProps> = ({
+    selectedDate,
+    onSelectDate,
+    showDate,
+    label,
+    popoverOpen = () => {},
+}) => {
     return (
         <InlineDateTimePicker
             title={selectedDate.format()}
             style={{width: showDate ? 185 : 95}}
             keyboard
+            PopoverProps={{onEntered: () => popoverOpen(true), onExited: () => popoverOpen(false)}}
             variant="standard"
             margin="none"
             value={uglyConvertToLocalTime(selectedDate).format()}

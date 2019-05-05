@@ -16,18 +16,24 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 // @ts-ignore
 import bestContrast from 'get-best-contrast-color';
 import Input from '@material-ui/core/Input';
+import {useStateAndDelegateWithDelayOnChange} from '../utils/hooks';
 
 export interface TagSelectorProps {
     onSelectedEntriesChanged: (entries: TagSelectorEntry[]) => void;
     selectedEntries: TagSelectorEntry[];
+    dialogOpen?: (open: boolean) => void;
 }
 
-export const TagSelector: React.FC<TagSelectorProps> = ({selectedEntries, onSelectedEntriesChanged: setSelectedEntries}) => {
+export const TagSelector: React.FC<TagSelectorProps> = ({
+    selectedEntries,
+    onSelectedEntriesChanged: setSelectedEntries,
+    dialogOpen = () => {},
+}) => {
     const [tooltipErrorActive, tooltipError, showTooltipError] = useError(4000);
     const [open, setOpen] = React.useState(false);
     const [currentValue, setCurrentValueInternal] = React.useState('');
     const [highlightedIndex, setHighlightedIndex] = React.useState<number>(0);
-    const [addDialogOpen, setAddDialogOpen] = React.useState(false);
+    const [addDialogOpen, setAddDialogOpen] = useStateAndDelegateWithDelayOnChange<boolean>(false, dialogOpen);
     const input = React.useRef<null | HTMLDivElement>(null);
     const container = React.useRef<null | HTMLDivElement>(null);
 
