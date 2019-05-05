@@ -37,6 +37,7 @@ const drawerWidth = 240;
 const styles: StyleRulesCallback = (theme) => ({
     root: {
         display: 'flex',
+        height: '100%',
     },
     drawer: {
         [theme.breakpoints.up('md')]: {

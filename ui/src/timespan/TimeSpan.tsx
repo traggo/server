@@ -16,6 +16,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import {RemoveTimeSpan, RemoveTimeSpanVariables} from '../gql/__generated__/RemoveTimeSpan';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import {useStateAndDelegateWithDelayOnChange} from '../utils/hooks';
 
 export const calcShowDate = (from: moment.Moment, to?: moment.Moment): boolean => {
     const fromString = from.format('YYYYMMDD');
@@ -34,6 +35,7 @@ export interface TimeSpanProps {
     now?: moment.Moment;
     dateSelectorOpen?: (open: boolean) => void;
     deleted?: () => void;
+    stopped?: () => void;
 }
 
 export const TimeSpan: React.FC<TimeSpanProps> = ({
@@ -43,17 +45,14 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
     now,
     dateSelectorOpen = () => {},
     deleted = () => {},
+    stopped = () => {},
 }) => {
     if (!to && !now) {
         throw new Error('now must be set when to is not set');
     }
 
     const [selectedEntries, setSelectedEntries] = React.useState<TagSelectorEntry[]>(initialTags);
-    const [openMenu, setOpenMenuX] = React.useState<null | HTMLElement>(null);
-    const setOpenMenu = (o: null | HTMLElement) => {
-        setOpenMenuX(o);
-        dateSelectorOpen(!!o);
-    };
+    const [openMenu, setOpenMenu] = useStateAndDelegateWithDelayOnChange<null | HTMLElement>(null, (o) => dateSelectorOpen(!!o));
     const stopTimer = useMutation<StopTimer, StopTimerVariables>(gqlTimeSpan.StopTimer, {
         refetchQueries: [{query: gqlTimeSpan.Trackers}, {query: gqlTimeSpan.TimeSpans}],
     });
@@ -69,6 +68,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
         <Paper style={{display: 'flex', alignItems: 'center', padding: '10px', margin: '10px 0'}}>
             <div style={{flex: '1', marginRight: 10}}>
                 <TagSelector
+                    dialogOpen={dateSelectorOpen}
                     selectedEntries={selectedEntries}
                     onSelectedEntriesChanged={(entries) => {
                         setSelectedEntries(entries);
@@ -144,7 +144,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
                 <Button
                     style={{minWidth: 120}}
                     onClick={() => {
-                        stopTimer({variables: {id, end: inUserTz(require(now)).format()}});
+                        stopTimer({variables: {id, end: inUserTz(require(now)).format()}}).then(stopped);
                     }}>
                     Stop {timeRunning(from, require(now))}
                 </Button>

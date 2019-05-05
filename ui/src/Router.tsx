@@ -12,6 +12,7 @@ import {DefaultPaper} from './common/DefaultPaper';
 import {Page} from './common/Page';
 import {Redirect, Route, Switch} from 'react-router';
 import {DailyPage} from './timespan/DailyPage';
+import {Calendar} from './timespan/calendar/Calendar';
 
 export const Router = () => {
     const {loading, error, data, refetch} = useQuery<CurrentUser>(gqlUser.CurrentUser);
@@ -31,7 +32,7 @@ export const Router = () => {
             <Page>
                 <Route exact path="/dashboard" component={TODO} />
                 <Route exact path="/timesheet/daily" component={DailyPage} />
-                <Route exact path="/timesheet/weekly" component={TODO} />
+                <Route exact path="/timesheet/weekly" component={Calendar} />
                 <Route exact path="/user/settings" component={TODO} />
                 <Route exact path="/user/devices" component={TODO} />
                 <Route exact path="/admin/users" component={TODO} />
