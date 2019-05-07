@@ -28,8 +28,12 @@ export const calcShowDate = (from: moment.Moment, to: moment.Moment) => {
     return fromString !== to.format('YYYYMMDD') || moment().format('YYYYMMDD') !== fromString;
 };
 
-export const Tracker = () => {
-    const [selectedEntries, setSelectedEntries] = React.useState<TagSelectorEntry[]>([]);
+interface TrackerProps {
+    onSelectedEntriesChanged: (entries: TagSelectorEntry[]) => void;
+    selectedEntries: TagSelectorEntry[];
+}
+
+export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntriesChanged: setSelectedEntries}) => {
     const [openMenu, setOpenMenu] = React.useState<null | HTMLElement>(null);
     const [type, setType] = React.useState<Type>(Type.Tracker);
     const [manualSelected, setManualSelected] = React.useState(false);
