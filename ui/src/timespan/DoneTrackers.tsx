@@ -9,8 +9,13 @@ import moment from 'moment';
 import {TimeSpans} from '../gql/__generated__/TimeSpans';
 import {Typography} from '@material-ui/core';
 import {GroupedTimeSpanProps, toGroupedTimeSpanProps} from './timespanutils';
+import {TagSelectorEntry} from '../tag/tagSelectorEntry';
 
-export const DoneTrackers = () => {
+interface DoneTrackersProps {
+    addTagsToTracker?: (entries: TagSelectorEntry[]) => void;
+}
+
+export const DoneTrackers: React.FC<DoneTrackersProps> = ({addTagsToTracker}) => {
     const trackersResult = useQuery<TimeSpans>(gqlTimeSpan.TimeSpans);
     const tagsResult = useQuery<Tags>(gqlTag.Tags);
     const [currentDate, setCurrentDate] = React.useState(moment());
@@ -47,7 +52,7 @@ export const DoneTrackers = () => {
                             {key}
                         </Typography>
                         {timeSpans.map((timeSpanProps) => (
-                            <TimeSpan key={timeSpanProps.id} {...timeSpanProps} />
+                            <TimeSpan key={timeSpanProps.id} {...timeSpanProps} addTagsToTracker={addTagsToTracker} />
                         ))}
                     </div>
                 );

@@ -36,6 +36,7 @@ export interface TimeSpanProps {
     dateSelectorOpen?: (open: boolean) => void;
     deleted?: () => void;
     stopped?: () => void;
+    addTagsToTracker?: (tags: TagSelectorEntry[]) => void;
 }
 
 export const TimeSpan: React.FC<TimeSpanProps> = ({
@@ -46,6 +47,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
     dateSelectorOpen = () => {},
     deleted = () => {},
     stopped = () => {},
+    addTagsToTracker,
 }) => {
     if (!to && !now) {
         throw new Error('now must be set when to is not set');
@@ -163,6 +165,15 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
                             }}>
                             Delete
                         </MenuItem>
+                        {addTagsToTracker ? (
+                            <MenuItem
+                                onClick={() => {
+                                    setOpenMenu(null);
+                                    addTagsToTracker(selectedEntries);
+                                }}>
+                                Copy tags
+                            </MenuItem>
+                        ) : null}
                     </Menu>
                 </>
             </ClickAwayListener>
