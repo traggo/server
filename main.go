@@ -34,6 +34,8 @@ var (
 func main() {
 	mode.Set(BuildMode)
 
+	version := model.Version{Commit: BuildCommit, BuildDate: BuildDate, Name: BuildVersion}
+
 	conf, errs := config.Get()
 	logger.Init(conf.LogLevel.AsZeroLogLevel())
 
@@ -51,7 +53,7 @@ func main() {
 
 	stopCleanUp := initCleanUp(db)
 
-	router := initRouter(db, conf)
+	router := initRouter(db, conf, version)
 
 	log.Info().Int("port", conf.Port).Msg("Start listening")
 	if err := server.Start(router, conf.Port); err != nil {
@@ -60,10 +62,10 @@ func main() {
 	stopCleanUp <- true
 }
 
-func initRouter(db *gorm.DB, conf config.Config) *mux.Router {
+func initRouter(db *gorm.DB, conf config.Config, version model.Version) *mux.Router {
 	gqlHandler := graphql.Handler(
 		"/graphql",
-		graphql.NewResolver(db, conf.PassStrength),
+		graphql.NewResolver(db, conf.PassStrength, version),
 		graphql.NewDirective())
 
 	router := mux.NewRouter()

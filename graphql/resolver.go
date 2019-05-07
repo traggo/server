@@ -1,9 +1,14 @@
 package graphql
 
 import (
+	"context"
+
+	"github.com/jinzhu/copier"
 	"github.com/jinzhu/gorm"
 	"github.com/traggo/server/device"
+	"github.com/traggo/server/generated/gqlmodel"
 	"github.com/traggo/server/generated/gqlschema"
+	"github.com/traggo/server/model"
 	"github.com/traggo/server/statistics"
 	"github.com/traggo/server/tag"
 	"github.com/traggo/server/timespan"
@@ -11,24 +16,25 @@ import (
 )
 
 // NewResolver combines all resolvers to a resolver root.
-func NewResolver(db *gorm.DB, passStrength int) gqlschema.ResolverRoot {
+func NewResolver(db *gorm.DB, passStrength int, version model.Version) gqlschema.ResolverRoot {
 	return &resolver{
-		user.ResolverForUser{
+		ResolverForUser: user.ResolverForUser{
 			DB:           db,
 			PassStrength: passStrength,
 		},
-		tag.ResolverForTag{
+		ResolverForTag: tag.ResolverForTag{
 			DB: db,
 		},
-		device.ResolverForDevice{
+		ResolverForDevice: device.ResolverForDevice{
 			DB: db,
 		},
-		timespan.ResolverForTimeSpan{
+		ResolverForTimeSpan: timespan.ResolverForTimeSpan{
 			DB: db,
 		},
-		statistics.ResolverForStatistics{
+		ResolverForStatistics: statistics.ResolverForStatistics{
 			DB: db,
 		},
+		version: version,
 	}
 }
 
@@ -38,6 +44,7 @@ type resolver struct {
 	device.ResolverForDevice
 	timespan.ResolverForTimeSpan
 	statistics.ResolverForStatistics
+	version model.Version
 }
 
 func (r *resolver) RootMutation() gqlschema.RootMutationResolver {
@@ -46,4 +53,10 @@ func (r *resolver) RootMutation() gqlschema.RootMutationResolver {
 
 func (r *resolver) RootQuery() gqlschema.RootQueryResolver {
 	return r
+}
+
+func (r *resolver) Version(ctx context.Context) (*gqlmodel.Version, error) {
+	gql := &gqlmodel.Version{}
+	copier.Copy(gql, r.version)
+	return gql, nil
 }

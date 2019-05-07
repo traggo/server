@@ -40,6 +40,13 @@ type RootQuery {
     timeSpans(fromInclusive: Time, toInclusive: Time): [TimeSpan!] @hasRole(role: USER)
     timers: [TimeSpan!] @hasRole(role: USER)
     timeSpanSummary(fromExclusive: Time!, toInclusive: Time!, stat: StatInput!): [StatisticsEntry!] @hasRole(role: USER)
+    version: Version!
+}
+
+type Version {
+    name: String!
+    commit: String!
+    buildDate: String!
 }
 
 type Login {

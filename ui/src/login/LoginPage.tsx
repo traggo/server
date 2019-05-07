@@ -7,6 +7,9 @@ import {LoginForm} from './LoginForm';
 import {ToggleTheme} from '../common/ToggleTheme';
 import Link from '@material-ui/core/Link';
 import {DefaultPaper} from '../common/DefaultPaper';
+import * as gqlVersion from '../gql/version';
+import {useQuery} from 'react-apollo-hooks';
+import {Version} from '../gql/__generated__/Version';
 
 const styles: StyleRulesCallback = () => ({
     footerLink: {
@@ -19,40 +22,38 @@ const styles: StyleRulesCallback = () => ({
     },
 });
 
-export const LoginPage = withStyles(styles, {withTheme: true})(
-    class extends React.Component<WithStyles<typeof styles>> {
-        public render(): React.ReactNode {
-            const {classes} = this.props;
-            return (
-                <Grid container={true} direction="row" alignItems="center" justify="center" style={{height: '95%'}}>
-                    <Grid item>
-                        <DefaultPaper>
-                            <Typography variant="h1" component="h1" gutterBottom={true}>
-                                traggo
-                            </Typography>
-                            <LoginForm />
-                        </DefaultPaper>
-                    </Grid>
-                    <div style={{position: 'absolute', bottom: 10, display: 'flex'}}>
-                        <Typography variant="subtitle1" component="span" className={classes.footerLink}>
-                            <Link href="https://github.com/traggo/server">Source Code</Link>
-                        </Typography>
-                        <Typography variant="subtitle1" component="span" className={classes.footerLink}>
-                            |
-                        </Typography>
-                        <Typography variant="subtitle1" component="span" className={classes.footerLink}>
-                            <Link href="https://github.com/traggo/server/issues">Bug Tracker</Link>
-                        </Typography>
-                        <Typography variant="subtitle1" component="span" className={classes.footerLink}>
-                            |
-                        </Typography>
-                        <Typography variant="subtitle1" component="span" className={classes.footerLink}>
-                            v1.0.0@12efefef
-                        </Typography>
-                    </div>
-                    <ToggleTheme className={classes.themeButton} />
-                </Grid>
-            );
-        }
-    }
-);
+export const LoginPage = withStyles(styles, {withTheme: true})(({classes}: WithStyles<typeof styles>) => {
+    const {data: {version = gqlVersion.VersionDefault.version} = gqlVersion.VersionDefault} = useQuery<Version>(
+        gqlVersion.Version
+    );
+    return (
+        <Grid container={true} direction="row" alignItems="center" justify="center" style={{height: '95%'}}>
+            <Grid item>
+                <DefaultPaper>
+                    <Typography variant="h1" component="h1" gutterBottom={true}>
+                        traggo
+                    </Typography>
+                    <LoginForm />
+                </DefaultPaper>
+            </Grid>
+            <div style={{position: 'absolute', bottom: 10, display: 'flex'}}>
+                <Typography variant="subtitle1" component="span" className={classes.footerLink}>
+                    <Link href="https://github.com/traggo/server">Source Code</Link>
+                </Typography>
+                <Typography variant="subtitle1" component="span" className={classes.footerLink}>
+                    |
+                </Typography>
+                <Typography variant="subtitle1" component="span" className={classes.footerLink}>
+                    <Link href="https://github.com/traggo/server/issues">Bug Tracker</Link>
+                </Typography>
+                <Typography variant="subtitle1" component="span" className={classes.footerLink}>
+                    |
+                </Typography>
+                <Typography variant="subtitle1" component="span" className={classes.footerLink}>
+                    {version.name}@{version.commit.slice(0, 8)}
+                </Typography>
+            </div>
+            <ToggleTheme className={classes.themeButton} />
+        </Grid>
+    );
+});
