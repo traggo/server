@@ -3,6 +3,7 @@ package tag
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/jinzhu/copier"
 	"github.com/traggo/server/auth"
@@ -14,7 +15,7 @@ import (
 func (r *ResolverForTag) CreateTag(ctx context.Context, key string, color string, typeArg gqlmodel.TagDefinitionType) (*gqlmodel.TagDefinition, error) {
 	userID := auth.GetUser(ctx).ID
 	definition := &model.TagDefinition{
-		Key:    key,
+		Key:    strings.ToLower(key),
 		Color:  color,
 		Type:   model.TagDefinitionType(typeArg),
 		UserID: userID,

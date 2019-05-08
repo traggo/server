@@ -45,7 +45,8 @@ export const specialTag = (name: string, state: 'used' | 'new'): TagSelectorEntr
 };
 
 const tryAdd = (tagsResult: QueryHookResult<Tags, {}>, entry: string): TagSelectorEntry | TagInputError => {
-    const [key, value, ...other] = entry.split(':');
+    const [keySomeCase, value, ...other] = entry.split(':');
+    const key = keySomeCase.toLowerCase();
 
     if (other.length || !tagsResult.data || !tagsResult.data.tags) {
         return {error: `${entry} has too many colons`, value: entry};

@@ -9,7 +9,8 @@ export const useSuggest = (
     inputValue: string,
     selectedEntries: TagSelectorEntry[]
 ): TagSelectorEntry[] => {
-    const [tagKey, tagValue] = inputValue.split(':');
+    const [tagKeySomeCase, tagValue] = inputValue.split(':');
+    const tagKey = tagKeySomeCase.toLowerCase();
 
     const usedTags = selectedEntries.map((entry) => entry.tag.key);
     const exactMatch = ((tagResult.data && tagResult.data.tags) || []).find((tag) => tag.key === tagKey);
