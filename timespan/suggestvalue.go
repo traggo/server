@@ -15,7 +15,7 @@ func (r *ResolverForTimeSpan) SuggestTagValue(ctx context.Context, key string, q
 		Select("DISTINCT time_span_tags.string_value").
 		Joins("JOIN time_spans on time_spans.id = time_span_tags.time_span_id").
 		Where("user_id = ?", auth.GetUser(ctx).ID).
-		Where("key = ?", key).Where("string_value LIKE ?", query+"%").
+		Where("key = ?", key).Where("LOWER(string_value) LIKE LOWER(?)", "%"+query+"%").
 		Find(&suggestions)
 	var result []string
 	for _, value := range suggestions {
