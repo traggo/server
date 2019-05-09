@@ -1,4 +1,4 @@
-package auth_test
+package auth
 
 import (
 	"context"
@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/traggo/server/auth"
 	"github.com/traggo/server/model"
 	"github.com/traggo/server/test"
 )
@@ -17,11 +16,11 @@ func TestMiddleware_noAuthentication_noAuthentication(t *testing.T) {
 	defer db.Close()
 	spy := &requestSpy{}
 
-	auth.Middleware(db.DB)(spy).ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/test", nil))
+	Middleware(db.DB)(spy).ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/test", nil))
 
 	ctx := spy.req.Context()
-	assert.Nil(t, auth.GetUser(ctx))
-	assert.Nil(t, auth.GetDevice(ctx))
+	assert.Nil(t, GetUser(ctx))
+	assert.Nil(t, GetDevice(ctx))
 }
 
 func TestMiddleware_query_notExistingToken_noAuthentication(t *testing.T) {
@@ -29,14 +28,18 @@ func TestMiddleware_query_notExistingToken_noAuthentication(t *testing.T) {
 	defer db.Close()
 	spy := &requestSpy{}
 
-	auth.Middleware(db.DB)(spy).ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/test?token=abc", nil))
+	Middleware(db.DB)(spy).ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/test?token=abc", nil))
 
 	ctx := spy.req.Context()
-	assert.Nil(t, auth.GetUser(ctx))
-	assert.Nil(t, auth.GetDevice(ctx))
+	assert.Nil(t, GetUser(ctx))
+	assert.Nil(t, GetDevice(ctx))
 }
 
 func TestMiddleware_query_validToken_authenticates(t *testing.T) {
+	now := test.Time("2018-06-30T18:30:00Z")
+	timeDispose := fakeTime(now)
+	defer timeDispose()
+
 	db := test.InMemoryDB(t)
 	defer db.Close()
 	builder := db.User(1)
@@ -44,11 +47,13 @@ func TestMiddleware_query_validToken_authenticates(t *testing.T) {
 	device := builder.NewDevice(2, "abc", "test")
 	spy := &requestSpy{}
 
-	auth.Middleware(db.DB)(spy).ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/test?token=abc", nil))
+	Middleware(db.DB)(spy).ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/test?token=abc", nil))
 
 	ctx := spy.req.Context()
-	assert.Equal(t, &user, auth.GetUser(ctx))
-	assert.Equal(t, &device, auth.GetDevice(ctx))
+	assert.Equal(t, &user, GetUser(ctx))
+
+	device.ActiveAt = now
+	assert.Equal(t, &device, GetDevice(ctx))
 }
 
 func TestMiddleware_header_notExistingToken_noAuthentication(t *testing.T) {
@@ -58,14 +63,18 @@ func TestMiddleware_header_notExistingToken_noAuthentication(t *testing.T) {
 
 	request := httptest.NewRequest("GET", "/test?token=abc", nil)
 	request.Header["Authorization"] = []string{"traggo abc"}
-	auth.Middleware(db.DB)(spy).ServeHTTP(httptest.NewRecorder(), request)
+	Middleware(db.DB)(spy).ServeHTTP(httptest.NewRecorder(), request)
 
 	ctx := spy.req.Context()
-	assert.Nil(t, auth.GetUser(ctx))
-	assert.Nil(t, auth.GetDevice(ctx))
+	assert.Nil(t, GetUser(ctx))
+	assert.Nil(t, GetDevice(ctx))
 }
 
 func TestMiddleware_header_validToken_authenticates(t *testing.T) {
+	now := test.Time("2018-06-30T18:30:00Z")
+	timeDispose := fakeTime(now)
+	defer timeDispose()
+
 	db := test.InMemoryDB(t)
 	defer db.Close()
 	builder := db.User(1)
@@ -75,11 +84,13 @@ func TestMiddleware_header_validToken_authenticates(t *testing.T) {
 
 	request := httptest.NewRequest("GET", "/test", nil)
 	request.Header.Set("Authorization", "traggo abc")
-	auth.Middleware(db.DB)(spy).ServeHTTP(httptest.NewRecorder(), request)
+	Middleware(db.DB)(spy).ServeHTTP(httptest.NewRecorder(), request)
 
 	ctx := spy.req.Context()
-	assert.Equal(t, &user, auth.GetUser(ctx))
-	assert.Equal(t, &device, auth.GetDevice(ctx))
+	assert.Equal(t, &user, GetUser(ctx))
+
+	device.ActiveAt = now
+	assert.Equal(t, &device, GetDevice(ctx))
 }
 
 func TestMiddleware_header_validToken_invalidAuthenticationType_noAuthentication(t *testing.T) {
@@ -91,11 +102,11 @@ func TestMiddleware_header_validToken_invalidAuthenticationType_noAuthentication
 	request := httptest.NewRequest("GET", "/test", nil)
 	request.Header.Set("Authorization", "basic abc")
 
-	auth.Middleware(db.DB)(spy).ServeHTTP(httptest.NewRecorder(), request)
+	Middleware(db.DB)(spy).ServeHTTP(httptest.NewRecorder(), request)
 
 	ctx := spy.req.Context()
-	assert.Nil(t, auth.GetUser(ctx))
-	assert.Nil(t, auth.GetDevice(ctx))
+	assert.Nil(t, GetUser(ctx))
+	assert.Nil(t, GetDevice(ctx))
 }
 
 func TestMiddleware_cookie_notExistingToken_noAuthentication(t *testing.T) {
@@ -108,14 +119,18 @@ func TestMiddleware_cookie_notExistingToken_noAuthentication(t *testing.T) {
 		Name:  "traggo",
 		Value: "abc",
 	})
-	auth.Middleware(db.DB)(spy).ServeHTTP(httptest.NewRecorder(), request)
+	Middleware(db.DB)(spy).ServeHTTP(httptest.NewRecorder(), request)
 
 	ctx := spy.req.Context()
-	assert.Nil(t, auth.GetUser(ctx))
-	assert.Nil(t, auth.GetDevice(ctx))
+	assert.Nil(t, GetUser(ctx))
+	assert.Nil(t, GetDevice(ctx))
 }
 
-func TestMiddleware_cookie_validToken_noAuthentication(t *testing.T) {
+func TestMiddleware_cookie_validToken_authenticates(t *testing.T) {
+	now := test.Time("2018-06-30T18:30:00Z")
+	timeDispose := fakeTime(now)
+	defer timeDispose()
+
 	db := test.InMemoryDB(t)
 	defer db.Close()
 	builder := db.User(1)
@@ -128,11 +143,13 @@ func TestMiddleware_cookie_validToken_noAuthentication(t *testing.T) {
 		Name:  "traggo",
 		Value: "abc",
 	})
-	auth.Middleware(db.DB)(spy).ServeHTTP(httptest.NewRecorder(), request)
+	Middleware(db.DB)(spy).ServeHTTP(httptest.NewRecorder(), request)
 
 	ctx := spy.req.Context()
-	assert.Equal(t, &user, auth.GetUser(ctx))
-	assert.Equal(t, &device, auth.GetDevice(ctx))
+	assert.Equal(t, &user, GetUser(ctx))
+
+	device.ActiveAt = now
+	assert.Equal(t, &device, GetDevice(ctx))
 }
 
 func TestMiddleware_createSession_setsCookie(t *testing.T) {
@@ -142,10 +159,10 @@ func TestMiddleware_createSession_setsCookie(t *testing.T) {
 	recorder := httptest.NewRecorder()
 
 	request := httptest.NewRequest("GET", "/test", nil)
-	auth.Middleware(db.DB)(spy).ServeHTTP(recorder, request)
+	Middleware(db.DB)(spy).ServeHTTP(recorder, request)
 
 	ctx := spy.req.Context()
-	auth.GetCreateSession(ctx)("new token", 60)
+	GetCreateSession(ctx)("new token", 60)
 
 	cookieHeader := recorder.Header().Get("Set-Cookie")
 	assert.Equal(t, `traggo="new token"; Max-Age=60`, cookieHeader)
@@ -158,7 +175,7 @@ func TestMiddleware_noCallbackExecuted_noCookieSet(t *testing.T) {
 	recorder := httptest.NewRecorder()
 
 	request := httptest.NewRequest("GET", "/test", nil)
-	auth.Middleware(db.DB)(spy).ServeHTTP(recorder, request)
+	Middleware(db.DB)(spy).ServeHTTP(recorder, request)
 
 	cookieHeader := recorder.Header().Get("Set-Cookie")
 	assert.Equal(t, "", cookieHeader)
@@ -171,10 +188,10 @@ func TestMiddleware_destroySession_destroysCookie(t *testing.T) {
 	recorder := httptest.NewRecorder()
 
 	request := httptest.NewRequest("GET", "/test", nil)
-	auth.Middleware(db.DB)(spy).ServeHTTP(recorder, request)
+	Middleware(db.DB)(spy).ServeHTTP(recorder, request)
 
 	ctx := spy.req.Context()
-	auth.GetDestroySession(ctx)()
+	GetDestroySession(ctx)()
 
 	cookieHeader := recorder.Header().Get("Set-Cookie")
 	assert.Equal(t, "traggo=; Max-Age=0", cookieHeader)
@@ -182,13 +199,13 @@ func TestMiddleware_destroySession_destroysCookie(t *testing.T) {
 
 func TestGetCreateSession_panicsWhenMiddlewareWasNotExecuted(t *testing.T) {
 	assert.Panics(t, func() {
-		auth.GetCreateSession(context.Background())
+		GetCreateSession(context.Background())
 	})
 }
 
 func TestGetDestroySession_panicsWhenMiddlewareWasNotExecuted(t *testing.T) {
 	assert.Panics(t, func() {
-		auth.GetDestroySession(context.Background())
+		GetDestroySession(context.Background())
 	})
 }
 
@@ -203,7 +220,7 @@ func TestMiddleware_panicsWhenDeviceExistButUserDoesNot(t *testing.T) {
 	spy := &requestSpy{}
 
 	assert.Panics(t, func() {
-		auth.Middleware(db.DB)(spy).ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/test?token=abc", nil))
+		Middleware(db.DB)(spy).ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/test?token=abc", nil))
 	})
 }
 

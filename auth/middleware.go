@@ -2,10 +2,10 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"strings"
-
-	"errors"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
@@ -61,6 +61,12 @@ func reqisterUser(request *http.Request, _ http.ResponseWriter, db *gorm.DB) *ht
 		user := &model.User{}
 		if db.Find(user, device.UserID).RecordNotFound() {
 			log.Panic().Int("userID", device.UserID).Int("deviceID", device.ID).Msg("User not found")
+		}
+
+		if device.ActiveAt.Before(time.Now().Add(5 * -time.Minute)) {
+			log.Debug().Int("deviceId", device.ID).Str("deviceName", device.Name).Msg("update device activeAt")
+			device.ActiveAt = timeNow()
+			db.Save(device)
 		}
 
 		return request.WithContext(WithUser(WithDevice(request.Context(), device), user))
