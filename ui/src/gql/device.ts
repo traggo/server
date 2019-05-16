@@ -28,3 +28,11 @@ export const UpdateDevice = gql`
         }
     }
 `;
+
+export const CreateDevice = gql`
+    mutation CreateDevice($name: String!, $expiresAt: Time!) {
+        device: createDevice(name: $name, expiresAt: $expiresAt) {
+            token
+        }
+    }
+`;

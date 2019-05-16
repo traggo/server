@@ -21,7 +21,9 @@ import {RemoveDevice, RemoveDeviceVariables} from '../gql/__generated__/RemoveDe
 import {UpdateDevice, UpdateDeviceVariables} from '../gql/__generated__/UpdateDevice';
 import {useSnackbar} from 'notistack';
 import {TextField} from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import {InlineDateTimePicker} from 'material-ui-pickers';
+import {AddDeviceDialog} from './AddDeviceDialog';
 
 const styles: StyleRulesCallback = (theme) => ({
     root: {
@@ -41,6 +43,7 @@ export const DevicesPage = withStyles(styles)(({classes}: WithStyles<typeof styl
     const {enqueueSnackbar} = useSnackbar();
     const removeDevice = useMutation<RemoveDevice, RemoveDeviceVariables>(gqlDevice.RemoveDevice, refetch);
     const [[editId, editName, editExpiresIn], setEditing] = React.useState<[number, string, string]>([-1, '', '']);
+    const [addActive, setAddActive] = React.useState(false);
     const updateDevice = useMutation<UpdateDevice, UpdateDeviceVariables>(gqlDevice.UpdateDevice, refetch);
     if (loading || !data || !data.currentDevice || !data.devices) {
         return <CenteredSpinner />;
@@ -113,6 +116,7 @@ export const DevicesPage = withStyles(styles)(({classes}: WithStyles<typeof styl
 
     return (
         <Paper elevation={1} square={true} className={classes.root}>
+            <Button onClick={() => setAddActive(true)}>Add Device</Button>
             <Table padding={'dense'}>
                 <TableHead>
                     <TableRow>
@@ -124,7 +128,10 @@ export const DevicesPage = withStyles(styles)(({classes}: WithStyles<typeof styl
                         <TableCell style={{width: 150}} />
                     </TableRow>
                 </TableHead>
-                <TableBody>{devices}</TableBody>
+                <TableBody>
+                    {addActive ? <AddDeviceDialog initialName={''} open={true} close={() => setAddActive(false)} /> : null}
+                    {devices}
+                </TableBody>
             </Table>
         </Paper>
     );
