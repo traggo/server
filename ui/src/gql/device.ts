@@ -22,8 +22,8 @@ export const RemoveDevice = gql`
     }
 `;
 export const UpdateDevice = gql`
-    mutation UpdateDevice($id: Int!, $name: String!) {
-        updateDevice(id: $id, name: $name) {
+    mutation UpdateDevice($id: Int!, $name: String!, $expiresAt: Time!) {
+        updateDevice(id: $id, name: $name, expiresAt: $expiresAt) {
             id
         }
     }

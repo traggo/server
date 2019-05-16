@@ -21,6 +21,7 @@ import {RemoveDevice, RemoveDeviceVariables} from '../gql/__generated__/RemoveDe
 import {UpdateDevice, UpdateDeviceVariables} from '../gql/__generated__/UpdateDevice';
 import {useSnackbar} from 'notistack';
 import {TextField} from '@material-ui/core';
+import {InlineDateTimePicker} from 'material-ui-pickers';
 
 const styles: StyleRulesCallback = (theme) => ({
     root: {
@@ -39,7 +40,7 @@ export const DevicesPage = withStyles(styles)(({classes}: WithStyles<typeof styl
     const refetch = {refetchQueries: [{query: gqlDevice.Devices}, {query: gqlUser.CurrentUser}]};
     const {enqueueSnackbar} = useSnackbar();
     const removeDevice = useMutation<RemoveDevice, RemoveDeviceVariables>(gqlDevice.RemoveDevice, refetch);
-    const [[editId, editValue], setEditing] = React.useState<[number, string]>([-1, '']);
+    const [[editId, editName, editExpiresIn], setEditing] = React.useState<[number, string, string]>([-1, '', '']);
     const updateDevice = useMutation<UpdateDevice, UpdateDeviceVariables>(gqlDevice.UpdateDevice, refetch);
     if (loading || !data || !data.currentDevice || !data.devices) {
         return <CenteredSpinner />;
@@ -49,11 +50,12 @@ export const DevicesPage = withStyles(styles)(({classes}: WithStyles<typeof styl
         const onClickDelete = () =>
             removeDevice({variables: {id: device.id}}).then(() => enqueueSnackbar('device deleted', {variant: 'success'}));
         const onClickSubmit = () => {
-            setEditing([-1, '']);
+            setEditing([-1, '', '']);
             updateDevice({
                 variables: {
                     id: editId,
-                    name: editValue,
+                    name: editName,
+                    expiresAt: editExpiresIn,
                 },
             }).then(() => enqueueSnackbar('device edited', {variant: 'success'}));
         };
@@ -65,8 +67,8 @@ export const DevicesPage = withStyles(styles)(({classes}: WithStyles<typeof styl
                 <TableCell>
                     {isEdited ? (
                         <TextField
-                            value={editValue}
-                            onChange={(e) => setEditing([editId, e.target.value])}
+                            value={editName}
+                            onChange={(e) => setEditing([editId, e.target.value, editExpiresIn])}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                     onClickSubmit();
@@ -79,7 +81,17 @@ export const DevicesPage = withStyles(styles)(({classes}: WithStyles<typeof styl
                     )}
                 </TableCell>
                 <TableCell title={device.createdAt}>{moment(device.createdAt).fromNow()}</TableCell>
-                <TableCell title={device.expiresAt}>{moment(device.expiresAt).fromNow()}</TableCell>
+                <TableCell title={device.expiresAt}>
+                    {isEdited ? (
+                        <InlineDateTimePicker
+                            value={editExpiresIn}
+                            onChange={(val) => setEditing([device.id, editName, val])}
+                            keyboard={true}
+                        />
+                    ) : (
+                        moment(device.expiresAt).fromNow()
+                    )}
+                </TableCell>
                 <TableCell title={device.activeAt}>{moment(device.activeAt).fromNow()}</TableCell>
                 <TableCell>
                     {isEdited ? (
@@ -87,7 +99,7 @@ export const DevicesPage = withStyles(styles)(({classes}: WithStyles<typeof styl
                             <DoneIcon />
                         </IconButton>
                     ) : (
-                        <IconButton onClick={() => setEditing([device.id, device.name])}>
+                        <IconButton onClick={() => setEditing([device.id, device.name, device.expiresAt])}>
                             <EditIcon />
                         </IconButton>
                     )}
