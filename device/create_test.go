@@ -17,7 +17,7 @@ var (
 	existingPassword = []byte{1}
 )
 
-func TestGQL_CreateDevice_fails_userDoesNotExist(t *testing.T) {
+func TestGQL_Login_fails_userDoesNotExist(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
 
@@ -26,7 +26,7 @@ func TestGQL_CreateDevice_fails_userDoesNotExist(t *testing.T) {
 	defer timeDispose()
 
 	resolver := ResolverForDevice{DB: db.DB}
-	login, err := resolver.CreateDevice(
+	login, err := resolver.Login(
 		context.Background(),
 		"jmattheis",
 		"123",
@@ -40,19 +40,26 @@ func TestGQL_CreateDevice_fails_userDoesNotExist(t *testing.T) {
 	assertDeviceCount(t, db, 0)
 }
 
-func TestGQL_CreateDevice_fails_ExpireAtAlreadyExpired(t *testing.T) {
+func TestGQL_Login_fails_ExpireAtAlreadyExpired(t *testing.T) {
 	db := test.InMemoryDB(t)
+	db.Create(&model.User{
+		Name: "jmattheis",
+		ID:   1,
+		Pass: existingPassword,
+	})
 	defer db.Close()
+	pwDispose := fakePassword()
+	defer pwDispose()
 
 	now := test.Time("2018-06-30T18:30:00+02:00")
 	timeDispose := fakeTime(now)
 	defer timeDispose()
 
 	resolver := ResolverForDevice{DB: db.DB}
-	login, err := resolver.CreateDevice(
+	login, err := resolver.Login(
 		context.Background(),
 		"jmattheis",
-		"123",
+		"unicorn",
 		"test",
 		model.Time(test.Time("2012-06-30T18:30:00+02:00")),
 
@@ -63,7 +70,7 @@ func TestGQL_CreateDevice_fails_ExpireAtAlreadyExpired(t *testing.T) {
 	assertDeviceCount(t, db, 0)
 }
 
-func TestGQL_CreateDevice_fails_wrongPass(t *testing.T) {
+func TestGQL_Login_fails_wrongPass(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
 	db.Create(&model.User{
@@ -79,7 +86,7 @@ func TestGQL_CreateDevice_fails_wrongPass(t *testing.T) {
 	defer timeDispose()
 
 	resolver := ResolverForDevice{DB: db.DB}
-	login, err := resolver.CreateDevice(
+	login, err := resolver.Login(
 		context.Background(),
 		"jmattheis",
 		"123",
@@ -93,7 +100,7 @@ func TestGQL_CreateDevice_fails_wrongPass(t *testing.T) {
 	assertDeviceCount(t, db, 0)
 }
 
-func TestGQL_CreateDevice_succeeds(t *testing.T) {
+func TestGQL_Login_succeeds(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
 	db.Create(&model.User{
@@ -113,7 +120,7 @@ func TestGQL_CreateDevice_succeeds(t *testing.T) {
 
 	resolver := ResolverForDevice{DB: db.DB}
 	expireDate := test.Time("2019-06-30T18:30:00+02:00")
-	login, err := resolver.CreateDevice(
+	login, err := resolver.Login(
 		context.Background(),
 		"jmattheis",
 		"unicorn",
@@ -138,7 +145,50 @@ func TestGQL_CreateDevice_succeeds(t *testing.T) {
 	assertDeviceCount(t, db, 1)
 }
 
-func TestGQL_CreateDevice_setsCookie(t *testing.T) {
+func TestGQL_CreateDevice_succeeds(t *testing.T) {
+	db := test.InMemoryDB(t)
+	defer db.Close()
+	user := &model.User{
+		Name: "jmattheis",
+		ID:   1,
+		Pass: existingPassword,
+	}
+	db.Create(user)
+	pwDispose := fakePassword()
+	defer pwDispose()
+
+	tokenDispose := fakeToken("firstToken")
+	defer tokenDispose()
+
+	now := test.Time("2018-06-30T18:30:00+02:00")
+	timeDispose := fakeTime(now)
+	defer timeDispose()
+
+	resolver := ResolverForDevice{DB: db.DB}
+	expireDate := test.Time("2019-06-30T18:30:00+02:00")
+	login, err := resolver.CreateDevice(
+		auth.WithUser(context.Background(), user),
+		"test",
+		model.Time(expireDate))
+
+	assert.Nil(t, err)
+
+	expected := &gqlmodel.Login{
+		Token: "firstToken",
+		User:  gqlmodel.User{Admin: false, ID: 1, Name: "jmattheis"},
+		Device: gqlmodel.Device{
+			ID:        1,
+			Name:      "test",
+			ExpiresAt: model.Time(expireDate.UTC()),
+			CreatedAt: model.Time(now.UTC()),
+			ActiveAt:  model.Time(now.UTC()),
+		},
+	}
+	assert.Equal(t, expected, login)
+	assertDeviceCount(t, db, 1)
+}
+
+func TestGQL_Login_setsCookie(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
 	db.Create(&model.User{
@@ -162,7 +212,7 @@ func TestGQL_CreateDevice_setsCookie(t *testing.T) {
 	createSessionToken := ""
 	createSessionAge := 0
 
-	_, err := resolver.CreateDevice(
+	_, err := resolver.Login(
 		auth.WithCreateSession(context.Background(), func(token string, age int) {
 			createSessionToken = token
 			createSessionAge = age
@@ -180,7 +230,7 @@ func TestGQL_CreateDevice_setsCookie(t *testing.T) {
 	assertDeviceCount(t, db, 1)
 }
 
-func TestGQL_CreateDevice_succeeds_withExistingToken(t *testing.T) {
+func TestGQL_Login_succeeds_withExistingToken(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
 	db.Create(&model.User{
@@ -206,7 +256,7 @@ func TestGQL_CreateDevice_succeeds_withExistingToken(t *testing.T) {
 
 	resolver := ResolverForDevice{DB: db.DB}
 	expireDate := test.Time("2022-06-30T18:30:00+02:00")
-	login, err := resolver.CreateDevice(
+	login, err := resolver.Login(
 		context.Background(),
 		"jmattheis",
 		"unicorn",

@@ -17,7 +17,9 @@ type RootMutation {
     removeUser(id: Int!): User @hasRole(role: ADMIN)
     updateUser(id: Int!, name: String!, pass: String, admin: Boolean!): User @hasRole(role: ADMIN)
 
-    createDevice(username: String!, pass: String!, deviceName: String! expiresAt: Time!, cookie: Boolean!): Login
+    login(username: String!, pass: String!, deviceName: String! expiresAt: Time!, cookie: Boolean!): Login
+
+    createDevice(name: String! expiresAt: Time!): Login @hasRole(role: USER)
     updateDevice(id: Int!, name: String!, expiresAt: Time!): Device
     removeDevice(id: Int!): Device @hasRole(role: USER)
     removeCurrentDevice: Device! @hasRole(role: USER)
