@@ -12,7 +12,7 @@ export const CurrentUser = gql`
 
 export const Login = gql`
     mutation Login($name: String!, $pass: String!, $expiresAt: Time!) {
-        login: createDevice(username: $name, pass: $pass, deviceName: "web ui", expiresAt: $expiresAt, cookie: true) {
+        login(username: $name, pass: $pass, deviceName: "web ui", expiresAt: $expiresAt, cookie: true) {
             user {
                 id
                 name

@@ -20,11 +20,8 @@ var (
 	errUserPassWrong = errors.New("username/password combination does not exist")
 )
 
-// CreateDevice creates a device.
-func (r *ResolverForDevice) CreateDevice(ctx context.Context, username string, pass string, deviceName string, expiresAt model.Time, cookie bool) (*gqlmodel.Login, error) {
-	if !expiresAt.Time().After(timeNow()) {
-		return nil, errors.New("expiresAt must be in the future")
-	}
+// Login creates a device.
+func (r *ResolverForDevice) Login(ctx context.Context, username string, pass string, deviceName string, expiresAt model.Time, cookie bool) (*gqlmodel.Login, error) {
 
 	user := new(model.User)
 	find := r.DB.Where("name = ?", username).Find(user)
@@ -35,6 +32,22 @@ func (r *ResolverForDevice) CreateDevice(ctx context.Context, username string, p
 
 	if !comparePassword(user.Pass, []byte(pass)) {
 		return nil, errUserPassWrong
+	}
+
+	return r.createDeviceInternal(ctx, user, deviceName, expiresAt, cookie)
+}
+
+// CreateDevice creates a device.
+func (r *ResolverForDevice) CreateDevice(ctx context.Context, deviceName string, expiresAt model.Time) (*gqlmodel.Login, error) {
+
+	user := auth.GetUser(ctx)
+
+	return r.createDeviceInternal(ctx, user, deviceName, expiresAt, false)
+}
+
+func (r *ResolverForDevice) createDeviceInternal(ctx context.Context, user *model.User, deviceName string, expiresAt model.Time, cookie bool) (*gqlmodel.Login, error) {
+	if !expiresAt.Time().After(timeNow()) {
+		return nil, errors.New("expiresAt must be in the future")
 	}
 
 	token := randToken(20)
