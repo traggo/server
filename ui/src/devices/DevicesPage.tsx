@@ -16,6 +16,7 @@ import moment from 'moment-timezone';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
+import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import {RemoveDevice, RemoveDeviceVariables} from '../gql/__generated__/RemoveDevice';
 import {UpdateDevice, UpdateDeviceVariables} from '../gql/__generated__/UpdateDevice';
@@ -98,17 +99,24 @@ export const DevicesPage = withStyles(styles)(({classes}: WithStyles<typeof styl
                 <TableCell title={device.activeAt}>{moment(device.activeAt).fromNow()}</TableCell>
                 <TableCell>
                     {isEdited ? (
-                        <IconButton onClick={onClickSubmit}>
-                            <DoneIcon />
-                        </IconButton>
+                        <>
+                            <IconButton onClick={onClickSubmit} title="Save">
+                                <DoneIcon />
+                            </IconButton>
+                            <IconButton onClick={() => setEditing([-1, '', ''])} title="Cancel">
+                                <CloseIcon />
+                            </IconButton>
+                        </>
                     ) : (
-                        <IconButton onClick={() => setEditing([device.id, device.name, device.expiresAt])}>
-                            <EditIcon />
-                        </IconButton>
+                        <>
+                            <IconButton onClick={() => setEditing([device.id, device.name, device.expiresAt])} title="Edit">
+                                <EditIcon />
+                            </IconButton>
+                            <IconButton onClick={onClickDelete} title="Delete">
+                                <DeleteIcon />
+                            </IconButton>
+                        </>
                     )}
-                    <IconButton onClick={onClickDelete}>
-                        <DeleteIcon />
-                    </IconButton>
                 </TableCell>
             </TableRow>
         );
@@ -116,7 +124,15 @@ export const DevicesPage = withStyles(styles)(({classes}: WithStyles<typeof styl
 
     return (
         <Paper elevation={1} square={true} className={classes.root}>
-            <Button onClick={() => setAddActive(true)}>Add Device</Button>
+            <Button
+                color={'primary'}
+                variant={'outlined'}
+                size="small"
+                onClick={() => setAddActive(true)}
+                fullWidth
+                style={{marginBottom: 10}}>
+                Create Device
+            </Button>
             <Table padding={'dense'}>
                 <TableHead>
                     <TableRow>
