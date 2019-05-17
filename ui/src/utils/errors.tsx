@@ -22,7 +22,7 @@ export const useError = (timeout = 1000): [boolean, string, (s: string) => void]
             setActive(false);
         }, timeout);
         return () => clearTimeout(handle);
-    }, [active]);
+    }, [active, timeout]);
 
     return [
         active,

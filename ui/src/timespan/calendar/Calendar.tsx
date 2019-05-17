@@ -45,7 +45,7 @@ export const Calendar = () => {
         () => {
             setCurrentDate(moment());
         },
-        1000,
+        5000,
         true
     );
 
@@ -77,7 +77,7 @@ export const Calendar = () => {
                 tags: ts.tags!,
                 title: ts.tags!.map((t) => t.key + ':' + t.stringValue).join(' '),
             }));
-    }, [trackersResult, tagsResult]);
+    }, [trackersResult, tagsResult, timeSpansResult, currentDate]);
     const [selected, setSelected] = React.useState<{selected: HTMLElement | null; data: CalendarEntry | null}>({
         selected: null,
         data: null,
