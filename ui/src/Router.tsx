@@ -25,6 +25,7 @@ export const Router = () => {
         return <Error refetch={refetch} error={error} />;
     }
     const loggedIn = data && data.user;
+    const admin = data && data.user && data.user.admin;
 
     return (
         <Switch>
@@ -37,7 +38,7 @@ export const Router = () => {
                 <Route exact path="/timesheet/weekly" component={Calendar} />
                 <Route exact path="/user/settings" component={TODO} />
                 <Route exact path="/user/devices" component={DevicesPage} />
-                <Route exact path="/admin/users" component={UsersPage} />
+                {admin ? <Route exact path="/admin/users" component={UsersPage} /> : null}
                 <Route exact path="/" render={() => <Redirect to="/dashboard" />} />
             </Page>
         </Switch>

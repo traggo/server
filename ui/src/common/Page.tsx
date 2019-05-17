@@ -32,6 +32,7 @@ import {useMutation, useQuery} from 'react-apollo-hooks';
 import {Logout} from '../gql/__generated__/Logout';
 import {Preferences, ToggleTheme} from '../gql/preferences.local';
 import {Version} from '../gql/__generated__/Version';
+import {CurrentUser} from '../gql/__generated__/CurrentUser';
 
 const drawerWidth = 240;
 
@@ -93,6 +94,8 @@ const routerLink = (to: string) => {
 };
 
 export const Page = withStyles(styles)(({children, classes}: React.PropsWithChildren<WithStyles<typeof styles>>) => {
+    const {data} = useQuery<CurrentUser>(gqlUser.CurrentUser);
+
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [userMenuOpen, setUserMenuOpen] = React.useState<null | HTMLElement>(null);
     const logout = useMutation<Logout>(gqlUser.Logout, {refetchQueries: [{query: gqlUser.CurrentUser}]});
@@ -100,6 +103,10 @@ export const Page = withStyles(styles)(({children, classes}: React.PropsWithChil
     const {data: {version = gqlVersion.VersionDefault.version} = gqlVersion.VersionDefault} = useQuery<Version>(
         gqlVersion.Version
     );
+
+    const username = (data && data.user && data.user.name) || 'unknown';
+    const admin = data && data.user && data.user.admin;
+
     const drawer = (
         <div>
             <div className={classes.toolbar}>
@@ -153,15 +160,19 @@ export const Page = withStyles(styles)(({children, classes}: React.PropsWithChil
                     <ListItemText primary="Devices" />
                 </ListItem>
             </List>
-            <Divider />
-            <List subheader={<ListSubheader>Admin</ListSubheader>}>
-                <ListItem button component={routerLink('/admin/users')}>
-                    <ListItemIcon>
-                        <UsersIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Users" />
-                </ListItem>
-            </List>
+            {admin ? (
+                <>
+                    <Divider />
+                    <List subheader={<ListSubheader>Admin</ListSubheader>}>
+                        <ListItem button component={routerLink('/admin/users')}>
+                            <ListItemIcon>
+                                <UsersIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Users" />
+                        </ListItem>
+                    </List>
+                </>
+            ) : null}
             <Divider />
         </div>
     );
@@ -185,7 +196,7 @@ export const Page = withStyles(styles)(({children, classes}: React.PropsWithChil
                     <div className={classes.sectionDesktop}>
                         <Button color="inherit" onClick={(e) => setUserMenuOpen(e.currentTarget)}>
                             <AccountCircle />
-                            &nbsp;admin
+                            &nbsp;{username}
                         </Button>
                         <IconButton color="inherit" onClick={() => toggleTheme()}>
                             <HighlightIcon />
