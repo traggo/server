@@ -28,3 +28,39 @@ export const Logout = gql`
         }
     }
 `;
+
+export const Users = gql`
+    query Users {
+        users {
+            id
+            name
+            admin
+        }
+        currentUser {
+            id
+        }
+    }
+`;
+
+export const RemoveUser = gql`
+    mutation RemoveUser($id: Int!) {
+        removeUser(id: $id) {
+            id
+        }
+    }
+`;
+
+export const UpdateUser = gql`
+    mutation UpdateUser($id: Int!, $name: String!, $admin: Boolean!, $pass: String) {
+        updateUser(id: $id, name: $name, admin: $admin, pass: $pass) {
+            id
+        }
+    }
+`;
+export const CreateUser = gql`
+    mutation CreateUser($name: String!, $admin: Boolean!, $pass: String!) {
+        createUser(name: $name, admin: $admin, pass: $pass) {
+            id
+        }
+    }
+`;
