@@ -22,7 +22,7 @@ func TestGQL_Tags(t *testing.T) {
 	tags, err := resolver.Tags(fake.User(5))
 
 	require.Nil(t, err)
-	expected := []gqlmodel.TagDefinition{
+	expected := []*gqlmodel.TagDefinition{
 		{Key: "my tag", Color: "#fff", Type: gqlmodel.TagDefinitionTypeSinglevalue},
 		{Key: "my tag 2", Color: "#fff", Type: gqlmodel.TagDefinitionTypeSinglevalue},
 	}

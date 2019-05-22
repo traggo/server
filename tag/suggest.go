@@ -10,10 +10,10 @@ import (
 )
 
 // SuggestTag suggests a tag.
-func (r *ResolverForTag) SuggestTag(ctx context.Context, query string) ([]gqlmodel.TagDefinition, error) {
+func (r *ResolverForTag) SuggestTag(ctx context.Context, query string) ([]*gqlmodel.TagDefinition, error) {
 	var suggestions []model.TagDefinition
 	find := r.DB.Where("user_id = ?", auth.GetUser(ctx).ID).Where("Key LIKE ?", query+"%").Find(&suggestions)
-	var result []gqlmodel.TagDefinition
+	var result []*gqlmodel.TagDefinition
 	copier.Copy(&result, &suggestions)
 	return result, find.Error
 }

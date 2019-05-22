@@ -132,8 +132,8 @@ func TestGQL_Login_succeeds(t *testing.T) {
 
 	expected := &gqlmodel.Login{
 		Token: "firstToken",
-		User:  gqlmodel.User{Admin: false, ID: 1, Name: "jmattheis"},
-		Device: gqlmodel.Device{
+		User:  &gqlmodel.User{Admin: false, ID: 1, Name: "jmattheis"},
+		Device: &gqlmodel.Device{
 			ID:        1,
 			Name:      "test",
 			ExpiresAt: model.Time(expireDate.UTC()),
@@ -175,8 +175,8 @@ func TestGQL_CreateDevice_succeeds(t *testing.T) {
 
 	expected := &gqlmodel.Login{
 		Token: "firstToken",
-		User:  gqlmodel.User{Admin: false, ID: 1, Name: "jmattheis"},
-		Device: gqlmodel.Device{
+		User:  &gqlmodel.User{Admin: false, ID: 1, Name: "jmattheis"},
+		Device: &gqlmodel.Device{
 			ID:        1,
 			Name:      "test",
 			ExpiresAt: model.Time(expireDate.UTC()),

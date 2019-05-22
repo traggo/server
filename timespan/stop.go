@@ -29,5 +29,5 @@ func (r *ResolverForTimeSpan) StopTimeSpan(ctx context.Context, id int, end mode
 	r.DB.Save(old)
 
 	external := timeSpanToExternal(*old)
-	return &external, nil
+	return external, nil
 }

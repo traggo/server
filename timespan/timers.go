@@ -9,7 +9,7 @@ import (
 )
 
 // Timers returns all running timers for a user
-func (r *ResolverForTimeSpan) Timers(ctx context.Context) ([]gqlmodel.TimeSpan, error) {
+func (r *ResolverForTimeSpan) Timers(ctx context.Context) ([]*gqlmodel.TimeSpan, error) {
 	user := auth.GetUser(ctx)
 
 	var timeSpans []model.TimeSpan
@@ -19,7 +19,7 @@ func (r *ResolverForTimeSpan) Timers(ctx context.Context) ([]gqlmodel.TimeSpan, 
 		Order("start_user_time DESC").
 		Find(&timeSpans)
 
-	var result []gqlmodel.TimeSpan
+	var result []*gqlmodel.TimeSpan
 	for _, span := range timeSpans {
 		result = append(result, timeSpanToExternal(span))
 	}

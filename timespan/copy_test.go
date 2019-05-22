@@ -60,7 +60,7 @@ func TestCopy(t *testing.T) {
 		ID:    4,
 		Start: test.ModelTime("2019-06-15T10:30:00+02:00"),
 		End:   nil,
-		Tags: []gqlmodel.TimeSpanTag{
+		Tags: []*gqlmodel.TimeSpanTag{
 			{Key: "test"},
 		},
 	}

@@ -10,7 +10,7 @@ import (
 )
 
 // TimeSpans returns all time spans for a user
-func (r *ResolverForTimeSpan) TimeSpans(ctx context.Context, fromInclusive *model.Time, toInclusive *model.Time) ([]gqlmodel.TimeSpan, error) {
+func (r *ResolverForTimeSpan) TimeSpans(ctx context.Context, fromInclusive *model.Time, toInclusive *model.Time) ([]*gqlmodel.TimeSpan, error) {
 	user := auth.GetUser(ctx)
 
 	call := r.DB.Preload("Tags").Where("user_id = ?", user.ID).Not("end_user_time is NULL").Order("start_user_time DESC")
@@ -31,7 +31,7 @@ func (r *ResolverForTimeSpan) TimeSpans(ctx context.Context, fromInclusive *mode
 	var timeSpans []model.TimeSpan
 	call.Find(&timeSpans)
 
-	var result []gqlmodel.TimeSpan
+	var result []*gqlmodel.TimeSpan
 	for _, span := range timeSpans {
 		result = append(result, timeSpanToExternal(span))
 	}

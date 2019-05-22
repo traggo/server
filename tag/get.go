@@ -10,10 +10,10 @@ import (
 )
 
 // Tags returns all tags.
-func (r *ResolverForTag) Tags(ctx context.Context) ([]gqlmodel.TagDefinition, error) {
+func (r *ResolverForTag) Tags(ctx context.Context) ([]*gqlmodel.TagDefinition, error) {
 	var tags []model.TagDefinition
 	find := r.DB.Where("user_id = ?", auth.GetUser(ctx).ID).Find(&tags)
-	var result []gqlmodel.TagDefinition
+	var result []*gqlmodel.TagDefinition
 	copier.Copy(&result, &tags)
 	return result, find.Error
 }

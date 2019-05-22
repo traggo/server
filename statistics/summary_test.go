@@ -76,7 +76,7 @@ func TestSummary(t *testing.T) {
 			From: "2019-06-11T10:00:00Z",
 			To:   "2019-06-11T20:00:00Z",
 			Key:  "proj",
-			Expected: []gqlmodel.StatisticsEntry{
+			Expected: []*gqlmodel.StatisticsEntry{
 				entry("proj", "gotify", 180*time.Minute),
 				entry("proj", "traggo", 64*time.Minute),
 			},
@@ -85,10 +85,10 @@ func TestSummary(t *testing.T) {
 			From: "2019-06-11T10:00:00Z",
 			To:   "2019-06-11T20:00:00Z",
 			Key:  "proj",
-			Has: []gqlmodel.InputTimeSpanTag{
+			Has: []*gqlmodel.InputTimeSpanTag{
 				tag("type", "review"),
 			},
-			Expected: []gqlmodel.StatisticsEntry{
+			Expected: []*gqlmodel.StatisticsEntry{
 				entry("proj", "gotify", 55*time.Minute),
 				entry("proj", "traggo", 34*time.Minute),
 			},
@@ -97,10 +97,10 @@ func TestSummary(t *testing.T) {
 			From: "2019-06-11T10:00:00Z",
 			To:   "2019-06-11T20:00:00Z",
 			Key:  "proj",
-			Has: []gqlmodel.InputTimeSpanTag{
+			Has: []*gqlmodel.InputTimeSpanTag{
 				tag("type", "work"),
 			},
-			Expected: []gqlmodel.StatisticsEntry{
+			Expected: []*gqlmodel.StatisticsEntry{
 				entry("proj", "gotify", 95*time.Minute),
 				entry("proj", "traggo", 30*time.Minute),
 			},
@@ -109,10 +109,10 @@ func TestSummary(t *testing.T) {
 			From: "2019-06-11T10:00:00Z",
 			To:   "2019-06-11T20:00:00Z",
 			Key:  "proj",
-			NotHas: []gqlmodel.InputTimeSpanTag{
+			NotHas: []*gqlmodel.InputTimeSpanTag{
 				tag("type", "work"),
 			},
-			Expected: []gqlmodel.StatisticsEntry{
+			Expected: []*gqlmodel.StatisticsEntry{
 				entry("proj", "gotify", 85*time.Minute),
 				entry("proj", "traggo", 34*time.Minute),
 			},
@@ -121,13 +121,13 @@ func TestSummary(t *testing.T) {
 			From: "2019-06-11T10:00:00Z",
 			To:   "2019-06-11T20:00:00Z",
 			Key:  "proj",
-			Has: []gqlmodel.InputTimeSpanTag{
+			Has: []*gqlmodel.InputTimeSpanTag{
 				tag("type", "review"),
 			},
-			NotHas: []gqlmodel.InputTimeSpanTag{
+			NotHas: []*gqlmodel.InputTimeSpanTag{
 				tag("issue", "12"),
 			},
-			Expected: []gqlmodel.StatisticsEntry{
+			Expected: []*gqlmodel.StatisticsEntry{
 				entry("proj", "gotify", 45*time.Minute),
 				entry("proj", "traggo", 34*time.Minute),
 			},
@@ -136,7 +136,7 @@ func TestSummary(t *testing.T) {
 			From: "2019-06-11T10:00:00Z",
 			To:   "2019-06-11T20:00:00Z",
 			Key:  "type",
-			Expected: []gqlmodel.StatisticsEntry{
+			Expected: []*gqlmodel.StatisticsEntry{
 				entry("type", "break", 103*time.Minute),
 				entry("type", "review", 89*time.Minute),
 				entry("type", "support", 30*time.Minute),
@@ -147,10 +147,10 @@ func TestSummary(t *testing.T) {
 			From: "2019-06-11T10:00:00Z",
 			To:   "2019-06-11T20:00:00Z",
 			Key:  "type",
-			Has: []gqlmodel.InputTimeSpanTag{
+			Has: []*gqlmodel.InputTimeSpanTag{
 				tag("proj", "gotify"),
 			},
-			Expected: []gqlmodel.StatisticsEntry{
+			Expected: []*gqlmodel.StatisticsEntry{
 				entry("type", "review", 55*time.Minute),
 				entry("type", "support", 30*time.Minute),
 				entry("type", "work", 95*time.Minute),
@@ -160,10 +160,10 @@ func TestSummary(t *testing.T) {
 			From: "2019-06-11T10:00:00Z",
 			To:   "2019-06-11T20:00:00Z",
 			Key:  "type",
-			Has: []gqlmodel.InputTimeSpanTag{
+			Has: []*gqlmodel.InputTimeSpanTag{
 				tag("proj", "traggo"),
 			},
-			Expected: []gqlmodel.StatisticsEntry{
+			Expected: []*gqlmodel.StatisticsEntry{
 				entry("type", "review", 34*time.Minute),
 				entry("type", "work", 30*time.Minute),
 			},
@@ -172,7 +172,7 @@ func TestSummary(t *testing.T) {
 			From: "2019-06-11T10:00:00Z",
 			To:   "2019-06-11T20:00:00Z",
 			Key:  "issue",
-			Expected: []gqlmodel.StatisticsEntry{
+			Expected: []*gqlmodel.StatisticsEntry{
 				entry("issue", "1", 77*time.Minute),
 				entry("issue", "12", 15*time.Minute),
 				entry("issue", "2", 30*time.Minute),
@@ -185,11 +185,11 @@ func TestSummary(t *testing.T) {
 			From: "2019-06-11T10:00:00Z",
 			To:   "2019-06-11T20:00:00Z",
 			Key:  "issue",
-			NotHas: []gqlmodel.InputTimeSpanTag{
+			NotHas: []*gqlmodel.InputTimeSpanTag{
 				tag("proj", "traggo"),
 				tag("type", "work"),
 			},
-			Expected: []gqlmodel.StatisticsEntry{
+			Expected: []*gqlmodel.StatisticsEntry{
 				entry("issue", "1", 17*time.Minute),
 				entry("issue", "12", 10*time.Minute),
 				entry("issue", "3", 31*time.Minute),
@@ -200,7 +200,7 @@ func TestSummary(t *testing.T) {
 			From: "2019-06-15T12:00:00Z",
 			To:   "2019-06-16T00:00:00Z",
 			Key:  "type",
-			Expected: []gqlmodel.StatisticsEntry{
+			Expected: []*gqlmodel.StatisticsEntry{
 				entry("type", "break", 12*time.Hour),
 			},
 		},
@@ -240,9 +240,9 @@ type sData struct {
 	From     string
 	To       string
 	Key      string
-	Has      []gqlmodel.InputTimeSpanTag
-	NotHas   []gqlmodel.InputTimeSpanTag
-	Expected []gqlmodel.StatisticsEntry
+	Has      []*gqlmodel.InputTimeSpanTag
+	NotHas   []*gqlmodel.InputTimeSpanTag
+	Expected []*gqlmodel.StatisticsEntry
 }
 
 func (d sData) String() string {
@@ -256,7 +256,7 @@ func (d sData) String() string {
 		}
 	}
 
-	fTag := func(tags []gqlmodel.InputTimeSpanTag) string {
+	fTag := func(tags []*gqlmodel.InputTimeSpanTag) string {
 		var result []string
 		for _, tag := range tags {
 			if tag.StringValue == nil {
@@ -272,16 +272,16 @@ func (d sData) String() string {
 		d.From, d.To, d.Key, fTag(d.Has), fTag(d.NotHas), strings.Join(expect, ","))
 }
 
-func entry(key string, value string, duration time.Duration) gqlmodel.StatisticsEntry {
-	return gqlmodel.StatisticsEntry{
+func entry(key string, value string, duration time.Duration) *gqlmodel.StatisticsEntry {
+	return &gqlmodel.StatisticsEntry{
 		Key:                key,
 		StringValue:        &value,
 		TimeSpendInSeconds: int(duration.Seconds()),
 	}
 }
 
-func tag(key string, value string) gqlmodel.InputTimeSpanTag {
-	return gqlmodel.InputTimeSpanTag{
+func tag(key string, value string) *gqlmodel.InputTimeSpanTag {
+	return &gqlmodel.InputTimeSpanTag{
 		Key:         key,
 		StringValue: &value,
 	}

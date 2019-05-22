@@ -8,7 +8,7 @@ import (
 	"github.com/traggo/server/model"
 )
 
-func timespanToInternal(userID int, start model.Time, end *model.Time, tags []gqlmodel.InputTimeSpanTag) (model.TimeSpan, error) {
+func timespanToInternal(userID int, start model.Time, end *model.Time, tags []*gqlmodel.InputTimeSpanTag) (model.TimeSpan, error) {
 	_, offset := start.Time().Zone()
 	span := model.TimeSpan{
 		StartUserTime: start.OmitTimeZone(),
@@ -31,7 +31,7 @@ func timespanToInternal(userID int, start model.Time, end *model.Time, tags []gq
 	return span, nil
 }
 
-func timeSpanToExternal(span model.TimeSpan) gqlmodel.TimeSpan {
+func timeSpanToExternal(span model.TimeSpan) *gqlmodel.TimeSpan {
 	location := time.FixedZone("unknown", span.OffsetUTC)
 
 	result := gqlmodel.TimeSpan{
@@ -46,13 +46,13 @@ func timeSpanToExternal(span model.TimeSpan) gqlmodel.TimeSpan {
 		result.End = &endModel
 	}
 
-	return result
+	return &result
 }
 
-func tagsToExternal(tags []model.TimeSpanTag) []gqlmodel.TimeSpanTag {
-	var result []gqlmodel.TimeSpanTag
+func tagsToExternal(tags []model.TimeSpanTag) []*gqlmodel.TimeSpanTag {
+	var result []*gqlmodel.TimeSpanTag
 	for _, tag := range tags {
-		result = append(result, gqlmodel.TimeSpanTag{
+		result = append(result, &gqlmodel.TimeSpanTag{
 			Key:         tag.Key,
 			StringValue: tag.StringValue,
 		})
@@ -60,7 +60,7 @@ func tagsToExternal(tags []model.TimeSpanTag) []gqlmodel.TimeSpanTag {
 	return result
 }
 
-func tagsToInternal(gqls []gqlmodel.InputTimeSpanTag) []model.TimeSpanTag {
+func tagsToInternal(gqls []*gqlmodel.InputTimeSpanTag) []model.TimeSpanTag {
 	result := make([]model.TimeSpanTag, 0)
 	for _, tag := range gqls {
 		result = append(result, model.TimeSpanTag{
@@ -71,10 +71,10 @@ func tagsToInternal(gqls []gqlmodel.InputTimeSpanTag) []model.TimeSpanTag {
 	return result
 }
 
-func tagsToInputTag(tags []model.TimeSpanTag) []gqlmodel.InputTimeSpanTag {
-	result := make([]gqlmodel.InputTimeSpanTag, 0)
+func tagsToInputTag(tags []model.TimeSpanTag) []*gqlmodel.InputTimeSpanTag {
+	result := make([]*gqlmodel.InputTimeSpanTag, 0)
 	for _, tag := range tags {
-		result = append(result, gqlmodel.InputTimeSpanTag{
+		result = append(result, &gqlmodel.InputTimeSpanTag{
 			Key:         tag.Key,
 			StringValue: tag.StringValue,
 		})
