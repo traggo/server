@@ -18,5 +18,5 @@ func (r *ResolverForTimeSpan) RemoveTimeSpan(ctx context.Context, id int) (*gqlm
 
 	remove := r.DB.Delete(&timeSpan)
 	external := timeSpanToExternal(timeSpan)
-	return &external, remove.Error
+	return external, remove.Error
 }

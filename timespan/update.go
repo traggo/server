@@ -10,7 +10,7 @@ import (
 )
 
 // UpdateTimeSpan update a time span
-func (r *ResolverForTimeSpan) UpdateTimeSpan(ctx context.Context, id int, start model.Time, end *model.Time, tags []gqlmodel.InputTimeSpanTag) (*gqlmodel.TimeSpan, error) {
+func (r *ResolverForTimeSpan) UpdateTimeSpan(ctx context.Context, id int, start model.Time, end *model.Time, tags []*gqlmodel.InputTimeSpanTag) (*gqlmodel.TimeSpan, error) {
 	timeSpan, err := timespanToInternal(auth.GetUser(ctx).ID, start, end, tags)
 	if err != nil {
 		return nil, err
@@ -30,5 +30,5 @@ func (r *ResolverForTimeSpan) UpdateTimeSpan(ctx context.Context, id int, start 
 	r.DB.Save(&timeSpan)
 
 	external := timeSpanToExternal(timeSpan)
-	return &external, nil
+	return external, nil
 }

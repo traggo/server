@@ -19,7 +19,7 @@ func TestGQL_Users(t *testing.T) {
 	users, err := resolver.Users(context.Background())
 
 	require.Nil(t, err)
-	expected := []gqlmodel.User{
+	expected := []*gqlmodel.User{
 		{
 			Name:  "jmattheis",
 			ID:    1,

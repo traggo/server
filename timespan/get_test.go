@@ -30,7 +30,7 @@ var (
 		ID:    1,
 		Start: test.ModelTime("2019-06-10T18:30:00Z"),
 		End:   test.ModelTimeP("2019-06-10T18:40:00Z"),
-		Tags: []gqlmodel.TimeSpanTag{
+		Tags: []*gqlmodel.TimeSpanTag{
 			{Key: "test"},
 			{Key: "test2"},
 		},
@@ -52,7 +52,7 @@ var (
 		ID:    2,
 		Start: test.ModelTime("2019-06-10T18:40:00Z"),
 		End:   test.ModelTimeP("2019-06-10T18:50:00Z"),
-		Tags: []gqlmodel.TimeSpanTag{
+		Tags: []*gqlmodel.TimeSpanTag{
 			{Key: "test"},
 			{Key: "test2"},
 		},
@@ -74,7 +74,7 @@ var (
 		ID:    3,
 		Start: test.ModelTime("2019-06-10T18:50:00Z"),
 		End:   test.ModelTimeP("2019-06-10T19:00:00Z"),
-		Tags: []gqlmodel.TimeSpanTag{
+		Tags: []*gqlmodel.TimeSpanTag{
 			{Key: "test"},
 			{Key: "test2"},
 		},
@@ -96,7 +96,7 @@ var (
 		ID:    4,
 		Start: test.ModelTime("2019-06-10T18:00:00Z"),
 		End:   test.ModelTimeP("2019-06-10T19:00:00Z"),
-		Tags: []gqlmodel.TimeSpanTag{
+		Tags: []*gqlmodel.TimeSpanTag{
 			{Key: "test"},
 			{Key: "test2"},
 		},
@@ -118,7 +118,7 @@ var (
 		ID:    5,
 		Start: test.ModelTime("2019-06-11T18:00:00Z"),
 		End:   nil,
-		Tags: []gqlmodel.TimeSpanTag{
+		Tags: []*gqlmodel.TimeSpanTag{
 			{Key: "test"},
 			{Key: "test2"},
 		},
@@ -142,7 +142,7 @@ type data struct {
 	DB       []*model.TimeSpan
 	From     *model.Time
 	To       *model.Time
-	Expected []gqlmodel.TimeSpan
+	Expected []*gqlmodel.TimeSpan
 }
 
 func (d data) String() string {
@@ -173,43 +173,43 @@ func TestGet(t *testing.T) {
 			DB:       []*model.TimeSpan{timeSpan1, timeSpanOtherUser},
 			From:     nil,
 			To:       nil,
-			Expected: []gqlmodel.TimeSpan{modelTimeSpan1},
+			Expected: []*gqlmodel.TimeSpan{&modelTimeSpan1},
 		},
 		{
 			DB:       []*model.TimeSpan{timeSpan1, timeSpan2, timeSpan3, timeSpan4, runningTimeSpan},
 			From:     nil,
 			To:       nil,
-			Expected: []gqlmodel.TimeSpan{modelTimeSpan3, modelTimeSpan2, modelTimeSpan1, modelTimeSpan4},
+			Expected: []*gqlmodel.TimeSpan{&modelTimeSpan3, &modelTimeSpan2, &modelTimeSpan1, &modelTimeSpan4},
 		},
 		{
 			DB:       []*model.TimeSpan{timeSpan1, timeSpan2, timeSpan3, timeSpan4},
 			From:     test.ModelTimeP("2019-06-10T18:40:01+02:00"),
 			To:       nil,
-			Expected: []gqlmodel.TimeSpan{modelTimeSpan3, modelTimeSpan2, modelTimeSpan4},
+			Expected: []*gqlmodel.TimeSpan{&modelTimeSpan3, &modelTimeSpan2, &modelTimeSpan4},
 		},
 		{
 			DB:       []*model.TimeSpan{timeSpan1, timeSpan2, timeSpan3, timeSpan4},
 			From:     modelTimeSpan1.End,
 			To:       nil,
-			Expected: []gqlmodel.TimeSpan{modelTimeSpan3, modelTimeSpan2, modelTimeSpan1, modelTimeSpan4},
+			Expected: []*gqlmodel.TimeSpan{&modelTimeSpan3, &modelTimeSpan2, &modelTimeSpan1, &modelTimeSpan4},
 		},
 		{
 			DB:       []*model.TimeSpan{timeSpan1, timeSpan2, timeSpan3, timeSpan4},
 			From:     nil,
 			To:       test.ModelTimeP("2019-06-10T18:45:00+02:00"),
-			Expected: []gqlmodel.TimeSpan{modelTimeSpan2, modelTimeSpan1, modelTimeSpan4},
+			Expected: []*gqlmodel.TimeSpan{&modelTimeSpan2, &modelTimeSpan1, &modelTimeSpan4},
 		},
 		{
 			DB:       []*model.TimeSpan{timeSpan1, timeSpan2, timeSpan3, timeSpan4},
 			From:     test.ModelTimeP("2019-06-10T18:35:00+02:00"),
 			To:       test.ModelTimeP("2019-06-10T18:45:00+02:00"),
-			Expected: []gqlmodel.TimeSpan{modelTimeSpan2, modelTimeSpan1, modelTimeSpan4},
+			Expected: []*gqlmodel.TimeSpan{&modelTimeSpan2, &modelTimeSpan1, &modelTimeSpan4},
 		},
 		{
 			DB:       []*model.TimeSpan{timeSpan1, timeSpan2, timeSpan3, timeSpan4},
 			From:     test.ModelTimeP("2019-06-10T18:55:00+02:00"),
 			To:       test.ModelTimeP("2019-06-10T18:56:00+02:00"),
-			Expected: []gqlmodel.TimeSpan{modelTimeSpan3, modelTimeSpan4},
+			Expected: []*gqlmodel.TimeSpan{&modelTimeSpan3, &modelTimeSpan4},
 		},
 		{
 			DB:       []*model.TimeSpan{runningTimeSpan},

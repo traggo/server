@@ -12,7 +12,7 @@ import (
 )
 
 // TimeSpanSummary groups the time spans by tag key.
-func (r *ResolverForStatistics) TimeSpanSummary(ctx context.Context, from model.Time, to model.Time, stat gqlmodel.StatInput) ([]gqlmodel.StatisticsEntry, error) {
+func (r *ResolverForStatistics) TimeSpanSummary(ctx context.Context, from model.Time, to model.Time, stat gqlmodel.StatInput) ([]*gqlmodel.StatisticsEntry, error) {
 	if from.Time().After(to.Time()) {
 		return nil, fmt.Errorf("fromInclusive must be before toInclusive")
 	}
@@ -34,7 +34,7 @@ func (r *ResolverForStatistics) TimeSpanSummary(ctx context.Context, from model.
 		filteredTimeSpans = filteredTimeSpans.Where("NOT EXISTS ?", base.Where(query, params...).SubQuery())
 	}
 
-	var entries []gqlmodel.StatisticsEntry
+	var entries []*gqlmodel.StatisticsEntry
 	r.DB.Select(`max(tst.key) as key,
 			max(tst.string_value) as string_value, 
 			sum(round((julianday(ts.end_user_time) - julianday(ts.start_user_time)) * 24 * 60 * 60, 0)) as time_spend_in_seconds`).
@@ -49,7 +49,7 @@ func (r *ResolverForStatistics) TimeSpanSummary(ctx context.Context, from model.
 	return entries, nil
 }
 
-func build(tags []gqlmodel.InputTimeSpanTag) (string, []interface{}, error) {
+func build(tags []*gqlmodel.InputTimeSpanTag) (string, []interface{}, error) {
 	if len(tags) == 0 {
 		return "", nil, errors.New("empty")
 	}

@@ -76,7 +76,7 @@ func (r *ResolverForDevice) createDeviceInternal(ctx context.Context, user *mode
 	gqlDevice := &gqlmodel.Device{}
 	copier.Copy(gqlDevice, device)
 	return &gqlmodel.Login{
-		User:   *gqlUser,
-		Device: *gqlDevice,
+		User:   gqlUser,
+		Device: gqlDevice,
 		Token:  token}, create.Error
 }

@@ -19,6 +19,6 @@ func TestTimers(t *testing.T) {
 	timeSpans, err := resolver.Timers(fake.User(5))
 	require.NoError(t, err)
 
-	expected := []gqlmodel.TimeSpan{modelRunningTimeSpan}
+	expected := []*gqlmodel.TimeSpan{&modelRunningTimeSpan}
 	require.Equal(t, expected, timeSpans)
 }

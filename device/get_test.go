@@ -36,7 +36,7 @@ func TestGQL_Devices(t *testing.T) {
 	devices, err := resolver.Devices(fake.User(1))
 
 	require.Nil(t, err)
-	expected := []gqlmodel.Device{
+	expected := []*gqlmodel.Device{
 		{
 			ID:        1,
 			Name:      "Android",
