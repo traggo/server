@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"context"
+	"github.com/traggo/server/setting"
 
 	"github.com/jinzhu/copier"
 	"github.com/jinzhu/gorm"
@@ -34,6 +35,9 @@ func NewResolver(db *gorm.DB, passStrength int, version model.Version) gqlschema
 		ResolverForStatistics: statistics.ResolverForStatistics{
 			DB: db,
 		},
+		ResolverForSettings: setting.ResolverForSettings{
+			DB: db,
+		},
 		version: version,
 	}
 }
@@ -45,6 +49,7 @@ type resolver struct {
 	timespan.ResolverForTimeSpan
 	statistics.ResolverForStatistics
 	version model.Version
+	setting.ResolverForSettings
 }
 
 func (r *resolver) RootMutation() gqlschema.RootMutationResolver {

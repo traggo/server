@@ -8,5 +8,6 @@ func All() []interface{} {
 		new(Device),
 		new(TimeSpan),
 		new(TimeSpanTag),
+		new(Setting),
 	}
 }
