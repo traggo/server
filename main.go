@@ -38,6 +38,7 @@ func main() {
 
 	conf, errs := config.Get()
 	logger.Init(conf.LogLevel.AsZeroLogLevel())
+	log.Info().Str("commit", BuildCommit).Str("buildDate", BuildDate).Str("buildMode", BuildMode).Str("version", BuildVersion).Msg("Traggo")
 
 	exit := false
 	for _, err := range errs {
