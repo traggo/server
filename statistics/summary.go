@@ -2,6 +2,7 @@ package statistics
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -13,6 +14,9 @@ import (
 
 // Stats groups the time spans by tag key.
 func (r *ResolverForStatistics) Stats(ctx context.Context, ranges []*gqlmodel.Range, tags []string, excludeTags []*gqlmodel.InputTimeSpanTag, requireTags []*gqlmodel.InputTimeSpanTag) ([]*gqlmodel.RangedStatisticsEntries, error) {
+	if len(ranges) == 0 {
+		return nil, errors.New("ranges may not be empty")
+	}
 	var variables []interface{}
 	var rangesStrs []string
 	for _, r := range ranges {
