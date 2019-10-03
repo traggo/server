@@ -42,7 +42,7 @@ func TestGet_withFile_usesFile(t *testing.T) {
 	conf, logs := Get()
 
 	expected := []FutureLog{{
-		Msg:   `using file .env`,
+		Msg:   `Loading file .env`,
 		Level: zerolog.DebugLevel,
 	}}
 	assert.Equal(t, expected, logs)
@@ -98,7 +98,7 @@ func TestGet_prodMode_findFileRelativeToExecutable(t *testing.T) {
 	conf, logs := Get()
 
 	expected := []FutureLog{{
-		Msg:   `using file ` + filepath.Join("testpath", ".env"),
+		Msg:   `Loading file ` + filepath.Join("testpath", ".env"),
 		Level: zerolog.DebugLevel,
 	}}
 	assert.Equal(t, expected, logs)
@@ -166,7 +166,7 @@ func TestGet_checksAbsoluteFiles(t *testing.T) {
 	conf, logs := Get()
 
 	expected := []FutureLog{{
-		Msg:   `using file ` + path,
+		Msg:   `Loading file ` + path,
 		Level: zerolog.DebugLevel,
 	}}
 	assert.Equal(t, expected, logs)

@@ -48,7 +48,7 @@ func Get() (Config, []FutureLog) {
 			} else {
 				logs = append(logs, FutureLog{
 					Level: zerolog.DebugLevel,
-					Msg:   fmt.Sprintf("using file %s", file)})
+					Msg:   fmt.Sprintf("Loading file %s", file)})
 			}
 		} else if os.IsNotExist(fileErr) {
 			continue
