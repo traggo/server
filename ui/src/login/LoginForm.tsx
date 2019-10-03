@@ -11,7 +11,7 @@ import {useMutation} from 'react-apollo-hooks';
 
 const styles: StyleRulesCallback = (theme) => ({
     button: {
-        marginTop: theme.spacing.unit,
+        marginTop: theme.spacing(1),
     },
 });
 

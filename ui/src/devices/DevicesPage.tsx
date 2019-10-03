@@ -23,14 +23,14 @@ import {UpdateDevice, UpdateDeviceVariables} from '../gql/__generated__/UpdateDe
 import {useSnackbar} from 'notistack';
 import {TextField} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import {InlineDateTimePicker} from 'material-ui-pickers';
 import {AddDeviceDialog} from './AddDeviceDialog';
+import {KeyboardDateTimePicker} from '@material-ui/pickers';
 
 const styles: StyleRulesCallback = (theme) => ({
     root: {
         ...theme.mixins.gutters(),
-        paddingTop: theme.spacing.unit * 3,
-        paddingBottom: theme.spacing.unit * 3,
+        paddingTop: theme.spacing(3),
+        paddingBottom: theme.spacing(3),
         textAlign: 'center',
         maxWidth: 1200,
         minWidth: 800,
@@ -87,10 +87,10 @@ export const DevicesPage = withStyles(styles)(({classes}: WithStyles<typeof styl
                 <TableCell title={device.createdAt}>{moment(device.createdAt).fromNow()}</TableCell>
                 <TableCell title={device.expiresAt}>
                     {isEdited ? (
-                        <InlineDateTimePicker
+                        <KeyboardDateTimePicker
+                            variant="inline"
                             value={editExpiresIn}
-                            onChange={(val) => setEditing([device.id, editName, val])}
-                            keyboard={true}
+                            onChange={(val: moment.Moment) => setEditing([device.id, editName, val.format()])}
                         />
                     ) : (
                         moment(device.expiresAt).fromNow()
@@ -133,7 +133,7 @@ export const DevicesPage = withStyles(styles)(({classes}: WithStyles<typeof styl
                 style={{marginBottom: 10}}>
                 Create Device
             </Button>
-            <Table padding={'dense'}>
+            <Table>
                 <TableHead>
                     <TableRow>
                         <TableCell>ID</TableCell>

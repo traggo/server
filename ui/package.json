@@ -4,8 +4,9 @@
   "private": true,
   "dependencies": {
     "@date-io/moment": "^1.1.0",
-    "@material-ui/core": "^3.9.2",
+    "@material-ui/core": "^4.0.1",
     "@material-ui/icons": "^3.0.2",
+    "@material-ui/pickers": "^3.0.0",
     "@rooks/use-interval": "^1.2.0",
     "@rooks/use-timeout": "^3.0.1",
     "apollo-boost": "^0.3.1",
@@ -13,7 +14,6 @@
     "duration": "^0.2.2",
     "get-best-contrast-color": "^0.2.2",
     "graphql": "^14.1.1",
-    "material-ui-pickers": "^2.2.4",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.23",
     "notistack": "^0.6.1",

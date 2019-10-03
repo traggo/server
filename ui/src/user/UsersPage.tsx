@@ -27,8 +27,8 @@ import {AddUserDialog} from './AddUserDialog';
 const styles: StyleRulesCallback = (theme) => ({
     root: {
         ...theme.mixins.gutters(),
-        paddingTop: theme.spacing.unit * 3,
-        paddingBottom: theme.spacing.unit * 3,
+        paddingTop: theme.spacing(3),
+        paddingBottom: theme.spacing(3),
         textAlign: 'center',
         maxWidth: 800,
         minWidth: 500,
@@ -145,7 +145,7 @@ export const UsersPage = withStyles(styles)(({classes}: WithStyles<typeof styles
                 Create User
             </Button>
             {addUser && <AddUserDialog open={true} close={() => setAddUser(false)} />}
-            <Table padding={'dense'}>
+            <Table>
                 <TableHead>
                     <TableRow>
                         <TableCell>ID</TableCell>

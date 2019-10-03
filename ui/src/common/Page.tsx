@@ -14,7 +14,8 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import MenuIcon from '@material-ui/icons/Menu';
 import SettingsIcon from '@material-ui/icons/Settings';
 import DevicesIcon from '@material-ui/icons/DevicesOther';
-import ViewLintIcon from '@material-ui/icons/ViewList';
+import ViewQuitIcon from '@material-ui/icons/ViewQuilt';
+import TimeLineIcon from '@material-ui/icons/Timeline';
 import CalendarIcon from '@material-ui/icons/CalendarToday';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -70,7 +71,10 @@ const styles: StyleRulesCallback = (theme) => ({
     },
     content: {
         flexGrow: 1,
-        padding: theme.spacing.unit * 3,
+        paddingTop: theme.spacing(2),
+        paddingBottom: theme.spacing(2),
+        paddingLeft: theme.spacing(1),
+        paddingRight: theme.spacing(1),
     },
     grow: {
         flexGrow: 1,
@@ -89,8 +93,8 @@ const styles: StyleRulesCallback = (theme) => ({
     },
 });
 
-const routerLink = (to: string) => {
-    return (props: {}) => <Link to={to} {...props} />;
+const routerLink = (to: string): any => {
+    return React.forwardRef<HTMLAnchorElement>((props, ref) => <Link innerRef={ref} to={to} {...props} />);
 };
 
 export const Page = withStyles(styles)(({children, classes}: React.PropsWithChildren<WithStyles<typeof styles>>) => {
@@ -111,12 +115,12 @@ export const Page = withStyles(styles)(({children, classes}: React.PropsWithChil
         <div>
             <div className={classes.toolbar}>
                 <HrefLink href="https://github.com/traggo" underline="none">
-                    <Typography variant="h5" align="center">
+                    <Typography variant="h5" align="center" color="textPrimary">
                         traggo
                     </Typography>
                 </HrefLink>
                 <HrefLink href="https://github.com/traggo/server/releases" underline="none">
-                    <Typography variant="subtitle2" align="center">
+                    <Typography variant="subtitle2" align="center" color="textPrimary">
                         {version.name}@{version.commit.slice(0, 8)}
                     </Typography>
                 </HrefLink>
@@ -131,10 +135,10 @@ export const Page = withStyles(styles)(({children, classes}: React.PropsWithChil
                 </ListItem>
             </List>
             <Divider />
-            <List subheader={<ListSubheader>Timesheet</ListSubheader>}>
+            <List subheader={<ListSubheader>Timesheet</ListSubheader>} dense={true}>
                 <ListItem button component={routerLink('/timesheet/daily')}>
                     <ListItemIcon>
-                        <ViewLintIcon />
+                        <TimeLineIcon />
                     </ListItemIcon>
                     <ListItemText primary="Daily" />
                 </ListItem>
@@ -146,7 +150,7 @@ export const Page = withStyles(styles)(({children, classes}: React.PropsWithChil
                 </ListItem>
             </List>
             <Divider />
-            <List subheader={<ListSubheader>User</ListSubheader>}>
+            <List subheader={<ListSubheader>User</ListSubheader>} dense={true}>
                 <ListItem button component={routerLink('/user/settings')}>
                     <ListItemIcon>
                         <SettingsIcon />
@@ -163,7 +167,7 @@ export const Page = withStyles(styles)(({children, classes}: React.PropsWithChil
             {admin ? (
                 <>
                     <Divider />
-                    <List subheader={<ListSubheader>Admin</ListSubheader>}>
+                    <List subheader={<ListSubheader>Admin</ListSubheader>} dense={true}>
                         <ListItem button component={routerLink('/admin/users')}>
                             <ListItemIcon>
                                 <UsersIcon />
