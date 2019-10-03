@@ -6,7 +6,7 @@ import 'typeface-roboto';
 import {ThemeProvider} from './provider/ThemeProvider';
 import {ApolloProvider} from './provider/ApolloProvider';
 import {SnackbarProvider} from './provider/SnackbarProvider';
-import {MuiPickersUtilsProvider} from 'material-ui-pickers/';
+import {MuiPickersUtilsProvider} from '@material-ui/pickers';
 import MomentUtils from '@date-io/moment';
 import {Router} from './Router';
 import {HashRouter} from 'react-router-dom';

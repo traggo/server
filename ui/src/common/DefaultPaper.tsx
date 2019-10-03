@@ -6,8 +6,8 @@ import * as React from 'react';
 const styles: StyleRulesCallback = (theme) => ({
     root: {
         ...theme.mixins.gutters(),
-        paddingTop: theme.spacing.unit * 4,
-        paddingBottom: theme.spacing.unit * 3,
+        paddingTop: theme.spacing(4),
+        paddingBottom: theme.spacing(3),
         textAlign: 'center',
         maxWidth: 400,
         borderTop: `5px solid ${theme.palette.primary.main}`,

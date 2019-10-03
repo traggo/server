@@ -9,11 +9,11 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import * as gqlDevice from '../gql/device';
 import {FetchResult} from 'react-apollo/Mutation';
 import {useMutation} from 'react-apollo-hooks';
-import {InlineDateTimePicker} from 'material-ui-pickers';
 import moment from 'moment-timezone';
 import {CreateDevice, CreateDeviceVariables} from '../gql/__generated__/CreateDevice';
 import {useSnackbar} from 'notistack';
 import {handleError} from '../utils/errors';
+import {KeyboardDateTimePicker} from '@material-ui/pickers';
 
 interface AddTagDialogProps {
     initialName: string;
@@ -68,10 +68,10 @@ export const AddDeviceDialog: React.FC<AddTagDialogProps> = ({close, open, initi
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                         />
-                        <InlineDateTimePicker
+                        <KeyboardDateTimePicker
+                            variant="inline"
                             value={expiresAt}
                             onChange={setExpiresAt}
-                            keyboard={true}
                             fullWidth
                             margin="dense"
                             label="Expire Date"

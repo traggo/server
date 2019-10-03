@@ -6,9 +6,6 @@ import Query, {QueryResult} from 'react-apollo/Query';
 import {Preferences, UserPreferences} from '../gql/preferences.local';
 
 const dark = createMuiTheme({
-    typography: {
-        useNextVariants: true,
-    },
     overrides: {
         MuiLink: {
             root: {
@@ -28,9 +25,6 @@ const dark = createMuiTheme({
 });
 
 const light = createMuiTheme({
-    typography: {
-        useNextVariants: true,
-    },
     overrides: {
         MuiLink: {
             root: {
