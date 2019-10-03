@@ -26,7 +26,7 @@ download-tools:
 	GO111MODULE=off go get -u github.com/gobuffalo/packr/v2/packr2
 
 generate-go:
-	go run hack/gqlgen.go
+	go run hack/gqlgen/gqlgen.go
 
 generate-js:
 	(cd ui && yarn generate)
