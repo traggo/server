@@ -7,20 +7,20 @@ import {TagSelectorEntry, specialTag} from './tagSelectorEntry';
 export const useSuggest = (
     tagResult: QueryHookResult<Tags, {}>,
     inputValue: string,
-    selectedEntries: TagSelectorEntry[]
+    usedTags: string[],
+    skipValue = false
 ): TagSelectorEntry[] => {
     const [tagKeySomeCase, tagValue] = inputValue.split(':');
     const tagKey = tagKeySomeCase.toLowerCase();
 
-    const usedTags = selectedEntries.map((entry) => entry.tag.key);
     const exactMatch = ((tagResult.data && tagResult.data.tags) || []).find((tag) => tag.key === tagKey);
 
     const valueResult = useQuery<SuggestTagValue, SuggestTagValueVariables>(gqlTags.SuggestTagValue, {
         variables: {tag: tagKey, query: tagValue},
-        skip: exactMatch === undefined,
+        skip: exactMatch === undefined || skipValue,
     });
 
-    if (exactMatch && tagValue !== undefined && usedTags.indexOf(exactMatch.key) === -1) {
+    if (exactMatch && tagValue !== undefined && usedTags.indexOf(exactMatch.key) === -1 && !skipValue) {
         return suggestTagValue(exactMatch, tagValue, valueResult);
     } else {
         return suggestTag(exactMatch, tagResult, tagKey, usedTags);
