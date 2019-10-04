@@ -4,6 +4,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gobuffalo/packr/v2"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"github.com/rs/zerolog"
@@ -30,6 +31,8 @@ var (
 	// BuildDate will be set via ldflags
 	BuildDate = "unknown"
 )
+
+var box = packr.New("UI", "ui/build")
 
 func main() {
 	mode.Set(BuildMode)
@@ -72,7 +75,7 @@ func initRouter(db *gorm.DB, conf config.Config, version model.Version) *mux.Rou
 	router := mux.NewRouter()
 	router.Use(auth.Middleware(db))
 	router.HandleFunc("/graphql", gqlHandler)
-	ui.Register(router)
+	ui.Register(router, box)
 	return router
 }
 
