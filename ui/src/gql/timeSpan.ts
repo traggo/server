@@ -15,14 +15,21 @@ export const Trackers = gql`
 `;
 
 export const TimeSpans = gql`
-    query TimeSpans {
-        timeSpans {
-            id
-            start
-            end
-            tags {
-                key
-                stringValue
+    query TimeSpans($cursor: InputCursor) {
+        timeSpans(cursor: $cursor) {
+            timeSpans {
+                id
+                start
+                end
+                tags {
+                    key
+                    stringValue
+                }
+            }
+            cursor {
+                startId
+                offset
+                pageSize
             }
         }
     }
