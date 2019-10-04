@@ -143,6 +143,7 @@ type data struct {
 	From     *model.Time
 	To       *model.Time
 	Expected []*gqlmodel.TimeSpan
+	Cursor   *gqlmodel.InputCursor
 }
 
 func (d data) String() string {
@@ -167,7 +168,6 @@ func (d data) String() string {
 }
 
 func TestGet(t *testing.T) {
-
 	d := []data{
 		{
 			DB:       []*model.TimeSpan{timeSpan1, timeSpanOtherUser},
@@ -180,6 +180,27 @@ func TestGet(t *testing.T) {
 			From:     nil,
 			To:       nil,
 			Expected: []*gqlmodel.TimeSpan{&modelTimeSpan3, &modelTimeSpan2, &modelTimeSpan1, &modelTimeSpan4},
+		},
+		{
+			DB:       []*model.TimeSpan{timeSpan1, timeSpan2, timeSpan3, timeSpan4},
+			From:     nil,
+			To:       nil,
+			Cursor:   &gqlmodel.InputCursor{PageSize: p(1)},
+			Expected: []*gqlmodel.TimeSpan{&modelTimeSpan3},
+		},
+		{
+			DB:       []*model.TimeSpan{timeSpan1, timeSpan2, timeSpan3, timeSpan4},
+			From:     nil,
+			To:       nil,
+			Cursor:   &gqlmodel.InputCursor{PageSize: p(1), Offset: p(1), StartID: p(4)},
+			Expected: []*gqlmodel.TimeSpan{&modelTimeSpan2},
+		},
+		{
+			DB:       []*model.TimeSpan{timeSpan1, timeSpan2, timeSpan3, timeSpan4},
+			From:     nil,
+			To:       nil,
+			Cursor:   &gqlmodel.InputCursor{PageSize: p(1), Offset: p(0), StartID: p(1)},
+			Expected: []*gqlmodel.TimeSpan{&modelTimeSpan1},
 		},
 		{
 			DB:       []*model.TimeSpan{timeSpan1, timeSpan2, timeSpan3, timeSpan4},
@@ -229,10 +250,10 @@ func TestGet(t *testing.T) {
 			}
 
 			resolver := ResolverForTimeSpan{DB: db.DB}
-			timeSpans, err := resolver.TimeSpans(fake.User(5), testData.From, testData.To)
+			timeSpans, err := resolver.TimeSpans(fake.User(5), testData.From, testData.To, testData.Cursor)
 
 			require.NoError(t, err)
-			require.Equal(t, testData.Expected, timeSpans)
+			require.Equal(t, testData.Expected, timeSpans.TimeSpans)
 		})
 	}
 }
@@ -243,7 +264,11 @@ func TestGet_fail_toBeforeStart(t *testing.T) {
 
 	resolver := ResolverForTimeSpan{DB: db.DB}
 	timeSpans, err := resolver.TimeSpans(fake.User(5), test.ModelTimeP("2019-06-10T18:30:00+02:00"),
-		test.ModelTimeP("2019-06-10T17:30:00+02:00"))
+		test.ModelTimeP("2019-06-10T17:30:00+02:00"), nil)
 	require.Nil(t, timeSpans)
 	require.EqualError(t, err, "fromInclusive must be before toInclusive")
+}
+
+func p(i int) *int {
+	return &i
 }

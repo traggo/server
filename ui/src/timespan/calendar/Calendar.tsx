@@ -66,7 +66,7 @@ export const Calendar = () => {
         ) {
             return [];
         }
-        return timeSpansResult.data.timeSpans
+        return timeSpansResult.data.timeSpans.timeSpans
             .concat(trackersResult.data.timers)
             .sort((a, b) => a.start.toString().localeCompare(b.start.toString()))
             .map((ts) => ({
