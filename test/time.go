@@ -8,9 +8,13 @@ import (
 
 // Time parses a time panics if not valid
 func Time(value string) time.Time {
-	parse, err := time.ParseInLocation(time.RFC3339, value, time.UTC)
-	if err != nil {
-		panic(err)
+	parse, firstErr := time.ParseInLocation(time.RFC3339, value, time.UTC)
+	if firstErr != nil {
+		var err error
+		parse, err = time.ParseInLocation(time.RFC3339Nano, value, time.UTC)
+		if err != nil {
+			panic(firstErr)
+		}
 	}
 	return parse
 }
