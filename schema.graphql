@@ -43,7 +43,8 @@ type RootQuery {
     devices: [Device!] @hasRole(role: USER)
     timeSpans(fromInclusive: Time, toInclusive: Time, cursor: InputCursor): PagedTimeSpans! @hasRole(role: USER)
     timers: [TimeSpan!] @hasRole(role: USER)
-    stats(ranges: [Range!], tags: [String!], excludeTags: [InputTimeSpanTag!], requireTags: [InputTimeSpanTag!]): [RangedStatisticsEntries!]
+    stats(ranges: [Range!], tags: [String!], excludeTags: [InputTimeSpanTag!], requireTags: [InputTimeSpanTag!]): [RangedStatisticsEntries!] @hasRole(role: USER)
+    ranged(now: Time!, stats: InputStatsSelection!): [RangedStatisticsEntries!] @hasRole(role: USER)
     version: Version!
     settings(namespace: String!): [Setting!] @hasRole(role: USER)
     settingGet(namespace: String!, key: String!): String! @hasRole(role: USER)
@@ -150,4 +151,22 @@ type RangedStatisticsEntries {
     start: Time!
     end: Time!
     entries: [StatisticsEntry!]
+}
+
+
+input InputStatsSelection {
+    interval: StatsInterval!
+    tags: [String!]
+    excludeTags: [InputTimeSpanTag!]
+    includeTags: [InputTimeSpanTag!]
+    rangeId: Int
+    range: InputRelativeOrStaticRange
+}
+
+enum StatsInterval {
+    Hourly, Daily, Weekly, Monthly, Yearly, Single
+}
+input InputRelativeOrStaticRange {
+    from: String!
+    to: String!
 }
