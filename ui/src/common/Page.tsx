@@ -34,6 +34,8 @@ import {Logout} from '../gql/__generated__/Logout';
 import {Preferences, ToggleTheme} from '../gql/preferences.local';
 import {Version} from '../gql/__generated__/Version';
 import {CurrentUser} from '../gql/__generated__/CurrentUser';
+import * as gqlDashboard from '../gql/dashboard';
+import {Dashboards} from '../gql/__generated__/Dashboards';
 
 const drawerWidth = 240;
 
@@ -93,6 +95,7 @@ const styles: StyleRulesCallback = (theme) => ({
     },
 });
 
+// tslint:disable-next-line:no-any
 const routerLink = (to: string): any => {
     return React.forwardRef<HTMLAnchorElement>((props, ref) => <Link innerRef={ref} to={to} {...props} />);
 };
@@ -107,6 +110,8 @@ export const Page = withStyles(styles)(({children, classes}: React.PropsWithChil
     const {data: {version = gqlVersion.VersionDefault.version} = gqlVersion.VersionDefault} = useQuery<Version>(
         gqlVersion.Version
     );
+    const dashboardsQuery = useQuery<Dashboards>(gqlDashboard.Dashboards);
+    const dashboards = (dashboardsQuery.data && dashboardsQuery.data.dashboards) || [];
 
     const username = (data && data.user && data.user.name) || 'unknown';
     const admin = data && data.user && data.user.admin;
@@ -126,13 +131,20 @@ export const Page = withStyles(styles)(({children, classes}: React.PropsWithChil
                 </HrefLink>
             </div>
             <Divider />
-            <List>
-                <ListItem button component={routerLink('/dashboard')}>
-                    <ListItemIcon>
-                        <DashboardIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={'Dashboard'} />
-                </ListItem>
+            <List subheader={<ListSubheader>Dashboards</ListSubheader>} dense={true}>
+                {dashboards.map(({id, name}) => (
+                    <ListItem key={id} button component={routerLink(`/dashboard/${id}/${encodeURIComponent(name)}`)}>
+                        <ListItemIcon>
+                            <DashboardIcon />
+                        </ListItemIcon>
+                        <ListItemText primary={name} />
+                    </ListItem>
+                ))}
+                {dashboards.length === 0 ? (
+                    <ListItem button dense={true} disabled={true}>
+                        <ListItemText primary={'no dashboards added'} />
+                    </ListItem>
+                ) : null}
             </List>
             <Divider />
             <List subheader={<ListSubheader>Timesheet</ListSubheader>} dense={true}>
@@ -162,6 +174,12 @@ export const Page = withStyles(styles)(({children, classes}: React.PropsWithChil
                         <DevicesIcon />
                     </ListItemIcon>
                     <ListItemText primary="Devices" />
+                </ListItem>
+                <ListItem button component={routerLink(`/dashboards`)}>
+                    <ListItemIcon>
+                        <ViewQuitIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={'Dashboards'} />
                 </ListItem>
             </List>
             {admin ? (
