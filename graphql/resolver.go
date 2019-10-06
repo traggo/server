@@ -2,6 +2,8 @@ package graphql
 
 import (
 	"context"
+
+	"github.com/traggo/server/dashboard"
 	"github.com/traggo/server/setting"
 
 	"github.com/jinzhu/copier"
@@ -38,7 +40,8 @@ func NewResolver(db *gorm.DB, passStrength int, version model.Version) gqlschema
 		ResolverForSettings: setting.ResolverForSettings{
 			DB: db,
 		},
-		version: version,
+		ResolverForDashboard: dashboard.NewResolverForDashboard(db),
+		version:              version,
 	}
 }
 
@@ -50,6 +53,7 @@ type resolver struct {
 	statistics.ResolverForStatistics
 	version model.Version
 	setting.ResolverForSettings
+	dashboard.ResolverForDashboard
 }
 
 func (r *resolver) RootMutation() gqlschema.RootMutationResolver {

@@ -9,5 +9,8 @@ func All() []interface{} {
 		new(TimeSpan),
 		new(TimeSpanTag),
 		new(Setting),
+		new(Dashboard),
+		new(DashboardEntry),
+		new(DashboardRange),
 	}
 }

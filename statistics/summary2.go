@@ -2,6 +2,7 @@ package statistics
 
 import (
 	"context"
+
 	"github.com/traggo/server/time"
 
 	"github.com/traggo/server/generated/gqlmodel"
@@ -26,4 +27,3 @@ func (r *ResolverForStatistics) Stats2(ctx context.Context, now model.Time, stat
 
 	return r.Stats(ctx, ranges, stats.Tags, stats.ExcludeTags, stats.IncludeTags)
 }
-
