@@ -76,6 +76,25 @@ GROUP BY query_start,
 		return nil, err
 	}
 
+	lookup := make(map[string]struct{})
+	for _, entry := range statisticsEntries {
+		for _, statEntry := range entry.Entries {
+			lookup[key(statEntry.Key, statEntry.StringValue)] = struct{}{}
+		}
+	}
+	for _, entry := range statisticsEntries {
+		existing := make(map[string]struct{}, len(lookup))
+		for _, statEntry := range entry.Entries {
+			existing[key(statEntry.Key, statEntry.StringValue)] = struct{}{}
+		}
+		for identifier := range lookup {
+			if _, ok := existing[identifier]; !ok {
+				key, value := extract(identifier)
+				entry.Entries = append(entry.Entries, &gqlmodel.StatisticsEntry{Key: key, StringValue: value, TimeSpendInSeconds: 0})
+			}
+		}
+	}
+
 	return statisticsEntries, r.DB.Error
 }
 
@@ -130,4 +149,21 @@ func build(tags []*gqlmodel.InputTimeSpanTag, noop string) (string, []interface{
 	}
 
 	return strings.Join(have, " OR "), haveParams
+}
+
+func key(key string, value *string) string {
+	if value == nil {
+		return key
+	}
+	return fmt.Sprintf("%s:%s", key, *value)
+}
+
+func extract(id string) (string, *string) {
+	split := strings.Split(id, ":")
+	if len(split) == 1 {
+		return split[0], nil
+	}
+
+	value := split[1]
+	return split[0], &value
 }
