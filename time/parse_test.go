@@ -170,10 +170,22 @@ func TestParseRange(t *testing.T) {
 	}
 }
 
-func TestRanges(t *testing.T) {
+func TestStuff(t *testing.T) {
 	assert.Panics(t, func() {
 		ranges(time.Time{}, time.Time{}, "meh")
 	})
+	assert.NotNil(t, Validate("invalid"))
+	assert.Nil(t, Validate("now-1d"))
+	_, err := ParseRange(time.Now(), RelativeRange{
+		From: "invalid",
+		To:   "invalid",
+	}, model.IntervalDaily)
+	assert.NotNil(t, err)
+	_, err = ParseRange(time.Now(), RelativeRange{
+		From: "now-1d",
+		To:   "invalid",
+	}, model.IntervalDaily)
+	assert.NotNil(t, err)
 }
 
 func now(now string) testEntry {

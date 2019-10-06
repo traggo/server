@@ -36,6 +36,12 @@ func ParseRange(now time.Time, r RelativeRange, interval model.Interval) ([]Stat
 	return ranges(from, to, interval), nil
 }
 
+// Validate tries to parse the input and only returns the error.
+func Validate(value string) error {
+	_, err := ParseTime(time.Now(), value, true, time.Monday)
+	return err
+}
+
 // ParseTime parses time.
 func ParseTime(now time.Time, value string, startOf bool, weekday time.Weekday) (time.Time, error) {
 	parse, err := time.Parse(time.RFC3339, value)
