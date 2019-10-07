@@ -157,7 +157,7 @@ input Range {
 type StatisticsEntry {
     key: String!
     stringValue: String
-    timeSpendInSeconds: Int!
+    timeSpendInSeconds: Float!
 }
 
 type RangedStatisticsEntries {

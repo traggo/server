@@ -304,6 +304,6 @@ func entry(key string, value string, duration time.Duration) *gqlmodel.Statistic
 	return &gqlmodel.StatisticsEntry{
 		Key:                key,
 		StringValue:        &value,
-		TimeSpendInSeconds: int(duration.Seconds()),
+		TimeSpendInSeconds: duration.Seconds(),
 	}
 }

@@ -126,7 +126,7 @@ type statReturn struct {
 	QueryEnd           string
 	Key                string
 	StringValue        *string
-	TimeSpendInSeconds int
+	TimeSpendInSeconds float64
 }
 
 func group(entries []statReturn) ([]*gqlmodel.RangedStatisticsEntries, error) {
