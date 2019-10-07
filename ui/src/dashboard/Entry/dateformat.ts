@@ -1,5 +1,5 @@
 import {StatsInterval} from '../../gql/__generated__/globalTypes';
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 import {expectNever} from '../../utils/never';
 
 export type FInterval = (date: moment.Moment) => string;
@@ -9,12 +9,12 @@ export const ofInterval = (interval: StatsInterval): FInterval => {
         case StatsInterval.Weekly:
         case StatsInterval.Monthly:
         case StatsInterval.Yearly:
-            return (d) => d.format('l');
+            return (d) => d.tz('utc').format('l');
         case StatsInterval.Hourly:
-            return (d) => d.format('lll');
+            return (d) => d.tz('utc').format('lll');
         case StatsInterval.Single:
         case StatsInterval.Daily:
-            return (d) => d.format('dddd') + ', ' + d.format('l');
+            return (d) => d.tz('utc').format('dddd') + ', ' + d.format('l');
         default:
             return expectNever(interval);
     }
