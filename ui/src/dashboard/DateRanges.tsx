@@ -67,7 +67,7 @@ export const DateRanges: React.FC<Props> = ({changeMode, dashboard, ranges, setR
             {dashboard.ranges
                 .filter((range) => range.editable || changeMode)
                 .map((range) => {
-                    const name = editedNames[range.id] ? editedNames[range.id] : range.name;
+                    const name = editedNames[range.id] !== undefined ? editedNames[range.id] : range.name;
                     const dateRange = (changeMode ? editedRanges[range.id] : ranges[range.id]) || stripTypename(range.range);
                     return (
                         <React.Fragment key={range.id}>
