@@ -107,9 +107,21 @@ build-bin-windows-amd64: pre-build
 build-bin-windows-386: pre-build
 	${DOCKER_RUN} ${DOCKER_BUILD_IMAGE}:$(GO_VERSION)-windows-386   ${DOCKER_GO_BUILD} -o ${BUILD_DIR}/traggo-${VERSION}-windows-386.exe ${DOCKER_WORKDIR}
 
-build-bin: build-bin-linux-amd64 build-bin-linux-386 build-bin-linux-arm-7 build-bin-linux-arm64 build-bin-windows-amd64 build-bin-windows-386
+build-bin-linux-ppc64le: pre-build
+	${DOCKER_RUN} ${DOCKER_BUILD_IMAGE}:$(GO_VERSION)-linux-ppc64le   ${DOCKER_GO_BUILD} -o ${BUILD_DIR}/traggo-${VERSION}-linux-ppc64le ${DOCKER_WORKDIR}
 
-build-docker: build-docker-linux-amd64 build-docker-linux-386 build-docker-linux-arm-7 build-docker-linux-arm64
+build-docker-linux-ppc64le:
+	cp ${BUILD_DIR}/traggo-${VERSION}-linux-ppc64le docker/traggo && docker build -t ${NEW_IMAGE_NAME}:ppc64le-latest -t ${NEW_IMAGE_NAME}:ppc64le-${VERSION} docker/ && rm docker/traggo
+
+build-bin-linux-s390x: pre-build
+	${DOCKER_RUN} ${DOCKER_BUILD_IMAGE}:$(GO_VERSION)-linux-s390x   ${DOCKER_GO_BUILD} -o ${BUILD_DIR}/traggo-${VERSION}-linux-s390x ${DOCKER_WORKDIR}
+
+build-docker-linux-s390x:
+	cp ${BUILD_DIR}/traggo-${VERSION}-linux-s390x docker/traggo && docker build -t ${NEW_IMAGE_NAME}:s390x-latest -t ${NEW_IMAGE_NAME}:s390x-${VERSION} docker/ && rm docker/traggo
+
+build-bin:    build-bin-linux-amd64    build-bin-linux-386    build-bin-linux-arm-7    build-bin-linux-arm64    build-bin-linux-ppc64le    build-bin-linux-s390x build-bin-windows-amd64 build-bin-windows-386 
+
+build-docker: build-docker-linux-amd64 build-docker-linux-386 build-docker-linux-arm-7 build-docker-linux-arm64 build-docker-linux-ppc64le build-docker-linux-s390x
 
 fix-build-owner:
 	sudo chown -R $(shell id -u):$(shell id -g) ${BUILD_DIR}
@@ -121,16 +133,20 @@ docker-push:
 	docker push ${NEW_IMAGE_NAME}
 
 docker-push-manifest:
-	${DOCKER_MANIFEST} create "${NEW_IMAGE_NAME}:latest"     "${NEW_IMAGE_NAME}:amd64-latest" "${NEW_IMAGE_NAME}:386-latest" "${NEW_IMAGE_NAME}:arm-7-latest" "${NEW_IMAGE_NAME}:arm64-latest"
-	${DOCKER_MANIFEST} create "${NEW_IMAGE_NAME}:${VERSION}" "${NEW_IMAGE_NAME}:amd64-${VERSION}" "${NEW_IMAGE_NAME}:386-${VERSION}" "${NEW_IMAGE_NAME}:arm-7-${VERSION}" "${NEW_IMAGE_NAME}:arm64-${VERSION}"
-	${DOCKER_MANIFEST} annotate "${NEW_IMAGE_NAME}:latest"     "${NEW_IMAGE_NAME}:amd64-latest"     --os=linux --arch=amd64
-	${DOCKER_MANIFEST} annotate "${NEW_IMAGE_NAME}:${VERSION}" "${NEW_IMAGE_NAME}:amd64-${VERSION}" --os=linux --arch=amd64
-	${DOCKER_MANIFEST} annotate "${NEW_IMAGE_NAME}:latest"     "${NEW_IMAGE_NAME}:386-latest"       --os=linux --arch=386
-	${DOCKER_MANIFEST} annotate "${NEW_IMAGE_NAME}:${VERSION}" "${NEW_IMAGE_NAME}:386-${VERSION}"   --os=linux --arch=386
-	${DOCKER_MANIFEST} annotate "${NEW_IMAGE_NAME}:latest"     "${NEW_IMAGE_NAME}:arm-7-latest"     --os=linux --arch=arm --variant=v7
-	${DOCKER_MANIFEST} annotate "${NEW_IMAGE_NAME}:${VERSION}" "${NEW_IMAGE_NAME}:arm-7-${VERSION}" --os=linux --arch=arm --variant=v7
-	${DOCKER_MANIFEST} annotate "${NEW_IMAGE_NAME}:latest"     "${NEW_IMAGE_NAME}:arm64-latest"     --os=linux --arch=arm64
-	${DOCKER_MANIFEST} annotate "${NEW_IMAGE_NAME}:${VERSION}" "${NEW_IMAGE_NAME}:arm64-${VERSION}" --os=linux --arch=arm64
+	${DOCKER_MANIFEST} create "${NEW_IMAGE_NAME}:latest"     "${NEW_IMAGE_NAME}:amd64-latest"     "${NEW_IMAGE_NAME}:386-latest"     "${NEW_IMAGE_NAME}:arm-7-latest"     "${NEW_IMAGE_NAME}:arm64-latest"     "${NEW_IMAGE_NAME}:ppc64le-latest"     "${NEW_IMAGE_NAME}:s390x-latest"
+	${DOCKER_MANIFEST} create "${NEW_IMAGE_NAME}:${VERSION}" "${NEW_IMAGE_NAME}:amd64-${VERSION}" "${NEW_IMAGE_NAME}:386-${VERSION}" "${NEW_IMAGE_NAME}:arm-7-${VERSION}" "${NEW_IMAGE_NAME}:arm64-${VERSION}" "${NEW_IMAGE_NAME}:ppc64le-${VERSION}" "${NEW_IMAGE_NAME}:s390x-${VERSION}"
+	${DOCKER_MANIFEST} annotate "${NEW_IMAGE_NAME}:latest"     "${NEW_IMAGE_NAME}:amd64-latest"       --os=linux --arch=amd64
+	${DOCKER_MANIFEST} annotate "${NEW_IMAGE_NAME}:${VERSION}" "${NEW_IMAGE_NAME}:amd64-${VERSION}"   --os=linux --arch=amd64
+	${DOCKER_MANIFEST} annotate "${NEW_IMAGE_NAME}:latest"     "${NEW_IMAGE_NAME}:386-latest"         --os=linux --arch=386
+	${DOCKER_MANIFEST} annotate "${NEW_IMAGE_NAME}:${VERSION}" "${NEW_IMAGE_NAME}:386-${VERSION}"     --os=linux --arch=386
+	${DOCKER_MANIFEST} annotate "${NEW_IMAGE_NAME}:latest"     "${NEW_IMAGE_NAME}:arm-7-latest"       --os=linux --arch=arm --variant=v7
+	${DOCKER_MANIFEST} annotate "${NEW_IMAGE_NAME}:${VERSION}" "${NEW_IMAGE_NAME}:arm-7-${VERSION}"   --os=linux --arch=arm --variant=v7
+	${DOCKER_MANIFEST} annotate "${NEW_IMAGE_NAME}:latest"     "${NEW_IMAGE_NAME}:arm64-latest"       --os=linux --arch=arm64
+	${DOCKER_MANIFEST} annotate "${NEW_IMAGE_NAME}:${VERSION}" "${NEW_IMAGE_NAME}:arm64-${VERSION}"   --os=linux --arch=arm64
+	${DOCKER_MANIFEST} annotate "${NEW_IMAGE_NAME}:latest"     "${NEW_IMAGE_NAME}:ppc64le-latest"     --os=linux --arch=ppc64le
+	${DOCKER_MANIFEST} annotate "${NEW_IMAGE_NAME}:${VERSION}" "${NEW_IMAGE_NAME}:ppc64le-${VERSION}" --os=linux --arch=ppc64le
+	${DOCKER_MANIFEST} annotate "${NEW_IMAGE_NAME}:latest"     "${NEW_IMAGE_NAME}:s390x-latest"       --os=linux --arch=s390x
+	${DOCKER_MANIFEST} annotate "${NEW_IMAGE_NAME}:${VERSION}" "${NEW_IMAGE_NAME}:s390x-${VERSION}"   --os=linux --arch=s390x
 	${DOCKER_MANIFEST} push "${NEW_IMAGE_NAME}:${VERSION}"
 	${DOCKER_MANIFEST} push "${NEW_IMAGE_NAME}:latest"
 
