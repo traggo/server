@@ -5,7 +5,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/NativeSelect/NativeSelect';
 import {EntryType, StatsInterval} from '../../gql/__generated__/globalTypes';
 import {TagKeySelector} from '../../tag/TagKeySelector';
-import {Dashboards_dashboards_items} from '../../gql/__generated__/Dashboards';
+import {Dashboards_dashboards_items, Dashboards_dashboards_items_statsSelection_range} from '../../gql/__generated__/Dashboards';
 import {RelativeDateTimeSelector} from '../../common/RelativeDateTimeSelector';
 import {parseRelativeTime} from '../../utils/time';
 import {Grid, Typography, Switch} from '@material-ui/core';
@@ -30,6 +30,15 @@ export const isValidDashboardEntry = (item: Dashboards_dashboards_items): boolea
 };
 export const DashboardEntryForm: React.FC<EditPopupProps> = ({entry, onChange: setEntry, disabled = false, ranges}) => {
     const [staticRange, setStaticRange] = React.useState(!entry.statsSelection.rangeId);
+
+    const range: Dashboards_dashboards_items_statsSelection_range = entry.statsSelection.range
+        ? entry.statsSelection.range
+        : {
+              from: 'now/w',
+              to: 'now/w',
+              __typename: 'RelativeOrStaticRange',
+          };
+
     return (
         <>
             <TextField
@@ -92,11 +101,7 @@ export const DashboardEntryForm: React.FC<EditPopupProps> = ({entry, onChange: s
                                     setStaticRange(false);
 
                                     if (entry.statsSelection.range === null) {
-                                        entry.statsSelection.range = {
-                                            __typename: 'RelativeOrStaticRange',
-                                            from: 'now/w',
-                                            to: 'now/w',
-                                        };
+                                        entry.statsSelection.range = range;
                                         setEntry(entry);
                                     }
                                 }
@@ -111,9 +116,10 @@ export const DashboardEntryForm: React.FC<EditPopupProps> = ({entry, onChange: s
                     <RelativeDateTimeSelector
                         label={'From'}
                         disabled={disabled}
-                        value={entry.statsSelection.range!.from}
+                        value={range.from}
                         onChange={(startDate) => {
-                            entry.statsSelection.range!.from = startDate;
+                            entry.statsSelection.rangeId = null;
+                            entry.statsSelection.range = {...range, from: startDate};
                             setEntry(entry);
                         }}
                         type="startOf"
@@ -121,10 +127,10 @@ export const DashboardEntryForm: React.FC<EditPopupProps> = ({entry, onChange: s
                     <RelativeDateTimeSelector
                         label={'To'}
                         disabled={disabled}
-                        value={entry.statsSelection.range!.to}
-                        onChange={(startDate) => {
+                        value={range.to}
+                        onChange={(endDate) => {
                             entry.statsSelection.rangeId = null;
-                            entry.statsSelection.range!.to = startDate;
+                            entry.statsSelection.range = {...range, to: endDate};
                             setEntry(entry);
                         }}
                         type="endOf"
