@@ -2,7 +2,9 @@ import {StatsInterval} from '../../gql/__generated__/globalTypes';
 import * as moment from 'moment';
 import {expectNever} from '../../utils/never';
 
-export const ofInterval = (interval: StatsInterval): ((date: moment.Moment) => string) => {
+export type FInterval = (date: moment.Moment) => string;
+
+export const ofInterval = (interval: StatsInterval): FInterval => {
     switch (interval) {
         case StatsInterval.Weekly:
         case StatsInterval.Monthly:

@@ -1,14 +1,12 @@
 import {Stats_stats} from '../../gql/__generated__/Stats';
-import {CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, TooltipProps, XAxis, YAxis} from 'recharts';
+import {CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
 import * as React from 'react';
-import {Typography} from '@material-ui/core';
-import prettyMs from 'pretty-ms';
-import Paper from '@material-ui/core/Paper';
 import {Colors} from './colors';
 import {ofSeconds} from './unit';
 import {ofInterval} from './dateformat';
 import {StatsInterval} from '../../gql/__generated__/globalTypes';
 import moment from 'moment';
+import {TagTooltip} from './TagTooltip';
 
 interface DashboardPieChartProps {
     entries: Stats_stats[];
@@ -47,7 +45,7 @@ export const DashboardLineChart: React.FC<DashboardPieChartProps> = ({entries, i
             <LineChart data={indexedEntries}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <YAxis type="number" unit={unit.short} />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<TagTooltip dateFormat={dateFormat} />} />
                 <Legend />
                 <XAxis dataKey={(entry) => dateFormat(moment(entry.start))} interval={'preserveStartEnd'} />
 
@@ -66,22 +64,4 @@ export const DashboardLineChart: React.FC<DashboardPieChartProps> = ({entries, i
             </LineChart>
         </ResponsiveContainer>
     );
-};
-
-export const CustomTooltip = ({active, payload}: TooltipProps) => {
-    if (active && payload) {
-        return (
-            <Paper style={{padding: 10}} elevation={4}>
-                {payload.map((entry) => {
-                    return (
-                        <Typography key={entry.name}>
-                            {entry.name}: {prettyMs((entry.payload.data[entry.name] as number) * 1000)}
-                        </Typography>
-                    );
-                })}
-            </Paper>
-        );
-    }
-
-    return null;
 };
