@@ -62,7 +62,7 @@ const SpecificDashboardEntry: React.FC<{entry: Dashboards_dashboards_items; rang
     if (stats.error) {
         return (
             <Center>
-                <Typography>error</Typography>
+                <Typography>error: {stats.error.message}</Typography>
             </Center>
         );
     }
