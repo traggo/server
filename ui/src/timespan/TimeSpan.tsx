@@ -33,7 +33,7 @@ export interface TimeSpanProps {
     range: Range;
     initialTags: TagSelectorEntry[];
     now?: moment.Moment;
-    dateSelectorOpen?: (open: boolean) => void;
+    dateSelectorOpen?: React.Dispatch<React.SetStateAction<boolean>>;
     deleted?: () => void;
     stopped?: () => void;
     addTagsToTracker?: (tags: TagSelectorEntry[]) => void;

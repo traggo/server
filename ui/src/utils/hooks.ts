@@ -3,10 +3,11 @@ import useTimeout from '@rooks/use-timeout';
 
 export const useStateAndDelegateWithDelayOnChange: <T>(
     initialState: T,
-    delegate: (value: T) => void
-) => [T | undefined, React.Dispatch<T>] = (initialState, delegate) => {
+    delegate: React.Dispatch<React.SetStateAction<T>>,
+    delay?: number
+) => [T, React.Dispatch<React.SetStateAction<T>>] = (initialState, delegate, delay = 50) => {
     const [value, setValue] = React.useState(initialState);
-    const {start} = useTimeout(() => delegate(value), 50);
+    const {start} = useTimeout(() => delegate(value), delay);
     return [
         value,
         (newValue) => {

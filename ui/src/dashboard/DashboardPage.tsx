@@ -20,6 +20,7 @@ import {RouteChildrenProps} from 'react-router';
 import {useSnackbar} from 'notistack';
 import {DateRanges} from './DateRanges';
 import {Range} from '../utils/range';
+import {useStateAndDelegateWithDelayOnChange} from '../utils/hooks';
 
 enum ViewType {
     Mobile = 'mobile',
@@ -84,7 +85,8 @@ export const DashboardPage: React.FC<RouterProps> = ({match, history}) => {
     const [changeMode, setChangeMode] = React.useState(false);
     const [viewType, setViewType] = React.useState<ViewType>(ViewType.Desktop);
     const [preview, setPreview] = React.useState(false);
-    const [ranges, setRanges] = React.useState<Record<number, Range>>({});
+    const [diagramRanges, setDiagramRanges] = React.useState<Record<number, Range>>({});
+    const [ranges, setRanges] = useStateAndDelegateWithDelayOnChange<Record<number, Range>>({}, setDiagramRanges, 2000);
     const [addEntry, setAddEntry] = React.useState<null | Dashboards_dashboards_items>(null);
     const [[editElement, editEntry], setEdit] = React.useState<[null] | [HTMLElement, Dashboards_dashboards_items]>([null]);
     const {loading, data, error} = useQuery<Dashboards>(gqlDashboard.Dashboards);
@@ -142,7 +144,7 @@ export const DashboardPage: React.FC<RouterProps> = ({match, history}) => {
             {}
         );
 
-    const indexedRanges = dashboard.ranges.reduce((a, range) => ({...a, [range.id]: ranges[range.id] || range.range}), {});
+    const indexedRanges = dashboard.ranges.reduce((a, range) => ({...a, [range.id]: diagramRanges[range.id] || range.range}), {});
 
     const updatePosHandler = (_1: unknown, _2: unknown, newItem: Layout) => {
         updatePos({

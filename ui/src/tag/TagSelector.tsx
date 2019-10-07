@@ -21,7 +21,7 @@ import {useStateAndDelegateWithDelayOnChange} from '../utils/hooks';
 export interface TagSelectorProps {
     onSelectedEntriesChanged: (entries: TagSelectorEntry[]) => void;
     selectedEntries: TagSelectorEntry[];
-    dialogOpen?: (open: boolean) => void;
+    dialogOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const TagSelector: React.FC<TagSelectorProps> = ({
