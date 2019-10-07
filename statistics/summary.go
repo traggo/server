@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 
@@ -76,6 +77,13 @@ GROUP BY query_start,
 		return nil, err
 	}
 
+	statisticsEntries = fillEmptyRanges(ranges, statisticsEntries)
+	fillEmptyTags(statisticsEntries)
+
+	return statisticsEntries, r.DB.Error
+}
+
+func fillEmptyTags(statisticsEntries []*gqlmodel.RangedStatisticsEntries) {
 	lookup := make(map[string]struct{})
 	for _, entry := range statisticsEntries {
 		for _, statEntry := range entry.Entries {
@@ -94,8 +102,23 @@ GROUP BY query_start,
 			}
 		}
 	}
+}
 
-	return statisticsEntries, r.DB.Error
+func fillEmptyRanges(ranges []*gqlmodel.Range, statisticsEntries []*gqlmodel.RangedStatisticsEntries) []*gqlmodel.RangedStatisticsEntries {
+	for idx, r := range ranges {
+		if len(statisticsEntries) > idx && statisticsEntries[idx].Start.UTC().Equal(r.Start.UTC()) && statisticsEntries[idx].End.UTC().Equal(r.End.UTC()) {
+			continue
+		}
+
+		old := statisticsEntries[idx:]
+		statisticsEntries = append(statisticsEntries[:idx], &gqlmodel.RangedStatisticsEntries{
+			Start:   model.Time(r.Start.UTC()),
+			End:     model.Time(r.End.UTC()),
+			Entries: []*gqlmodel.StatisticsEntry{},
+		})
+		statisticsEntries = append(statisticsEntries, old...)
+	}
+	return statisticsEntries
 }
 
 type statReturn struct {
@@ -133,6 +156,7 @@ func group(entries []statReturn) ([]*gqlmodel.RangedStatisticsEntries, error) {
 		result = append(result, value)
 	}
 
+	sort.SliceStable(result, func(i, j int) bool { return result[i].Start.Time().Before(result[j].End.Time()) })
 	return result, nil
 }
 

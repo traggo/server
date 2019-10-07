@@ -56,7 +56,16 @@ func TestStats(t *testing.T) {
 			Keys("type").
 			Exclude(tag("issue", "13")).
 			Ranges(rangex("2019-06-11T10:00:04Z", "2019-06-11T10:00:06Z")).
-			Expected(),
+			Expected(
+				result("2019-06-11T10:00:04Z", "2019-06-11T10:00:06Z", []*gqlmodel.StatisticsEntry{}...)),
+		name("empty range").
+			Load(ts("2019-06-11T10:00:00Z", 10*time.Second, tag("type", "review"), tag("issue", "13"))).
+			Keys("type").
+			Ranges(rangex("2019-06-11T10:00:04Z", "2019-06-11T10:00:06Z"),
+				rangex("2019-06-12T10:00:04Z", "2019-06-12T10:00:06Z")).
+			Expected(
+				result("2019-06-11T10:00:04Z", "2019-06-11T10:00:06Z", entry("type", "review", 2*time.Second)),
+				result("2019-06-12T10:00:04Z", "2019-06-12T10:00:06Z", entry("type", "review", 0*time.Second))),
 		name("include 1").
 			Load(ts("2019-06-11T10:00:00Z", 10*time.Second, tag("type", "review"), tag("issue", "13"))).
 			Keys("type").
