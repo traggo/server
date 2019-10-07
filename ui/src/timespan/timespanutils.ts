@@ -27,11 +27,11 @@ const group = (startOfToday: moment.Moment, startOfYesterday: moment.Moment) => 
     current: TimeSpans_timeSpans_timeSpans
 ): GroupedByIndex => {
     const startTime = moment(current.start);
-    let date = startTime.format('DD. MMMM YY');
+    let date = `${startTime.format('dddd')}, ${startTime.format('DD. MMMM YY')}`;
     if (startTime.isAfter(startOfToday)) {
-        date = `Today, ${date}`;
+        date = `${date} (today)`;
     } else if (startTime.isAfter(startOfYesterday)) {
-        date = `Yesterday, ${date}`;
+        date = `${date} (yesterday)`;
     }
     a[date] = [...(a[date] || []), current];
     return a;
