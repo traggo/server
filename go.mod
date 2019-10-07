@@ -32,3 +32,5 @@ require (
 	golang.org/x/tools v0.0.0-20190521171243-7927dbab1be7 // indirect
 	google.golang.org/appengine v1.3.0 // indirect
 )
+
+go 1.13
