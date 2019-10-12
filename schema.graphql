@@ -25,7 +25,7 @@ type RootMutation {
     removeCurrentDevice: Device! @hasRole(role: USER)
 
     createTimeSpan(start: Time!, end: Time, tags: [InputTimeSpanTag!]): TimeSpan @hasRole(role: USER)
-    updateTimeSpan(id: Int!, start: Time!, end: Time, tags: [InputTimeSpanTag!]): TimeSpan @hasRole(role: USER)
+    updateTimeSpan(id: Int!, start: Time!, end: Time, tags: [InputTimeSpanTag!], oldStart: Time): TimeSpan @hasRole(role: USER)
     removeTimeSpan(id: Int!): TimeSpan @hasRole(role: USER)
     copyTimeSpan(id: Int!, start: Time!, end: Time): TimeSpan @hasRole(role: USER)
     stopTimeSpan(id: Int!, end: Time!): TimeSpan @hasRole(role: USER)
@@ -125,6 +125,7 @@ type TimeSpan {
     id: Int!
     start: Time!
     end: Time
+    oldStart: Time
     tags: [TimeSpanTag!]
 }
 
