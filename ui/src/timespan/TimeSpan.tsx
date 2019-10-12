@@ -16,11 +16,8 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import {RemoveTimeSpan, RemoveTimeSpanVariables} from '../gql/__generated__/RemoveTimeSpan';
 import {useStateAndDelegateWithDelayOnChange} from '../utils/hooks';
-
-export const calcShowDate = (from: moment.Moment, to?: moment.Moment): boolean => {
-    const fromString = from.format('YYYYMMDD');
-    return to !== undefined && fromString !== to.format('YYYYMMDD');
-};
+import {TimeSpans} from '../gql/__generated__/TimeSpans';
+import {isSameDate} from '../utils/time';
 
 interface Range {
     from: moment.Moment;
@@ -55,18 +52,48 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
     const [selectedEntries, setSelectedEntries] = React.useState<TagSelectorEntry[]>(initialTags);
     const [openMenu, setOpenMenu] = useStateAndDelegateWithDelayOnChange<null | HTMLElement>(null, (o) => dateSelectorOpen(!!o));
     const stopTimer = useMutation<StopTimer, StopTimerVariables>(gqlTimeSpan.StopTimer, {
-        refetchQueries: [{query: gqlTimeSpan.Trackers}, {query: gqlTimeSpan.TimeSpans}],
+        update: (cache, {data}) => {
+            const oldData = cache.readQuery<TimeSpans>({query: gqlTimeSpan.TimeSpans});
+            if (!oldData || !data || !data.stopTimeSpan) {
+                return;
+            }
+            cache.writeQuery<TimeSpans>({
+                query: gqlTimeSpan.TimeSpans,
+                data: {
+                    timeSpans: {
+                        __typename: 'PagedTimeSpans',
+                        timeSpans: oldData.timeSpans.timeSpans.concat([data.stopTimeSpan]),
+                        cursor: oldData.timeSpans.cursor,
+                    },
+                },
+            });
+        },
     });
-    const updateTimeSpan = useMutation<UpdateTimeSpan, UpdateTimeSpanVariables>(gqlTimeSpan.UpdateTimeSpan, {
-        refetchQueries: [{query: gqlTimeSpan.Trackers}, {query: gqlTimeSpan.TimeSpans}],
-    });
+    const updateTimeSpan = useMutation<UpdateTimeSpan, UpdateTimeSpanVariables>(gqlTimeSpan.UpdateTimeSpan);
     const removeTimeSpan = useMutation<RemoveTimeSpan, RemoveTimeSpanVariables>(gqlTimeSpan.RemoveTimeSpan, {
-        refetchQueries: [{query: gqlTimeSpan.Trackers}, {query: gqlTimeSpan.TimeSpans}],
+        update: (cache, {data}) => {
+            const oldData = cache.readQuery<TimeSpans>({query: gqlTimeSpan.TimeSpans});
+            if (!oldData || !data || !data.removeTimeSpan) {
+                return;
+            }
+            const removedId = data.removeTimeSpan.id;
+            cache.writeQuery<TimeSpans>({
+                query: gqlTimeSpan.TimeSpans,
+                data: {
+                    timeSpans: {
+                        __typename: 'PagedTimeSpans',
+                        timeSpans: oldData.timeSpans.timeSpans.filter((ts) => ts.id !== removedId),
+                        cursor: oldData.timeSpans.cursor,
+                    },
+                },
+            });
+        },
     });
 
-    const showDate = to !== undefined && calcShowDate(from, to);
+    const wasMoved = !isSameDate(from, oldFrom);
+    const showDate = to !== undefined && (!isSameDate(from, to) || wasMoved);
     return (
-        <Paper style={{display: 'flex', alignItems: 'center', padding: '10px', margin: '10px 0'}}>
+        <Paper style={{display: 'flex', alignItems: 'center', padding: '10px', margin: '10px 0', opacity: wasMoved ? 0.5 : 1}}>
             <div style={{flex: '1', marginRight: 10}}>
                 <TagSelector
                     dialogOpen={dateSelectorOpen}

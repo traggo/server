@@ -136,3 +136,7 @@ export const isValidDate = (value: string, format?: string) => {
 export const asDate = (value: string, format = 'YYYY-MM-DD HH:mm') => {
     return moment(value, format, true);
 };
+export const isSameDate = (from: moment.Moment, to?: moment.Moment): boolean => {
+    const fromString = from.format('YYYYMMDD');
+    return to === undefined || fromString === to.format('YYYYMMDD');
+};
