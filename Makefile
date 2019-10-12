@@ -74,7 +74,7 @@ packr-clean:
 
 pre-build: build-js packr
 
-build-bin-local:
+build-bin-local: pre-build
 	CGO_ENABLED=1 go build -a -ldflags '${LD_FLAGS}' -tags '${TAGS}' -o ${BUILD_DIR}/traggo
 
 build-bin-linux-amd64: pre-build
