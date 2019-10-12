@@ -31,7 +31,7 @@ export const RefreshTimeSpans: React.FC = () => {
             };
         }
         return () => {};
-    }, [hasMovedEntries]);
+    }, [hasMovedEntries, enqueueSnackbar, closeSnackbar]);
 
     if (!hasMovedEntries) {
         return <></>;
