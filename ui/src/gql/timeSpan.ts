@@ -56,6 +56,12 @@ export const StopTimer = gql`
     mutation StopTimer($id: Int!, $end: Time!) {
         stopTimeSpan(id: $id, end: $end) {
             id
+            start
+            end
+            tags {
+                key
+                stringValue
+            }
             oldStart
         }
     }
