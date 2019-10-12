@@ -14,7 +14,7 @@ import (
 var (
 	prefix        = "traggo"
 	files         = []string{".env.development.local", ".env.development", ".env.local", ".env"}
-	absoluteFiles = []string{"/etc/traggo/.env"}
+	absoluteFiles = []string{"/etc/traggo/server.ini"}
 	osExecutable  = os.Executable
 	osStat        = os.Stat
 )
@@ -94,6 +94,10 @@ func getFiles(relativeTo string) []string {
 	var result []string
 	for _, file := range files {
 		result = append(result, filepath.Join(relativeTo, file))
+	}
+	homeDir, err := os.UserHomeDir()
+	if err == nil {
+		result = append(result, filepath.Join(homeDir, ".config/traggo/server.ini"))
 	}
 	result = append(result, absoluteFiles...)
 	return result
