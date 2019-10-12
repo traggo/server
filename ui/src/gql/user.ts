@@ -46,6 +46,8 @@ export const RemoveUser = gql`
     mutation RemoveUser($id: Int!) {
         removeUser(id: $id) {
             id
+            name
+            admin
         }
     }
 `;
@@ -54,6 +56,8 @@ export const UpdateUser = gql`
     mutation UpdateUser($id: Int!, $name: String!, $admin: Boolean!, $pass: String) {
         updateUser(id: $id, name: $name, admin: $admin, pass: $pass) {
             id
+            name
+            admin
         }
     }
 `;
@@ -61,6 +65,8 @@ export const CreateUser = gql`
     mutation CreateUser($name: String!, $admin: Boolean!, $pass: String!) {
         createUser(name: $name, admin: $admin, pass: $pass) {
             id
+            name
+            admin
         }
     }
 `;
