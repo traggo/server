@@ -15,7 +15,6 @@ import {MoreVert} from '@material-ui/icons';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import {RemoveTimeSpan, RemoveTimeSpanVariables} from '../gql/__generated__/RemoveTimeSpan';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import {useStateAndDelegateWithDelayOnChange} from '../utils/hooks';
 
 export const calcShowDate = (from: moment.Moment, to?: moment.Moment): boolean => {
@@ -151,32 +150,30 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
                     Stop {timeRunning(from, require(now))}
                 </Button>
             )}
-            <ClickAwayListener onClickAway={() => setOpenMenu(null)}>
-                <>
-                    <IconButton onClick={(e: React.MouseEvent<HTMLElement>) => setOpenMenu(e.currentTarget)}>
-                        <MoreVert />
-                    </IconButton>
-                    <Menu aria-haspopup="true" anchorEl={openMenu} open={openMenu !== null}>
+            <>
+                <IconButton onClick={(e: React.MouseEvent<HTMLElement>) => setOpenMenu(e.currentTarget)}>
+                    <MoreVert />
+                </IconButton>
+                <Menu aria-haspopup="true" anchorEl={openMenu} open={openMenu !== null} onClose={() => setOpenMenu(null)}>
+                    <MenuItem
+                        onClick={() => {
+                            setOpenMenu(null);
+                            removeTimeSpan({variables: {id}});
+                            deleted();
+                        }}>
+                        Delete
+                    </MenuItem>
+                    {addTagsToTracker ? (
                         <MenuItem
                             onClick={() => {
                                 setOpenMenu(null);
-                                removeTimeSpan({variables: {id}});
-                                deleted();
+                                addTagsToTracker(selectedEntries);
                             }}>
-                            Delete
+                            Copy tags
                         </MenuItem>
-                        {addTagsToTracker ? (
-                            <MenuItem
-                                onClick={() => {
-                                    setOpenMenu(null);
-                                    addTagsToTracker(selectedEntries);
-                                }}>
-                                Copy tags
-                            </MenuItem>
-                        ) : null}
-                    </Menu>
-                </>
-            </ClickAwayListener>
+                    ) : null}
+                </Menu>
+            </>
         </Paper>
     );
 };
