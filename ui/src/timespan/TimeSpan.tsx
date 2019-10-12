@@ -29,7 +29,7 @@ interface Range {
 
 export interface TimeSpanProps {
     id: number;
-    range: Range;
+    range: Range & {oldFrom?: moment.Moment};
     initialTags: TagSelectorEntry[];
     now?: moment.Moment;
     dateSelectorOpen?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -39,7 +39,7 @@ export interface TimeSpanProps {
 }
 
 export const TimeSpan: React.FC<TimeSpanProps> = ({
-    range: {from, to},
+    range: {from, to, oldFrom},
     id,
     initialTags,
     now,
@@ -75,6 +75,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
                         setSelectedEntries(entries);
                         updateTimeSpan({
                             variables: {
+                                oldStart: oldFrom,
                                 id,
                                 start: inUserTz(from).format(),
                                 end: to && inUserTz(to).format(),
@@ -92,6 +93,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
                         const newTo = moment(newFrom).add(15, 'minute');
                         updateTimeSpan({
                             variables: {
+                                oldStart: oldFrom,
                                 id,
                                 start: inUserTz(newFrom).format(),
                                 end: inUserTz(newTo).format(),
@@ -102,6 +104,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
                         updateTimeSpan({
                             variables: {
                                 id,
+                                oldStart: oldFrom,
                                 start: inUserTz(newFrom).format(),
                                 end: to && inUserTz(to).format(),
                                 tags: toInputTags(selectedEntries),
@@ -122,6 +125,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
                             updateTimeSpan({
                                 variables: {
                                     id,
+                                    oldStart: oldFrom,
                                     start: inUserTz(newFrom).format(),
                                     end: inUserTz(newTo).format(),
                                     tags: toInputTags(selectedEntries),
@@ -131,6 +135,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
                             updateTimeSpan({
                                 variables: {
                                     id,
+                                    oldStart: oldFrom,
                                     start: inUserTz(from).format(),
                                     end: inUserTz(newTo).format(),
                                     tags: toInputTags(selectedEntries),

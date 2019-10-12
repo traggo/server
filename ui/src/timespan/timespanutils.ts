@@ -15,7 +15,10 @@ export const toTimeSpanProps = (timers: Trackers_timers[], tags: Tags_tags[]): A
         }
         return {
             id: timer.id,
-            range,
+            range: {
+                ...range,
+                oldFrom: timer.oldStart ? moment(timer.oldStart) : undefined,
+            },
             initialTags: tagEntries,
         };
     });

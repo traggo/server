@@ -10,6 +10,7 @@ export const Trackers = gql`
                 key
                 stringValue
             }
+            oldStart
         }
     }
 `;
@@ -25,6 +26,7 @@ export const TimeSpans = gql`
                     key
                     stringValue
                 }
+                oldStart
             }
             cursor {
                 startId
@@ -45,6 +47,7 @@ export const StartTimer = gql`
                 key
                 stringValue
             }
+            oldStart
         }
     }
 `;
@@ -53,6 +56,7 @@ export const StopTimer = gql`
     mutation StopTimer($id: Int!, $end: Time!) {
         stopTimeSpan(id: $id, end: $end) {
             id
+            oldStart
         }
     }
 `;
@@ -67,13 +71,14 @@ export const AddTimeSpan = gql`
                 key
                 stringValue
             }
+            oldStart
         }
     }
 `;
 
 export const UpdateTimeSpan = gql`
-    mutation UpdateTimeSpan($id: Int!, $start: Time!, $end: Time, $tags: [InputTimeSpanTag!]) {
-        updateTimeSpan(id: $id, start: $start, end: $end, tags: $tags) {
+    mutation UpdateTimeSpan($id: Int!, $start: Time!, $end: Time, $tags: [InputTimeSpanTag!], $oldStart: Time) {
+        updateTimeSpan(id: $id, start: $start, end: $end, tags: $tags, oldStart: $oldStart) {
             id
             start
             end
@@ -81,6 +86,7 @@ export const UpdateTimeSpan = gql`
                 key
                 stringValue
             }
+            oldStart
         }
     }
 `;
