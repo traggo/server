@@ -17,7 +17,7 @@ export const Trackers = gql`
 
 export const TimeSpans = gql`
     query TimeSpans($cursor: InputCursor) {
-        timeSpans(cursor: $cursor) {
+        timeSpans(cursor: $cursor) @connection(key: "AllTimeSpans") {
             timeSpans {
                 id
                 start
