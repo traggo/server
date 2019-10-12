@@ -3,6 +3,7 @@ import {Tracker} from './Tracker';
 import {ActiveTrackers} from './ActiveTrackers';
 import {DoneTrackers} from './DoneTrackers';
 import {TagSelectorEntry} from '../tag/tagSelectorEntry';
+import {RefreshTimeSpans} from './RefreshTimespans';
 
 export const DailyPage = () => {
     const [selectedEntries, setSelectedEntries] = React.useState<TagSelectorEntry[]>([]);
@@ -15,6 +16,7 @@ export const DailyPage = () => {
                     selectedEntries.length === 0 ? (entries) => setSelectedEntries(selectedEntries.concat(entries)) : undefined
                 }
             />
+            <RefreshTimeSpans />
         </div>
     );
 };
