@@ -24,7 +24,9 @@ import {useSnackbar} from 'notistack';
 import {TextField} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import {AddDeviceDialog} from './AddDeviceDialog';
-import {KeyboardDateTimePicker} from '@material-ui/pickers';
+import {DeviceType} from '../gql/__generated__/globalTypes';
+import {deviceTypeToString} from './typeutils';
+import Select from '@material-ui/core/NativeSelect';
 
 const styles: StyleRulesCallback = (theme) => ({
     root: {
@@ -43,7 +45,11 @@ export const DevicesPage = withStyles(styles)(({classes}: WithStyles<typeof styl
     const refetch = {refetchQueries: [{query: gqlDevice.Devices}, {query: gqlUser.CurrentUser}]};
     const {enqueueSnackbar} = useSnackbar();
     const removeDevice = useMutation<RemoveDevice, RemoveDeviceVariables>(gqlDevice.RemoveDevice, refetch);
-    const [[editId, editName, editExpiresIn], setEditing] = React.useState<[number, string, string]>([-1, '', '']);
+    const [[editId, editName, editDeviceType], setEditing] = React.useState<[number, string, DeviceType]>([
+        -1,
+        '',
+        DeviceType.NoExpiry,
+    ]);
     const [addActive, setAddActive] = React.useState(false);
     const updateDevice = useMutation<UpdateDevice, UpdateDeviceVariables>(gqlDevice.UpdateDevice, refetch);
     if (loading || !data || !data.currentDevice || !data.devices) {
@@ -54,25 +60,25 @@ export const DevicesPage = withStyles(styles)(({classes}: WithStyles<typeof styl
         const onClickDelete = () =>
             removeDevice({variables: {id: device.id}}).then(() => enqueueSnackbar('device deleted', {variant: 'success'}));
         const onClickSubmit = () => {
-            setEditing([-1, '', '']);
+            setEditing([-1, '', DeviceType.NoExpiry]);
             updateDevice({
                 variables: {
                     id: editId,
                     name: editName,
-                    expiresAt: editExpiresIn,
+                    deviceType: editDeviceType,
                 },
             }).then(() => enqueueSnackbar('device edited', {variant: 'success'}));
         };
         const isCurrent = device.id === data.currentDevice!.id;
         const isEdited = editId === device.id;
         return (
-            <TableRow selected={isCurrent}>
+            <TableRow key={device.id} selected={isCurrent}>
                 <TableCell>{device.id}</TableCell>
                 <TableCell>
                     {isEdited ? (
                         <TextField
                             value={editName}
-                            onChange={(e) => setEditing([editId, e.target.value, editExpiresIn])}
+                            onChange={(e) => setEditing([editId, e.target.value, editDeviceType])}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                     onClickSubmit();
@@ -85,15 +91,17 @@ export const DevicesPage = withStyles(styles)(({classes}: WithStyles<typeof styl
                     )}
                 </TableCell>
                 <TableCell title={device.createdAt}>{moment(device.createdAt).fromNow()}</TableCell>
-                <TableCell title={device.expiresAt}>
+                <TableCell title={device.type}>
                     {isEdited ? (
-                        <KeyboardDateTimePicker
-                            variant="inline"
-                            value={editExpiresIn}
-                            onChange={(val: moment.Moment) => setEditing([device.id, editName, val.format()])}
-                        />
+                        <Select
+                            value={editDeviceType}
+                            onChange={(e) => setEditing([editId, editName, e.target.value as DeviceType])}>
+                            <option value={DeviceType.NoExpiry}>{deviceTypeToString(DeviceType.NoExpiry)}</option>
+                            <option value={DeviceType.ShortExpiry}>{deviceTypeToString(DeviceType.ShortExpiry)}</option>
+                            <option value={DeviceType.LongExpiry}>{deviceTypeToString(DeviceType.LongExpiry)}</option>
+                        </Select>
                     ) : (
-                        moment(device.expiresAt).fromNow()
+                        deviceTypeToString(device.type)
                     )}
                 </TableCell>
                 <TableCell title={device.activeAt}>{moment(device.activeAt).fromNow()}</TableCell>
@@ -103,13 +111,13 @@ export const DevicesPage = withStyles(styles)(({classes}: WithStyles<typeof styl
                             <IconButton onClick={onClickSubmit} title="Save">
                                 <DoneIcon />
                             </IconButton>
-                            <IconButton onClick={() => setEditing([-1, '', ''])} title="Cancel">
+                            <IconButton onClick={() => setEditing([-1, '', DeviceType.NoExpiry])} title="Cancel">
                                 <CloseIcon />
                             </IconButton>
                         </>
                     ) : (
                         <>
-                            <IconButton onClick={() => setEditing([device.id, device.name, device.expiresAt])} title="Edit">
+                            <IconButton onClick={() => setEditing([device.id, device.name, device.type])} title="Edit">
                                 <EditIcon />
                             </IconButton>
                             <IconButton onClick={onClickDelete} title="Delete">
@@ -139,7 +147,7 @@ export const DevicesPage = withStyles(styles)(({classes}: WithStyles<typeof styl
                         <TableCell>ID</TableCell>
                         <TableCell>Name</TableCell>
                         <TableCell>Created</TableCell>
-                        <TableCell>Expires</TableCell>
+                        <TableCell>Expires after</TableCell>
                         <TableCell>Last Active</TableCell>
                         <TableCell style={{width: 150}} />
                     </TableRow>

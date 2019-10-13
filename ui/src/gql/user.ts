@@ -11,8 +11,8 @@ export const CurrentUser = gql`
 `;
 
 export const Login = gql`
-    mutation Login($name: String!, $pass: String!, $expiresAt: Time!) {
-        login(username: $name, pass: $pass, deviceName: "web ui", expiresAt: $expiresAt, cookie: true) {
+    mutation Login($name: String!, $pass: String!, $deviceType: DeviceType!) {
+        login(username: $name, pass: $pass, deviceName: "web ui", type: $deviceType, cookie: true) {
             user {
                 id
                 name

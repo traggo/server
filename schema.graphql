@@ -17,10 +17,10 @@ type RootMutation {
     removeUser(id: Int!): User @hasRole(role: ADMIN)
     updateUser(id: Int!, name: String!, pass: String, admin: Boolean!): User @hasRole(role: ADMIN)
 
-    login(username: String!, pass: String!, deviceName: String! expiresAt: Time!, cookie: Boolean!): Login
+    login(username: String!, pass: String!, deviceName: String!, type: DeviceType!, cookie: Boolean!): Login
 
-    createDevice(name: String! expiresAt: Time!): Login @hasRole(role: USER)
-    updateDevice(id: Int!, name: String!, expiresAt: Time!): Device
+    createDevice(name: String!, type: DeviceType!): Login @hasRole(role: USER)
+    updateDevice(id: Int!, name: String!, type: DeviceType!): Device
     removeDevice(id: Int!): Device @hasRole(role: USER)
     removeCurrentDevice: Device! @hasRole(role: USER)
 
@@ -96,9 +96,13 @@ type Login {
 type Device {
     id: Int!
     name: String!
-    expiresAt: Time!
+    type: DeviceType!
     createdAt: Time!
     activeAt: Time!
+}
+
+enum DeviceType {
+    LongExpiry, ShortExpiry, NoExpiry
 }
 
 scalar Time

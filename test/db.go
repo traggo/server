@@ -43,7 +43,7 @@ func (d *UserWithDatabase) NewDevice(id int, token string, name string) model.De
 		Token:     token,
 		UserID:    d.User.ID,
 		Name:      name,
-		ExpiresAt: Time("2009-06-30T18:30:00Z"),
+		Type:      model.TypeNoExpiry,
 		ActiveAt:  Time("2009-06-30T18:30:00Z"),
 		CreatedAt: Time("2009-06-30T18:30:00Z"),
 	}

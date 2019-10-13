@@ -20,7 +20,7 @@ func TestGQL_RemoveDevice_succeeds_removesDevice(t *testing.T) {
 		UserID:    1,
 		CreatedAt: test.Time("2009-06-30T18:30:00+02:00"),
 		ActiveAt:  test.Time("2018-06-30T18:30:00+02:00"),
-		ExpiresAt: test.Time("2022-06-30T18:30:00+02:00"),
+		Type:      model.TypeNoExpiry,
 	})
 	resolver := ResolverForDevice{DB: db.DB}
 	_, err := resolver.RemoveDevice(fake.User(1), 55)
@@ -50,7 +50,7 @@ func TestGQL_RemoveDevice_fails_notPermission(t *testing.T) {
 		UserID:    2,
 		CreatedAt: test.Time("2009-06-30T18:30:00+02:00"),
 		ActiveAt:  test.Time("2018-06-30T18:30:00+02:00"),
-		ExpiresAt: test.Time("2022-06-30T18:30:00+02:00"),
+		Type:      model.TypeNoExpiry,
 	})
 	resolver := ResolverForDevice{DB: db.DB}
 	_, err := resolver.RemoveDevice(fake.User(1), 55)

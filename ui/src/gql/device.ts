@@ -5,7 +5,7 @@ export const Devices = gql`
         devices {
             id
             name
-            expiresAt
+            type
             createdAt
             activeAt
         }
@@ -22,16 +22,16 @@ export const RemoveDevice = gql`
     }
 `;
 export const UpdateDevice = gql`
-    mutation UpdateDevice($id: Int!, $name: String!, $expiresAt: Time!) {
-        updateDevice(id: $id, name: $name, expiresAt: $expiresAt) {
+    mutation UpdateDevice($id: Int!, $name: String!, $deviceType: DeviceType!) {
+        updateDevice(id: $id, name: $name, type: $deviceType) {
             id
         }
     }
 `;
 
 export const CreateDevice = gql`
-    mutation CreateDevice($name: String!, $expiresAt: Time!) {
-        device: createDevice(name: $name, expiresAt: $expiresAt) {
+    mutation CreateDevice($name: String!, $deviceType: DeviceType!) {
+        device: createDevice(name: $name, type: $deviceType) {
             token
         }
     }

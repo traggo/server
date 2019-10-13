@@ -21,7 +21,7 @@ var (
 )
 
 // Login creates a device.
-func (r *ResolverForDevice) Login(ctx context.Context, username string, pass string, deviceName string, expiresAt model.Time, cookie bool) (*gqlmodel.Login, error) {
+func (r *ResolverForDevice) Login(ctx context.Context, username string, pass string, deviceName string, deviceType gqlmodel.DeviceType, cookie bool) (*gqlmodel.Login, error) {
 
 	user := new(model.User)
 	find := r.DB.Where("name = ?", username).Find(user)
@@ -34,39 +34,40 @@ func (r *ResolverForDevice) Login(ctx context.Context, username string, pass str
 		return nil, errUserPassWrong
 	}
 
-	return r.createDeviceInternal(ctx, user, deviceName, expiresAt, cookie)
+	return r.createDeviceInternal(ctx, user, deviceName, deviceType, cookie)
 }
 
 // CreateDevice creates a device.
-func (r *ResolverForDevice) CreateDevice(ctx context.Context, deviceName string, expiresAt model.Time) (*gqlmodel.Login, error) {
+func (r *ResolverForDevice) CreateDevice(ctx context.Context, deviceName string, deviceType gqlmodel.DeviceType) (*gqlmodel.Login, error) {
 
 	user := auth.GetUser(ctx)
 
-	return r.createDeviceInternal(ctx, user, deviceName, expiresAt, false)
+	return r.createDeviceInternal(ctx, user, deviceName, deviceType, false)
 }
 
-func (r *ResolverForDevice) createDeviceInternal(ctx context.Context, user *model.User, deviceName string, expiresAt model.Time, cookie bool) (*gqlmodel.Login, error) {
-	if !expiresAt.Time().After(timeNow()) {
-		return nil, errors.New("expiresAt must be in the future")
-	}
+func (r *ResolverForDevice) createDeviceInternal(ctx context.Context, user *model.User, deviceName string, deviceType gqlmodel.DeviceType, cookie bool) (*gqlmodel.Login, error) {
 
 	token := randToken(20)
 	for !r.DB.Where("token = ?", token).Find(new(model.Device)).RecordNotFound() {
 		token = randToken(20)
 	}
 
+	now := timeNow()
 	device := &model.Device{
 		Token:     token,
 		UserID:    user.ID,
 		Name:      deviceName,
-		ExpiresAt: expiresAt.Time().UTC(),
-		CreatedAt: timeNow().UTC(),
-		ActiveAt:  timeNow().UTC(),
+		Type:      model.DeviceType(deviceType),
+		CreatedAt: now.UTC(),
+		ActiveAt:  now.UTC(),
+	}
+
+	if err := device.Type.Valid(); err != nil {
+		return nil, err
 	}
 
 	if cookie {
-		age := int(expiresAt.Time().Sub(timeNow()).Seconds())
-		auth.GetCreateSession(ctx)(token, age)
+		auth.GetCreateSession(ctx)(token, device.Type.Seconds())
 	}
 
 	create := r.DB.Create(device)

@@ -22,7 +22,7 @@ func TestGQL_CurrentDevice_withDevice(t *testing.T) {
 		UserID:    2,
 		CreatedAt: test.Time("2004-06-30T18:30:00Z"),
 		ActiveAt:  test.Time("2015-06-30T18:30:00Z"),
-		ExpiresAt: test.Time("2026-06-30T18:30:00Z"),
+		Type:      model.TypeNoExpiry,
 	}
 
 	resolver := ResolverForDevice{DB: db.DB}
@@ -34,7 +34,7 @@ func TestGQL_CurrentDevice_withDevice(t *testing.T) {
 		Name:      "Browser",
 		CreatedAt: test.ModelTimeUTC("2004-06-30T18:30:00Z"),
 		ActiveAt:  test.ModelTimeUTC("2015-06-30T18:30:00Z"),
-		ExpiresAt: test.ModelTimeUTC("2026-06-30T18:30:00Z"),
+		Type:      gqlmodel.DeviceTypeNoExpiry,
 	}
 
 	require.Equal(t, expected, result)

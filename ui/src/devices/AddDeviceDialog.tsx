@@ -9,11 +9,14 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import * as gqlDevice from '../gql/device';
 import {FetchResult} from 'react-apollo/Mutation';
 import {useMutation} from 'react-apollo-hooks';
-import moment from 'moment-timezone';
 import {CreateDevice, CreateDeviceVariables} from '../gql/__generated__/CreateDevice';
 import {useSnackbar} from 'notistack';
 import {handleError} from '../utils/errors';
-import {KeyboardDateTimePicker} from '@material-ui/pickers';
+import {DeviceType} from '../gql/__generated__/globalTypes';
+import {deviceTypeToString} from './typeutils';
+import Select from '@material-ui/core/NativeSelect';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
 
 interface AddTagDialogProps {
     initialName: string;
@@ -24,7 +27,7 @@ interface AddTagDialogProps {
 export const AddDeviceDialog: React.FC<AddTagDialogProps> = ({close, open, initialName}) => {
     const [token, setToken] = React.useState('');
     const [name, setName] = React.useState(initialName);
-    const [expiresAt, setExpiresAt] = React.useState(moment().add(10, 'year'));
+    const [deviceType, setDeviceType] = React.useState(DeviceType.NoExpiry);
     const {enqueueSnackbar} = useSnackbar();
 
     const addDevice = useMutation<CreateDevice, CreateDeviceVariables>(gqlDevice.CreateDevice, {
@@ -32,9 +35,8 @@ export const AddDeviceDialog: React.FC<AddTagDialogProps> = ({close, open, initi
     });
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        addDevice({variables: {expiresAt, name}})
+        addDevice({variables: {deviceType, name}})
             .then((result: FetchResult<CreateDevice>) => {
-                console.log(result);
                 if (result.data && result.data.device) {
                     enqueueSnackbar('Client created', {variant: 'success'});
                     setToken(result.data.device.token);
@@ -68,14 +70,14 @@ export const AddDeviceDialog: React.FC<AddTagDialogProps> = ({close, open, initi
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                         />
-                        <KeyboardDateTimePicker
-                            variant="inline"
-                            value={expiresAt}
-                            onChange={setExpiresAt}
-                            fullWidth
-                            margin="dense"
-                            label="Expire Date"
-                        />
+                        <FormControl margin={'normal'} fullWidth>
+                            <InputLabel>Expires after</InputLabel>
+                            <Select value={deviceType} onChange={(e) => setDeviceType(e.target.value as DeviceType)} fullWidth>
+                                <option value={DeviceType.NoExpiry}>{deviceTypeToString(DeviceType.NoExpiry)}</option>
+                                <option value={DeviceType.ShortExpiry}>{deviceTypeToString(DeviceType.ShortExpiry)}</option>
+                                <option value={DeviceType.LongExpiry}>{deviceTypeToString(DeviceType.LongExpiry)}</option>
+                            </Select>
+                        </FormControl>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={close} color="primary">

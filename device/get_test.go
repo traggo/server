@@ -20,7 +20,7 @@ func TestGQL_Devices(t *testing.T) {
 		UserID:    1,
 		CreatedAt: test.Time("2009-06-30T18:30:00Z"),
 		ActiveAt:  test.Time("2018-06-30T18:30:00Z"),
-		ExpiresAt: test.Time("2022-06-30T18:30:00Z"),
+		Type:      model.TypeNoExpiry,
 	})
 	db.Create(&model.Device{
 		ID:        2,
@@ -29,7 +29,7 @@ func TestGQL_Devices(t *testing.T) {
 		UserID:    2,
 		CreatedAt: test.Time("2004-06-30T18:30:00Z"),
 		ActiveAt:  test.Time("2015-06-30T18:30:00Z"),
-		ExpiresAt: test.Time("2026-06-30T18:30:00Z"),
+		Type:      model.TypeNoExpiry,
 	})
 
 	resolver := ResolverForDevice{DB: db.DB}
@@ -42,7 +42,7 @@ func TestGQL_Devices(t *testing.T) {
 			Name:      "Android",
 			CreatedAt: test.ModelTimeUTC("2009-06-30T18:30:00Z"),
 			ActiveAt:  test.ModelTimeUTC("2018-06-30T18:30:00Z"),
-			ExpiresAt: test.ModelTimeUTC("2022-06-30T18:30:00Z"),
+			Type:      gqlmodel.DeviceTypeNoExpiry,
 		},
 	}
 	require.Equal(t, expected, devices)

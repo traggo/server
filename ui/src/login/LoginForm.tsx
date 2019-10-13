@@ -8,6 +8,9 @@ import {StyleRulesCallback, WithStyles} from '@material-ui/core/styles';
 import withStyles from '@material-ui/core/styles/withStyles';
 import {Login, LoginVariables} from '../gql/__generated__/Login';
 import {useMutation} from 'react-apollo-hooks';
+import {Checkbox} from '@material-ui/core';
+import {DeviceType} from '../gql/__generated__/globalTypes';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 const styles: StyleRulesCallback = (theme) => ({
     button: {
@@ -25,13 +28,14 @@ export const LoginForm = withStyles(styles)(({classes}: WithStyles<typeof styles
     const {enqueueSnackbar} = useSnackbar();
     const [username, setUsername] = React.useState('');
     const [password, setPassword] = React.useState('');
+    const [remember, setRemember] = React.useState(false);
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         login({
             variables: {
                 name: username,
                 pass: password,
-                expiresAt: '2030-06-11T10:00:00Z',
+                deviceType: remember ? DeviceType.LongExpiry : DeviceType.ShortExpiry,
             },
         })
             .then(() => enqueueSnackbar('Login successful', {variant: 'success'}))
@@ -56,6 +60,11 @@ export const LoginForm = withStyles(styles)(({classes}: WithStyles<typeof styles
                 label="password"
                 fullWidth
                 onChange={(e) => setPassword(e.target.value)}
+            />
+            <FormControlLabel
+                style={{float: 'right'}}
+                control={<Checkbox checked={remember} onChange={(e) => setRemember(e.target.checked)} />}
+                label="Remember Me"
             />
             <Button
                 type="submit"
