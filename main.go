@@ -98,6 +98,6 @@ func initDatabase(conf config.Config) *gorm.DB {
 
 func initCleanUp(db *gorm.DB) chan<- bool {
 	stopCleanUp := make(chan bool)
-	go auth.CleanUp(db, time.Hour, stopCleanUp)
+	go auth.CleanUp(db, time.Minute*10, stopCleanUp)
 	return stopCleanUp
 }
