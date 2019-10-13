@@ -7,7 +7,7 @@ import {Tags} from '../gql/__generated__/Tags';
 import useInterval from '@rooks/use-interval';
 import moment from 'moment';
 import {TimeSpans, TimeSpansVariables} from '../gql/__generated__/TimeSpans';
-import {Button, Typography} from '@material-ui/core';
+import {Typography} from '@material-ui/core';
 import {GroupedTimeSpanProps, toGroupedTimeSpanProps} from './timespanutils';
 import {TagSelectorEntry} from '../tag/tagSelectorEntry';
 import ReactInfinite from 'react-infinite';
@@ -19,7 +19,7 @@ interface DoneTrackersProps {
 
 export const DoneTrackers: React.FC<DoneTrackersProps> = ({addTagsToTracker}) => {
     const trackersResult = useQuery<TimeSpans, TimeSpansVariables>(gqlTimeSpan.TimeSpans, {
-        variables: {cursor: {pageSize: 10}},
+        variables: {cursor: {pageSize: 30}},
     });
     const loading = React.useRef(false);
     const tagsResult = useQuery<Tags>(gqlTag.Tags);
@@ -94,11 +94,16 @@ export const DoneTrackers: React.FC<DoneTrackersProps> = ({addTagsToTracker}) =>
             <ReactInfinite
                 key={1}
                 useWindowAsScrollContainer
-                preloadBatchSize={window.innerHeight / 2}
+                preloadBatchSize={window.innerHeight}
                 onInfiniteLoad={fetchMore}
                 isInfiniteLoading={infiniteLoading}
                 infiniteLoadBeginEdgeOffset={2000}
-                elementHeight={values.map((m) => heights[m.key] || 1)}>
+                loadingSpinnerDelegate={
+                    <Typography align={'center'} variant={'h5'}>
+                        .. loading time spans ..
+                    </Typography>
+                }
+                elementHeight={values.map((m) => heights[m.key] || 500)}>
                 {values.map(({key, timeSpans}) => {
                     return (
                         <DatedTimeSpans
@@ -111,9 +116,6 @@ export const DoneTrackers: React.FC<DoneTrackersProps> = ({addTagsToTracker}) =>
                     );
                 })}
             </ReactInfinite>
-            <Button key={'fetch'} onClick={fetchMore}>
-                Fetch More
-            </Button>
         </div>
     );
 };

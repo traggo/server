@@ -10,7 +10,7 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 
 export const RefreshTimeSpans: React.FC = () => {
     const {refetch, data} = useQuery<TimeSpans, TimeSpansVariables>(gqlTimeSpan.TimeSpans, {
-        variables: {cursor: {pageSize: 10}},
+        variables: {cursor: {pageSize: 30}},
     });
     const {enqueueSnackbar, closeSnackbar} = useSnackbar();
     const hasMovedEntries =
@@ -48,7 +48,7 @@ export const RefreshTimeSpans: React.FC = () => {
             <Fab
                 aria-label={'refresh'}
                 onClick={() => {
-                    refetch({cursor: {pageSize: 10}}).then(() => {
+                    refetch({cursor: {pageSize: 30}}).then(() => {
                         enqueueSnackbar('Refreshed messages', {variant: 'success'});
                     });
                 }}
