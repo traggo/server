@@ -16,6 +16,7 @@ DOCKER_GO_BUILD=go build -mod=readonly -a -installsuffix cgo -ldflags '${LD_FLAG
 DOCKER_RUN=docker run --rm ${WORKDIR_VOLUME} ${GOPATH_VOLUME} -w ${DOCKER_WORKDIR}
 NEW_IMAGE_NAME=traggo/server
 DOCKER_MANIFEST=DOCKER_CLI_EXPERIMENTAL=enabled docker manifest
+BIN_PREFIX=traggo-server
 
 license-dir:
 	mkdir -p build/license || true
@@ -75,49 +76,49 @@ packr-clean:
 pre-build: build-js packr
 
 build-bin-local: pre-build
-	CGO_ENABLED=1 go build -a -ldflags '${LD_FLAGS}' -tags '${TAGS}' -o ${BUILD_DIR}/traggo
+	CGO_ENABLED=1 go build -a -ldflags '${LD_FLAGS}' -tags '${TAGS}' -o ${BUILD_DIR}/traggo-server
 
 build-bin-linux-amd64: pre-build
-	${DOCKER_RUN} ${DOCKER_BUILD_IMAGE}:$(GO_VERSION)-linux-amd64   ${DOCKER_GO_BUILD} -o ${BUILD_DIR}/traggo-${VERSION}-linux-amd64 ${DOCKER_WORKDIR}
+	${DOCKER_RUN} ${DOCKER_BUILD_IMAGE}:$(GO_VERSION)-linux-amd64   ${DOCKER_GO_BUILD} -o ${BUILD_DIR}/${BIN_PREFIX}-${VERSION}-linux-amd64 ${DOCKER_WORKDIR}
 
 build-docker-linux-amd64:
-	cp ${BUILD_DIR}/traggo-${VERSION}-linux-amd64 docker/traggo && docker build -t ${NEW_IMAGE_NAME}:amd64-latest -t ${NEW_IMAGE_NAME}:amd64-${VERSION} docker/ && rm docker/traggo
+	cp ${BUILD_DIR}/${BIN_PREFIX}-${VERSION}-linux-amd64 docker/traggo && docker build -t ${NEW_IMAGE_NAME}:amd64-latest -t ${NEW_IMAGE_NAME}:amd64-${VERSION} docker/ && rm docker/traggo
 
 build-bin-linux-386: pre-build
-	${DOCKER_RUN} ${DOCKER_BUILD_IMAGE}:$(GO_VERSION)-linux-386     ${DOCKER_GO_BUILD} -o ${BUILD_DIR}/traggo-${VERSION}-linux-386 ${DOCKER_WORKDIR}
+	${DOCKER_RUN} ${DOCKER_BUILD_IMAGE}:$(GO_VERSION)-linux-386     ${DOCKER_GO_BUILD} -o ${BUILD_DIR}/${BIN_PREFIX}-${VERSION}-linux-386 ${DOCKER_WORKDIR}
 
 build-docker-linux-386:
-	cp ${BUILD_DIR}/traggo-${VERSION}-linux-386 docker/traggo && docker build -t ${NEW_IMAGE_NAME}:386-latest -t ${NEW_IMAGE_NAME}:386-${VERSION} docker/ && rm docker/traggo
+	cp ${BUILD_DIR}/${BIN_PREFIX}-${VERSION}-linux-386 docker/traggo && docker build -t ${NEW_IMAGE_NAME}:386-latest -t ${NEW_IMAGE_NAME}:386-${VERSION} docker/ && rm docker/traggo
 
 build-bin-linux-arm-7: pre-build
-	${DOCKER_RUN} ${DOCKER_BUILD_IMAGE}:$(GO_VERSION)-linux-arm-7   ${DOCKER_GO_BUILD} -o ${BUILD_DIR}/traggo-${VERSION}-linux-arm-7 ${DOCKER_WORKDIR}
+	${DOCKER_RUN} ${DOCKER_BUILD_IMAGE}:$(GO_VERSION)-linux-arm-7   ${DOCKER_GO_BUILD} -o ${BUILD_DIR}/${BIN_PREFIX}-${VERSION}-linux-arm-7 ${DOCKER_WORKDIR}
 
 build-docker-linux-arm-7:
-	cp ${BUILD_DIR}/traggo-${VERSION}-linux-arm-7 docker/traggo && docker build -t ${NEW_IMAGE_NAME}:arm-7-latest -t ${NEW_IMAGE_NAME}:arm-7-${VERSION} docker/ && rm docker/traggo
+	cp ${BUILD_DIR}/${BIN_PREFIX}-${VERSION}-linux-arm-7 docker/traggo && docker build -t ${NEW_IMAGE_NAME}:arm-7-latest -t ${NEW_IMAGE_NAME}:arm-7-${VERSION} docker/ && rm docker/traggo
 
 build-bin-linux-arm64: pre-build
-	${DOCKER_RUN} ${DOCKER_BUILD_IMAGE}:$(GO_VERSION)-linux-arm64   ${DOCKER_GO_BUILD} -o ${BUILD_DIR}/traggo-${VERSION}-linux-arm64 ${DOCKER_WORKDIR}
+	${DOCKER_RUN} ${DOCKER_BUILD_IMAGE}:$(GO_VERSION)-linux-arm64   ${DOCKER_GO_BUILD} -o ${BUILD_DIR}/${BIN_PREFIX}-${VERSION}-linux-arm64 ${DOCKER_WORKDIR}
 
 build-docker-linux-arm64:
-	cp ${BUILD_DIR}/traggo-${VERSION}-linux-arm64 docker/traggo && docker build -t ${NEW_IMAGE_NAME}:arm64-latest -t ${NEW_IMAGE_NAME}:arm64-${VERSION} docker/ && rm docker/traggo
+	cp ${BUILD_DIR}/${BIN_PREFIX}-${VERSION}-linux-arm64 docker/traggo && docker build -t ${NEW_IMAGE_NAME}:arm64-latest -t ${NEW_IMAGE_NAME}:arm64-${VERSION} docker/ && rm docker/traggo
 
 build-bin-windows-amd64: pre-build
-	${DOCKER_RUN} ${DOCKER_BUILD_IMAGE}:$(GO_VERSION)-windows-amd64 ${DOCKER_GO_BUILD} -o ${BUILD_DIR}/traggo-${VERSION}-windows-amd64.exe ${DOCKER_WORKDIR}
+	${DOCKER_RUN} ${DOCKER_BUILD_IMAGE}:$(GO_VERSION)-windows-amd64 ${DOCKER_GO_BUILD} -o ${BUILD_DIR}/${BIN_PREFIX}-${VERSION}-windows-amd64.exe ${DOCKER_WORKDIR}
 
 build-bin-windows-386: pre-build
-	${DOCKER_RUN} ${DOCKER_BUILD_IMAGE}:$(GO_VERSION)-windows-386   ${DOCKER_GO_BUILD} -o ${BUILD_DIR}/traggo-${VERSION}-windows-386.exe ${DOCKER_WORKDIR}
+	${DOCKER_RUN} ${DOCKER_BUILD_IMAGE}:$(GO_VERSION)-windows-386   ${DOCKER_GO_BUILD} -o ${BUILD_DIR}/${BIN_PREFIX}-${VERSION}-windows-386.exe ${DOCKER_WORKDIR}
 
 build-bin-linux-ppc64le: pre-build
-	${DOCKER_RUN} ${DOCKER_BUILD_IMAGE}:$(GO_VERSION)-linux-ppc64le   ${DOCKER_GO_BUILD} -o ${BUILD_DIR}/traggo-${VERSION}-linux-ppc64le ${DOCKER_WORKDIR}
+	${DOCKER_RUN} ${DOCKER_BUILD_IMAGE}:$(GO_VERSION)-linux-ppc64le   ${DOCKER_GO_BUILD} -o ${BUILD_DIR}/${BIN_PREFIX}-${VERSION}-linux-ppc64le ${DOCKER_WORKDIR}
 
 build-docker-linux-ppc64le:
-	cp ${BUILD_DIR}/traggo-${VERSION}-linux-ppc64le docker/traggo && docker build -t ${NEW_IMAGE_NAME}:ppc64le-latest -t ${NEW_IMAGE_NAME}:ppc64le-${VERSION} docker/ && rm docker/traggo
+	cp ${BUILD_DIR}/${BIN_PREFIX}-${VERSION}-linux-ppc64le docker/traggo && docker build -t ${NEW_IMAGE_NAME}:ppc64le-latest -t ${NEW_IMAGE_NAME}:ppc64le-${VERSION} docker/ && rm docker/traggo
 
 build-bin-linux-s390x: pre-build
-	${DOCKER_RUN} ${DOCKER_BUILD_IMAGE}:$(GO_VERSION)-linux-s390x   ${DOCKER_GO_BUILD} -o ${BUILD_DIR}/traggo-${VERSION}-linux-s390x ${DOCKER_WORKDIR}
+	${DOCKER_RUN} ${DOCKER_BUILD_IMAGE}:$(GO_VERSION)-linux-s390x   ${DOCKER_GO_BUILD} -o ${BUILD_DIR}/${BIN_PREFIX}-${VERSION}-linux-s390x ${DOCKER_WORKDIR}
 
 build-docker-linux-s390x:
-	cp ${BUILD_DIR}/traggo-${VERSION}-linux-s390x docker/traggo && docker build -t ${NEW_IMAGE_NAME}:s390x-latest -t ${NEW_IMAGE_NAME}:s390x-${VERSION} docker/ && rm docker/traggo
+	cp ${BUILD_DIR}/${BIN_PREFIX}-${VERSION}-linux-s390x docker/traggo && docker build -t ${NEW_IMAGE_NAME}:s390x-latest -t ${NEW_IMAGE_NAME}:s390x-${VERSION} docker/ && rm docker/traggo
 
 build-bin:    build-bin-linux-amd64    build-bin-linux-386    build-bin-linux-arm-7    build-bin-linux-arm64    build-bin-linux-ppc64le    build-bin-linux-s390x build-bin-windows-amd64 build-bin-windows-386 
 
