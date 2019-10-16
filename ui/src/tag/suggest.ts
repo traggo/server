@@ -60,11 +60,7 @@ const suggestTagValue = (
     tagValue: string,
     valueResult: QueryHookResult<SuggestTagValue, SuggestTagValueVariables>
 ): TagSelectorEntry[] => {
-    if (!valueResult.data || valueResult.data.values === null) {
-        return [];
-    }
-
-    let someValues = valueResult.data.values || [];
+    let someValues = (valueResult.data && valueResult.data.values) || [];
 
     if (someValues.indexOf(tagValue) === -1) {
         someValues = [tagValue, ...someValues];
