@@ -12,6 +12,7 @@ import {GroupedTimeSpanProps, toGroupedTimeSpanProps} from './timespanutils';
 import {TagSelectorEntry} from '../tag/tagSelectorEntry';
 import ReactInfinite from 'react-infinite';
 import {Omit} from '../common/tsutil';
+import {isSameDate} from '../utils/time';
 
 interface DoneTrackersProps {
     addTagsToTracker?: (entries: TagSelectorEntry[]) => void;
@@ -28,7 +29,9 @@ export const DoneTrackers: React.FC<DoneTrackersProps> = ({addTagsToTracker}) =>
     const [heights, setHeights] = React.useState<Record<string, number>>({});
     useInterval(
         () => {
-            setCurrentDate(moment());
+            if (!isSameDate(currentDate, moment())) {
+                setCurrentDate(moment());
+            }
         },
         1000,
         true
