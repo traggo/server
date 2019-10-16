@@ -90,7 +90,11 @@ export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntr
         <ClickAwayListener onClickAway={() => setOpenMenu(null)}>
             <Paper style={{display: 'flex', alignItems: 'center', padding: '10px'}}>
                 <div style={{flex: '1', marginRight: 10}}>
-                    <TagSelector selectedEntries={selectedEntries} onSelectedEntriesChanged={setSelectedEntries} />
+                    <TagSelector
+                        selectedEntries={selectedEntries}
+                        onSelectedEntriesChanged={setSelectedEntries}
+                        onCtrlEnter={submit}
+                    />
                 </div>
                 {type === Type.Manual ? (
                     <div>

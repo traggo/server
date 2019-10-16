@@ -22,12 +22,14 @@ export interface TagSelectorProps {
     onSelectedEntriesChanged: (entries: TagSelectorEntry[]) => void;
     selectedEntries: TagSelectorEntry[];
     dialogOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+    onCtrlEnter?: () => void;
 }
 
 export const TagSelector: React.FC<TagSelectorProps> = ({
     selectedEntries,
     onSelectedEntriesChanged: setSelectedEntries,
     dialogOpen = () => {},
+    onCtrlEnter,
 }) => {
     const [tooltipErrorActive, tooltipError, showTooltipError] = useError(4000);
     const [open, setOpen] = React.useState(false);
@@ -121,7 +123,11 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
         }
         if (event.key === 'Enter' && highlightedIndex < suggestions.length) {
             event.preventDefault();
-            trySubmit(suggestions[highlightedIndex]);
+            if (!currentValue && event.ctrlKey && onCtrlEnter) {
+                onCtrlEnter();
+            } else {
+                trySubmit(suggestions[highlightedIndex]);
+            }
         }
         if (event.key === 'Escape' && input.current) {
             event.preventDefault();
