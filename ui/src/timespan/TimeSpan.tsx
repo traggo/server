@@ -20,6 +20,7 @@ import {TimeSpans} from '../gql/__generated__/TimeSpans';
 import {isSameDate} from '../utils/time';
 import {Trackers} from '../gql/__generated__/Trackers';
 import {addTimeSpanToCache} from '../gql/utils';
+import {StartTimer, StartTimerVariables} from '../gql/__generated__/StartTimer';
 
 interface Range {
     from: moment.Moment;
@@ -67,6 +68,9 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
             });
             addTimeSpanToCache(cache, data.stopTimeSpan);
         },
+    });
+    const startTimer = useMutation<StartTimer, StartTimerVariables>(gqlTimeSpan.StartTimer, {
+        refetchQueries: [{query: gqlTimeSpan.Trackers}],
     });
     const updateTimeSpan = useMutation<UpdateTimeSpan, UpdateTimeSpanVariables>(gqlTimeSpan.UpdateTimeSpan);
     const removeTimeSpan = useMutation<RemoveTimeSpan, RemoveTimeSpanVariables>(gqlTimeSpan.RemoveTimeSpan, {
@@ -193,14 +197,15 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
                     <MoreVert />
                 </IconButton>
                 <Menu aria-haspopup="true" anchorEl={openMenu} open={openMenu !== null} onClose={() => setOpenMenu(null)}>
-                    <MenuItem
-                        onClick={() => {
-                            setOpenMenu(null);
-                            removeTimeSpan({variables: {id}});
-                            deleted();
-                        }}>
-                        Delete
-                    </MenuItem>
+                    {to ? (
+                        <MenuItem
+                            onClick={() => {
+                                setOpenMenu(null);
+                                startTimer({variables: {start: inUserTz(moment()).format(), tags: toInputTags(selectedEntries)}});
+                            }}>
+                            Continue
+                        </MenuItem>
+                    ) : null}
                     {addTagsToTracker ? (
                         <MenuItem
                             onClick={() => {
@@ -210,6 +215,14 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
                             Copy tags
                         </MenuItem>
                     ) : null}
+                    <MenuItem
+                        onClick={() => {
+                            setOpenMenu(null);
+                            removeTimeSpan({variables: {id}});
+                            deleted();
+                        }}>
+                        Delete
+                    </MenuItem>
                 </Menu>
             </>
         </Paper>
