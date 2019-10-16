@@ -83,10 +83,17 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
     const removeTimeSpan = useMutation<RemoveTimeSpan, RemoveTimeSpanVariables>(gqlTimeSpan.RemoveTimeSpan, {
         update: (cache, {data}) => {
             const oldData = cache.readQuery<TimeSpans>({query: gqlTimeSpan.TimeSpans});
-            if (!oldData || !data || !data.removeTimeSpan) {
+            const oldTrackers = cache.readQuery<Trackers>({query: gqlTimeSpan.Trackers});
+            if (!oldData || !oldTrackers || !data || !data.removeTimeSpan) {
                 return;
             }
             const removedId = data.removeTimeSpan.id;
+            cache.writeQuery<Trackers>({
+                query: gqlTimeSpan.Trackers,
+                data: {
+                    timers: (oldTrackers.timers || []).filter((tracker) => tracker.id !== removedId),
+                },
+            });
             cache.writeQuery<TimeSpans>({
                 query: gqlTimeSpan.TimeSpans,
                 data: {
