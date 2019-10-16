@@ -19,6 +19,7 @@ import {useStateAndDelegateWithDelayOnChange} from '../utils/hooks';
 import {TimeSpans} from '../gql/__generated__/TimeSpans';
 import {isSameDate} from '../utils/time';
 import {Trackers} from '../gql/__generated__/Trackers';
+import {addTimeSpanToCache} from '../gql/utils';
 
 interface Range {
     from: moment.Moment;
@@ -54,9 +55,8 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
     const [openMenu, setOpenMenu] = useStateAndDelegateWithDelayOnChange<null | HTMLElement>(null, (o) => dateSelectorOpen(!!o));
     const stopTimer = useMutation<StopTimer, StopTimerVariables>(gqlTimeSpan.StopTimer, {
         update: (cache, {data}) => {
-            const oldTimeSpans = cache.readQuery<TimeSpans>({query: gqlTimeSpan.TimeSpans});
             const oldTrackers = cache.readQuery<Trackers>({query: gqlTimeSpan.Trackers});
-            if (!oldTimeSpans || !oldTrackers || !data || !data.stopTimeSpan) {
+            if (!oldTrackers || !data || !data.stopTimeSpan) {
                 return;
             }
             cache.writeQuery<Trackers>({
@@ -65,18 +65,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
                     timers: (oldTrackers.timers || []).filter((tracker) => tracker.id !== data.stopTimeSpan!.id),
                 },
             });
-            cache.writeQuery<TimeSpans>({
-                query: gqlTimeSpan.TimeSpans,
-                data: {
-                    timeSpans: {
-                        __typename: 'PagedTimeSpans',
-                        timeSpans: oldTimeSpans.timeSpans.timeSpans
-                            .concat([data.stopTimeSpan])
-                            .sort((a, b) => moment(b.start).unix() - moment(a.start).unix()),
-                        cursor: oldTimeSpans.timeSpans.cursor,
-                    },
-                },
-            });
+            addTimeSpanToCache(cache, data.stopTimeSpan);
         },
     });
     const updateTimeSpan = useMutation<UpdateTimeSpan, UpdateTimeSpanVariables>(gqlTimeSpan.UpdateTimeSpan);

@@ -17,6 +17,7 @@ import {InputTimeSpanTag} from '../gql/__generated__/globalTypes';
 import {AddTimeSpan, AddTimeSpanVariables} from '../gql/__generated__/AddTimeSpan';
 import {useSnackbar} from 'notistack';
 import {inUserTz} from './timeutils';
+import {addTimeSpanToCache} from '../gql/utils';
 
 enum Type {
     Tracker,
@@ -44,7 +45,12 @@ export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntr
         refetchQueries: [{query: gqlTimeSpan.Trackers}],
     });
     const addTimeSpan = useMutation<AddTimeSpan, AddTimeSpanVariables>(gqlTimeSpan.AddTimeSpan, {
-        refetchQueries: [{query: gqlTimeSpan.TimeSpans}],
+        update: (cache, {data}) => {
+            if (!data || !data.createTimeSpan) {
+                return;
+            }
+            addTimeSpanToCache(cache, data.createTimeSpan);
+        },
     });
     const {enqueueSnackbar} = useSnackbar();
 
