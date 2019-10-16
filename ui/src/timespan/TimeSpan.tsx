@@ -5,7 +5,7 @@ import moment from 'moment';
 import Paper from '@material-ui/core/Paper';
 import {DateTimeSelector} from '../common/DateTimeSelector';
 import {Button} from '@material-ui/core';
-import {inUserTz, timeRunning} from './timeutils';
+import {inUserTz} from './timeutils';
 import {useMutation} from 'react-apollo-hooks';
 import {StopTimer, StopTimerVariables} from '../gql/__generated__/StopTimer';
 import * as gqlTimeSpan from '../gql/timeSpan';
@@ -21,6 +21,7 @@ import {isSameDate} from '../utils/time';
 import {Trackers} from '../gql/__generated__/Trackers';
 import {addTimeSpanToCache} from '../gql/utils';
 import {StartTimer, StartTimerVariables} from '../gql/__generated__/StartTimer';
+import {RelativeToNow} from '../common/RelativeTime';
 
 interface Range {
     from: moment.Moment;
@@ -31,7 +32,6 @@ export interface TimeSpanProps {
     id: number;
     range: Range & {oldFrom?: moment.Moment};
     initialTags: TagSelectorEntry[];
-    now?: moment.Moment;
     dateSelectorOpen?: React.Dispatch<React.SetStateAction<boolean>>;
     deleted?: () => void;
     stopped?: () => void;
@@ -42,16 +42,11 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
     range: {from, to, oldFrom},
     id,
     initialTags,
-    now,
     dateSelectorOpen = () => {},
     deleted = () => {},
     stopped = () => {},
     addTagsToTracker,
 }) => {
-    if (!to && !now) {
-        throw new Error('now must be set when to is not set');
-    }
-
     const [selectedEntries, setSelectedEntries] = React.useState<TagSelectorEntry[]>(initialTags);
     const [openMenu, setOpenMenu] = useStateAndDelegateWithDelayOnChange<null | HTMLElement>(null, (o) => dateSelectorOpen(!!o));
     const stopTimer = useMutation<StopTimer, StopTimerVariables>(gqlTimeSpan.StopTimer, {
@@ -193,9 +188,9 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
                 <Button
                     style={{minWidth: 120}}
                     onClick={() => {
-                        stopTimer({variables: {id, end: inUserTz(require(now)).format()}}).then(stopped);
+                        stopTimer({variables: {id, end: inUserTz(moment()).format()}}).then(stopped);
                     }}>
-                    Stop {timeRunning(from, require(now))}
+                    Stop <RelativeToNow from={from} />
                 </Button>
             )}
             <>
@@ -233,11 +228,4 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
             </>
         </Paper>
     );
-};
-
-const require: <T>(e?: T) => T = (e) => {
-    if (!e) {
-        throw new Error('unset');
-    }
-    return e;
 };

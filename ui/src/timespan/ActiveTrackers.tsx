@@ -4,8 +4,6 @@ import * as gqlTimeSpan from '../gql/timeSpan';
 import * as gqlTag from '../gql/tags';
 import {Trackers} from '../gql/__generated__/Trackers';
 import {Tags} from '../gql/__generated__/Tags';
-import useInterval from '@rooks/use-interval';
-import moment from 'moment';
 import {TimeSpan} from './TimeSpan';
 import {toTimeSpanProps} from './timespanutils';
 import {Typography} from '@material-ui/core';
@@ -13,14 +11,6 @@ import {Typography} from '@material-ui/core';
 export const ActiveTrackers = () => {
     const trackersResult = useQuery<Trackers>(gqlTimeSpan.Trackers);
     const tagsResult = useQuery<Tags>(gqlTag.Tags);
-    const [currentDate, setCurrentDate] = React.useState(moment());
-    useInterval(
-        () => {
-            setCurrentDate(moment());
-        },
-        1000,
-        true
-    );
     const values = React.useMemo(() => {
         if (
             trackersResult.error ||
@@ -47,7 +37,7 @@ export const ActiveTrackers = () => {
                 Active Timers
             </Typography>
             {values.map((value) => {
-                return <TimeSpan key={value.id} {...value} now={currentDate} />;
+                return <TimeSpan key={value.id} {...value} />;
             })}
         </>
     );

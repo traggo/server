@@ -144,7 +144,6 @@ export const Calendar = () => {
                                     from: moment(selected.data!.start),
                                     to: selected.data!.hasEnd ? moment(selected.data!.end) : undefined,
                                 }}
-                                now={selected.data!.hasEnd ? undefined : currentDate}
                                 initialTags={toTagSelectorEntry(tagsResult.data!.tags!, selected.data!.tags)}
                                 dateSelectorOpen={setIgnore}
                                 stopped={() => {

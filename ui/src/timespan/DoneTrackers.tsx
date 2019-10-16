@@ -11,7 +11,6 @@ import {Typography} from '@material-ui/core';
 import {GroupedTimeSpanProps, toGroupedTimeSpanProps} from './timespanutils';
 import {TagSelectorEntry} from '../tag/tagSelectorEntry';
 import ReactInfinite from 'react-infinite';
-import {Omit} from '../common/tsutil';
 import {isSameDate} from '../utils/time';
 
 interface DoneTrackersProps {
@@ -127,7 +126,7 @@ const DatedTimeSpans: React.FC<
     {
         name: string;
         setHeight: (cb: (height: Record<string, number>) => Record<string, number>) => void;
-        timeSpans: Array<Omit<TimeSpanProps, 'now'>>;
+        timeSpans: TimeSpanProps[];
     } & DoneTrackersProps
 > = ({name, timeSpans, addTagsToTracker, setHeight}) => {
     const [ref, setRef] = React.useState<HTMLDivElement | null>();

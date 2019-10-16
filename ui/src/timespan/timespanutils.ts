@@ -3,10 +3,9 @@ import {Tags_tags} from '../gql/__generated__/Tags';
 import {toTagSelectorEntry} from '../tag/tagSelectorEntry';
 import moment from 'moment';
 import {TimeSpanProps} from './TimeSpan';
-import {Omit} from '../common/tsutil';
 import {TimeSpans_timeSpans_timeSpans} from '../gql/__generated__/TimeSpans';
 
-export const toTimeSpanProps = (timers: Trackers_timers[], tags: Tags_tags[]): Array<Omit<TimeSpanProps, 'now'>> => {
+export const toTimeSpanProps = (timers: Trackers_timers[], tags: Tags_tags[]): TimeSpanProps[] => {
     return [...timers].map((timer) => {
         const tagEntries = toTagSelectorEntry(tags, timer.tags || []);
         const range: TimeSpanProps['range'] = {from: moment.parseZone(timer.start)};
@@ -40,7 +39,7 @@ const group = (startOfTomorrow: moment.Moment, startOfToday: moment.Moment, star
     return a;
 };
 
-export type GroupedTimeSpanProps = Array<{key: string; timeSpans: Array<Omit<TimeSpanProps, 'now'>>}>;
+export type GroupedTimeSpanProps = Array<{key: string; timeSpans: TimeSpanProps[]}>;
 
 export const toGroupedTimeSpanProps = (
     timeSpans: TimeSpans_timeSpans_timeSpans[],
