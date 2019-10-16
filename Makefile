@@ -56,7 +56,10 @@ format: format-go format-js
 test-go:
 	go test --race -coverprofile=coverage.txt -covermode=atomic ./...
 
-test: test-go
+test-js:
+	(cd ui && CI=true yarn test)
+
+test: test-go test-js
 
 install-go:
 	go mod download
