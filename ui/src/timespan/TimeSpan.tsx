@@ -126,6 +126,9 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
                 popoverOpen={dateSelectorOpen}
                 selectedDate={from}
                 onSelectDate={(newFrom) => {
+                    if (!newFrom.isValid()) {
+                        return;
+                    }
                     if (to && moment(newFrom).isAfter(to)) {
                         const newTo = moment(newFrom).add(15, 'minute');
                         updateTimeSpan({
@@ -157,6 +160,9 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
                     popoverOpen={dateSelectorOpen}
                     selectedDate={to}
                     onSelectDate={(newTo) => {
+                        if (!newTo.isValid()) {
+                            return;
+                        }
                         if (moment(newTo).isBefore(from)) {
                             const newFrom = moment(newTo).subtract(15, 'minute');
                             updateTimeSpan({
