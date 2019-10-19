@@ -37,8 +37,8 @@ interface TrackerProps {
 export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntriesChanged: setSelectedEntries}) => {
     const [openMenu, setOpenMenu] = React.useState<null | HTMLElement>(null);
     const [type, setType] = React.useState<Type>(Type.Tracker);
-    const [from, setFrom] = React.useState<moment.Moment>(moment());
-    const [to, setTo] = React.useState<moment.Moment>(moment().add(15, 'minute'));
+    const [from, setFrom] = React.useState<moment.Moment>(moment().subtract(15, 'minute'));
+    const [to, setTo] = React.useState<moment.Moment>(moment());
     const [showDate, setShowDate] = React.useState(false);
     const startTimer = useMutation<StartTimer, StartTimerVariables>(gqlTimeSpan.StartTimer, {
         refetchQueries: [{query: gqlTimeSpan.Trackers}],
