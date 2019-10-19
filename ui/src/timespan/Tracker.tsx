@@ -37,7 +37,6 @@ interface TrackerProps {
 export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntriesChanged: setSelectedEntries}) => {
     const [openMenu, setOpenMenu] = React.useState<null | HTMLElement>(null);
     const [type, setType] = React.useState<Type>(Type.Tracker);
-    const [manualSelected, setManualSelected] = React.useState(false);
     const [from, setFrom] = React.useState<moment.Moment>(moment());
     const [to, setTo] = React.useState<moment.Moment>(moment().add(15, 'minute'));
     const [showDate, setShowDate] = React.useState(false);
@@ -53,20 +52,6 @@ export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntr
         },
     });
     const {enqueueSnackbar} = useSnackbar();
-
-    React.useEffect(() => {
-        if (manualSelected) {
-            return;
-        }
-        const handle = window.setInterval(() => {
-            const newFrom = moment();
-            setFrom(newFrom);
-            const newTo = moment().add(15, 'minute');
-            setTo(newTo);
-            setShowDate(calcShowDate(newFrom, newTo));
-        }, 10000);
-        return () => clearInterval(handle);
-    }, [manualSelected]);
 
     React.useEffect(() => {
         const handle = window.setInterval(() => {
@@ -110,7 +95,6 @@ export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntr
                                 if (!newFrom.isValid()) {
                                     return;
                                 }
-                                setManualSelected(true);
                                 setFrom(newFrom);
                                 if (moment(newFrom).isAfter(to)) {
                                     const newTo = moment(newFrom).add(15, 'minute');
@@ -129,7 +113,6 @@ export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntr
                                 if (!newTo.isValid()) {
                                     return;
                                 }
-                                setManualSelected(true);
                                 setTo(newTo);
                                 if (moment(newTo).isBefore(from)) {
                                     const newFrom = moment(newTo).subtract(15, 'minute');
