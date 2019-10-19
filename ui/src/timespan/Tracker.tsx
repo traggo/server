@@ -107,6 +107,9 @@ export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntr
                         <DateTimeSelector
                             selectedDate={from}
                             onSelectDate={(newFrom) => {
+                                if (!newFrom.isValid()) {
+                                    return;
+                                }
                                 setManualSelected(true);
                                 setFrom(newFrom);
                                 if (moment(newFrom).isAfter(to)) {
@@ -123,6 +126,9 @@ export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntr
                         <DateTimeSelector
                             selectedDate={to}
                             onSelectDate={(newTo) => {
+                                if (!newTo.isValid()) {
+                                    return;
+                                }
                                 setManualSelected(true);
                                 setTo(newTo);
                                 if (moment(newTo).isBefore(from)) {
