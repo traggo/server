@@ -4,21 +4,21 @@ import Button from '@material-ui/core/Button';
 import {useSnackbar} from 'notistack';
 import {handleError} from '../utils/errors';
 import * as gqlUser from '../gql/user';
-import {StyleRulesCallback, WithStyles} from '@material-ui/core/styles';
-import withStyles from '@material-ui/core/styles/withStyles';
 import {Login, LoginVariables} from '../gql/__generated__/Login';
 import {useMutation} from '@apollo/react-hooks';
 import {Checkbox} from '@material-ui/core';
 import {DeviceType} from '../gql/__generated__/globalTypes';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 
-const styles: StyleRulesCallback = (theme) => ({
+const useStyles = makeStyles((theme) => ({
     button: {
         marginTop: theme.spacing(1),
     },
-});
+}));
 
-export const LoginForm = withStyles(styles)(({classes}: WithStyles<typeof styles>) => {
+export const LoginForm = () => {
+    const classes = useStyles();
     const [login] = useMutation<Login, LoginVariables>(gqlUser.Login, {
         update: (cache, {data}) => {
             cache.writeQuery({query: gqlUser.CurrentUser, data: {user: data && data.login && data.login.user}});
@@ -78,4 +78,4 @@ export const LoginForm = withStyles(styles)(({classes}: WithStyles<typeof styles
             </Button>
         </form>
     );
-});
+};

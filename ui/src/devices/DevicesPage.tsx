@@ -1,7 +1,6 @@
 import * as React from 'react';
-import withStyles from '@material-ui/core/styles/withStyles';
 import Paper from '@material-ui/core/Paper';
-import {StyleRulesCallback, WithStyles} from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import {useMutation, useQuery} from '@apollo/react-hooks';
 import * as gqlDevice from '../gql/device';
 import * as gqlUser from '../gql/user';
@@ -28,7 +27,7 @@ import {DeviceType} from '../gql/__generated__/globalTypes';
 import {deviceTypeToString} from './typeutils';
 import Select from '@material-ui/core/NativeSelect';
 
-const styles: StyleRulesCallback = (theme) => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         ...theme.mixins.gutters(),
         paddingTop: theme.spacing(3),
@@ -38,9 +37,10 @@ const styles: StyleRulesCallback = (theme) => ({
         minWidth: 800,
         margin: '0 auto',
     },
-});
+}));
 
-export const DevicesPage = withStyles(styles)(({classes}: WithStyles<typeof styles>) => {
+export const DevicesPage = () => {
+    const classes = useStyles();
     const {data, loading} = useQuery<Devices>(gqlDevice.Devices);
     const refetch = {refetchQueries: [{query: gqlDevice.Devices}, {query: gqlUser.CurrentUser}]};
     const {enqueueSnackbar} = useSnackbar();
@@ -159,4 +159,4 @@ export const DevicesPage = withStyles(styles)(({classes}: WithStyles<typeof styl
             </Table>
         </Paper>
     );
-});
+};
