@@ -6,7 +6,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import * as gqlUser from '../gql/user';
-import {useMutation} from 'react-apollo-hooks';
+import {useMutation} from '@apollo/react-hooks';
 import {useSnackbar} from 'notistack';
 import {handleError} from '../utils/errors';
 import {Checkbox} from '@material-ui/core';
@@ -24,7 +24,7 @@ export const AddUserDialog: React.FC<AddTagDialogProps> = ({close, open}) => {
     const [admin, setAdmin] = React.useState(false);
     const {enqueueSnackbar} = useSnackbar();
 
-    const addUser = useMutation<CreateUser, CreateUserVariables>(gqlUser.CreateUser, {
+    const [addUser] = useMutation<CreateUser, CreateUserVariables>(gqlUser.CreateUser, {
         refetchQueries: [{query: gqlUser.Users}],
     });
     const submit = (e: React.FormEvent) => {

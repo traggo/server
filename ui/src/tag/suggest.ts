@@ -1,11 +1,12 @@
 import {Tags} from '../gql/__generated__/Tags';
 import * as gqlTags from '../gql/tags';
-import {QueryHookResult, useQuery} from 'react-apollo-hooks';
+import {useQuery} from '@apollo/react-hooks';
 import {SuggestTagValue, SuggestTagValueVariables} from '../gql/__generated__/SuggestTagValue';
 import {TagSelectorEntry, specialTag} from './tagSelectorEntry';
+import {QueryResult} from 'react-apollo';
 
 export const useSuggest = (
-    tagResult: QueryHookResult<Tags, {}>,
+    tagResult: QueryResult<Tags, {}>,
     inputValue: string,
     usedTags: string[],
     skipValue = false
@@ -29,7 +30,7 @@ export const useSuggest = (
 
 const suggestTag = (
     exactMatch: TagSelectorEntry['tag'] | undefined,
-    tagResult: QueryHookResult<Tags, {}>,
+    tagResult: QueryResult<Tags, {}>,
     tagKey: string,
     usedTags: string[]
 ) => {
@@ -58,7 +59,7 @@ const suggestTag = (
 const suggestTagValue = (
     exactMatch: TagSelectorEntry['tag'],
     tagValue: string,
-    valueResult: QueryHookResult<SuggestTagValue, SuggestTagValueVariables>
+    valueResult: QueryResult<SuggestTagValue, SuggestTagValueVariables>
 ): TagSelectorEntry[] => {
     let someValues = (valueResult.data && valueResult.data.values) || [];
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useQuery} from 'react-apollo-hooks';
+import {useQuery} from '@apollo/react-hooks';
 import {CurrentUser} from './gql/__generated__/CurrentUser';
 import * as gqlUser from './gql/user';
 import {CenteredSpinner} from './common/CenteredSpinner';

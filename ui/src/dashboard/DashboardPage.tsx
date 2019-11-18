@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useMutation, useQuery} from 'react-apollo-hooks';
+import {useMutation, useQuery} from '@apollo/react-hooks';
 import * as gqlDashboard from '../gql/dashboard';
 import {default as ReactGrid, Layout, WidthProvider} from 'react-grid-layout';
 import {Dashboards, Dashboards_dashboards_items} from '../gql/__generated__/Dashboards';
@@ -90,10 +90,10 @@ export const DashboardPage: React.FC<RouterProps> = ({match, history}) => {
     const [addEntry, setAddEntry] = React.useState<null | Dashboards_dashboards_items>(null);
     const [[editElement, editEntry], setEdit] = React.useState<[null] | [HTMLElement, Dashboards_dashboards_items]>([null]);
     const {loading, data, error} = useQuery<Dashboards>(gqlDashboard.Dashboards);
-    const updatePos = useMutation<UpdatePos, UpdatePosVariables>(gqlDashboard.UpdatePos, {
+    const [updatePos] = useMutation<UpdatePos, UpdatePosVariables>(gqlDashboard.UpdatePos, {
         refetchQueries: [{query: gqlDashboard.Dashboards}],
     });
-    const removeDashboardEntry = useMutation<RemoveDashboardEntry, RemoveDashboardEntryVariables>(
+    const [removeDashboardEntry] = useMutation<RemoveDashboardEntry, RemoveDashboardEntryVariables>(
         gqlDashboard.RemoveDashboardEntry,
         {
             refetchQueries: [{query: gqlDashboard.Dashboards}],

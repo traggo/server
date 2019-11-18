@@ -8,7 +8,7 @@ import {ToggleTheme} from '../common/ToggleTheme';
 import Link from '@material-ui/core/Link';
 import {DefaultPaper} from '../common/DefaultPaper';
 import * as gqlVersion from '../gql/version';
-import {useQuery} from 'react-apollo-hooks';
+import {useQuery} from '@apollo/react-hooks';
 import {Version} from '../gql/__generated__/Version';
 
 const styles: StyleRulesCallback = () => ({

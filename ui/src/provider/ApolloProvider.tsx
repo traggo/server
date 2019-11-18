@@ -1,8 +1,8 @@
 import ApolloClient from 'apollo-boost';
 import {bootPreferences, setPreferences} from '../user/preferences';
 import * as React from 'react';
-import {default as Provider} from 'react-apollo/ApolloProvider';
-import {ApolloProvider as ApolloProviderHooks} from 'react-apollo-hooks';
+import {ApolloProvider as Provider} from 'react-apollo';
+import {ApolloProvider as ApolloProviderHooks} from '@apollo/react-hooks';
 import {Preferences, UserPreferences} from '../gql/preferences.local';
 
 const client = new ApolloClient({

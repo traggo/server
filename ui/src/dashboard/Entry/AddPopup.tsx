@@ -5,7 +5,7 @@ import {Paper} from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import {Dashboards_dashboards_items} from '../../gql/__generated__/Dashboards';
-import {useMutation} from 'react-apollo-hooks';
+import {useMutation} from '@apollo/react-hooks';
 import * as gqlDashboard from '../../gql/dashboard';
 import {Fade} from '../../common/Fade';
 import {DashboardEntryForm, isValidDashboardEntry} from './DashboardEntryForm';
@@ -34,7 +34,7 @@ export const AddPopup: React.FC<EditPopupProps> = ({
     finish,
     ranges,
 }) => {
-    const addEntry = useMutation<AddDashboardEntry, AddDashboardEntryVariables>(gqlDashboard.AddDashboardEntry, {
+    const [addEntry] = useMutation<AddDashboardEntry, AddDashboardEntryVariables>(gqlDashboard.AddDashboardEntry, {
         refetchQueries: [{query: gqlDashboard.Dashboards}],
     });
     const valid = isValidDashboardEntry(entry);

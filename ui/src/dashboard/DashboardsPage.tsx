@@ -2,7 +2,7 @@ import * as React from 'react';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Paper from '@material-ui/core/Paper';
 import {StyleRulesCallback, WithStyles} from '@material-ui/core/styles';
-import {useMutation, useQuery} from 'react-apollo-hooks';
+import {useMutation, useQuery} from '@apollo/react-hooks';
 import {CenteredSpinner} from '../common/CenteredSpinner';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -42,9 +42,9 @@ export const DashboardsPage = withStyles(styles)(({classes}: WithStyles<typeof s
     const [addUser, setAddUser] = React.useState(false);
     const refetch = {refetchQueries: [{query: gqlDashboard.Dashboards}]};
     const {enqueueSnackbar} = useSnackbar();
-    const removeDashboard = useMutation<RemoveDashboard, RemoveDashboardVariables>(gqlDashboard.RemoveDashboard, refetch);
+    const [removeDashboard] = useMutation<RemoveDashboard, RemoveDashboardVariables>(gqlDashboard.RemoveDashboard, refetch);
     const [[editId, editName], setEditing] = React.useState<Readonly<[number, string]>>(NoEdit);
-    const updateDashboard = useMutation<UpdateDashboard, UpdateDashboardVariables>(gqlDashboard.UpdateDashboard, refetch);
+    const [updateDashboard] = useMutation<UpdateDashboard, UpdateDashboardVariables>(gqlDashboard.UpdateDashboard, refetch);
     if (loading || !data || !data.dashboards) {
         return <CenteredSpinner />;
     }

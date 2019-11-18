@@ -29,7 +29,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import HighlightIcon from '@material-ui/icons/Highlight';
 import {Link} from 'react-router-dom';
 import MenuItem from '@material-ui/core/MenuItem';
-import {useMutation, useQuery} from 'react-apollo-hooks';
+import {useMutation, useQuery} from '@apollo/react-hooks';
 import {Logout} from '../gql/__generated__/Logout';
 import {Preferences, ToggleTheme} from '../gql/preferences.local';
 import {Version} from '../gql/__generated__/Version';
@@ -105,8 +105,8 @@ export const Page = withStyles(styles)(({children, classes}: React.PropsWithChil
 
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [userMenuOpen, setUserMenuOpen] = React.useState<null | HTMLElement>(null);
-    const logout = useMutation<Logout>(gqlUser.Logout, {refetchQueries: [{query: gqlUser.CurrentUser}]});
-    const toggleTheme = useMutation<{}>(ToggleTheme, {refetchQueries: [{query: Preferences}]});
+    const [logout] = useMutation<Logout>(gqlUser.Logout, {refetchQueries: [{query: gqlUser.CurrentUser}]});
+    const [toggleTheme] = useMutation<{}>(ToggleTheme, {refetchQueries: [{query: Preferences}]});
     const {data: {version = gqlVersion.VersionDefault.version} = gqlVersion.VersionDefault} = useQuery<Version>(
         gqlVersion.Version
     );

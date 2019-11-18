@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useQuery} from 'react-apollo-hooks';
+import {useQuery} from '@apollo/react-hooks';
 import {TimeSpans, TimeSpansVariables} from '../gql/__generated__/TimeSpans';
 import * as gqlTimeSpan from '../gql/timeSpan';
 import {useSnackbar} from 'notistack';

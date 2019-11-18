@@ -3,7 +3,7 @@ import {Tags} from '../gql/__generated__/Tags';
 import Chip from '@material-ui/core/Chip';
 import {TagDefinitionType} from '../gql/__generated__/globalTypes';
 import * as gqlTags from '../gql/tags';
-import {useQuery} from 'react-apollo-hooks';
+import {useQuery} from '@apollo/react-hooks';
 import {useError} from '../utils/errors';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';

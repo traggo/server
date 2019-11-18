@@ -6,7 +6,7 @@ import Paper from '@material-ui/core/Paper';
 import {DateTimeSelector} from '../common/DateTimeSelector';
 import {Button} from '@material-ui/core';
 import {inUserTz} from './timeutils';
-import {useMutation} from 'react-apollo-hooks';
+import {useMutation} from '@apollo/react-hooks';
 import {StopTimer, StopTimerVariables} from '../gql/__generated__/StopTimer';
 import * as gqlTimeSpan from '../gql/timeSpan';
 import {UpdateTimeSpan, UpdateTimeSpanVariables} from '../gql/__generated__/UpdateTimeSpan';
@@ -49,7 +49,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
 }) => {
     const [selectedEntries, setSelectedEntries] = React.useState<TagSelectorEntry[]>(initialTags);
     const [openMenu, setOpenMenu] = useStateAndDelegateWithDelayOnChange<null | HTMLElement>(null, (o) => dateSelectorOpen(!!o));
-    const stopTimer = useMutation<StopTimer, StopTimerVariables>(gqlTimeSpan.StopTimer, {
+    const [stopTimer] = useMutation<StopTimer, StopTimerVariables>(gqlTimeSpan.StopTimer, {
         update: (cache, {data}) => {
             const oldTrackers = cache.readQuery<Trackers>({query: gqlTimeSpan.Trackers});
             if (!oldTrackers || !data || !data.stopTimeSpan) {
@@ -64,11 +64,11 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
             addTimeSpanToCache(cache, data.stopTimeSpan);
         },
     });
-    const startTimer = useMutation<StartTimer, StartTimerVariables>(gqlTimeSpan.StartTimer, {
+    const [startTimer] = useMutation<StartTimer, StartTimerVariables>(gqlTimeSpan.StartTimer, {
         refetchQueries: [{query: gqlTimeSpan.Trackers}],
     });
-    const updateTimeSpan = useMutation<UpdateTimeSpan, UpdateTimeSpanVariables>(gqlTimeSpan.UpdateTimeSpan);
-    const removeTimeSpan = useMutation<RemoveTimeSpan, RemoveTimeSpanVariables>(gqlTimeSpan.RemoveTimeSpan, {
+    const [updateTimeSpan] = useMutation<UpdateTimeSpan, UpdateTimeSpanVariables>(gqlTimeSpan.UpdateTimeSpan);
+    const [removeTimeSpan] = useMutation<RemoveTimeSpan, RemoveTimeSpanVariables>(gqlTimeSpan.RemoveTimeSpan, {
         update: (cache, {data}) => {
             const oldData = cache.readQuery<TimeSpans>({query: gqlTimeSpan.TimeSpans});
             const oldTrackers = cache.readQuery<Trackers>({query: gqlTimeSpan.Trackers});
