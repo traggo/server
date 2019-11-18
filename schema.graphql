@@ -263,5 +263,5 @@ enum DashboardSize {
 }
 
 enum EntryType {
-    PieChart, BarChart, StackedBarChart, LineChart
+    PieChart, BarChart, StackedBarChart, LineChart, VerticalTable, HorizontalTable
 }

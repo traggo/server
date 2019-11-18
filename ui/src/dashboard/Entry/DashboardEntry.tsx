@@ -15,6 +15,7 @@ import {DashboardLineChart} from './DashboardLineChart';
 import {CenteredSpinner} from '../../common/CenteredSpinner';
 import {Center} from '../../common/Center';
 import {findRange, Range} from '../../utils/range';
+import {DashboardTable} from './DashboardTable';
 
 interface DashboardEntryProps {
     entry: Dashboards_dashboards_items;
@@ -106,6 +107,24 @@ const SpecificDashboardEntry: React.FC<{entry: Dashboards_dashboards_items; rang
                 );
             }
             return <DashboardLineChart entries={entries} interval={interval} />;
+        case EntryType.VerticalTable:
+            if (entries.length === 0) {
+                return (
+                    <Center>
+                        <Typography>no data</Typography>
+                    </Center>
+                );
+            }
+            return <DashboardTable mode="vertical" entries={entries} interval={interval} />;
+        case EntryType.HorizontalTable:
+            if (entries.length === 0) {
+                return (
+                    <Center>
+                        <Typography>no data</Typography>
+                    </Center>
+                );
+            }
+            return <DashboardTable mode="horizontal" entries={entries} interval={interval} />;
         default:
             return expectNever(entry.entryType);
     }
