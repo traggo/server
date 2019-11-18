@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useQuery} from 'react-apollo-hooks';
+import {useQuery} from '@apollo/react-hooks';
 import * as gqlTimeSpan from '../gql/timeSpan';
 import * as gqlTag from '../gql/tags';
 import {Trackers} from '../gql/__generated__/Trackers';

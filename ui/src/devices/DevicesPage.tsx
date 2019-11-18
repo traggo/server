@@ -2,7 +2,7 @@ import * as React from 'react';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Paper from '@material-ui/core/Paper';
 import {StyleRulesCallback, WithStyles} from '@material-ui/core/styles';
-import {useMutation, useQuery} from 'react-apollo-hooks';
+import {useMutation, useQuery} from '@apollo/react-hooks';
 import * as gqlDevice from '../gql/device';
 import * as gqlUser from '../gql/user';
 import {Devices} from '../gql/__generated__/Devices';
@@ -44,14 +44,14 @@ export const DevicesPage = withStyles(styles)(({classes}: WithStyles<typeof styl
     const {data, loading} = useQuery<Devices>(gqlDevice.Devices);
     const refetch = {refetchQueries: [{query: gqlDevice.Devices}, {query: gqlUser.CurrentUser}]};
     const {enqueueSnackbar} = useSnackbar();
-    const removeDevice = useMutation<RemoveDevice, RemoveDeviceVariables>(gqlDevice.RemoveDevice, refetch);
+    const [removeDevice] = useMutation<RemoveDevice, RemoveDeviceVariables>(gqlDevice.RemoveDevice, refetch);
     const [[editId, editName, editDeviceType], setEditing] = React.useState<[number, string, DeviceType]>([
         -1,
         '',
         DeviceType.NoExpiry,
     ]);
     const [addActive, setAddActive] = React.useState(false);
-    const updateDevice = useMutation<UpdateDevice, UpdateDeviceVariables>(gqlDevice.UpdateDevice, refetch);
+    const [updateDevice] = useMutation<UpdateDevice, UpdateDeviceVariables>(gqlDevice.UpdateDevice, refetch);
     if (loading || !data || !data.currentDevice || !data.devices) {
         return <CenteredSpinner />;
     }

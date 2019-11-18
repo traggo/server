@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useMutation} from 'react-apollo-hooks';
+import {useMutation} from '@apollo/react-hooks';
 import * as gqlDashboard from '../gql/dashboard';
 import {Dashboards_dashboards, Dashboards_dashboards_ranges} from '../gql/__generated__/Dashboards';
 import {IconButton, Paper, Typography} from '@material-ui/core';
@@ -29,13 +29,13 @@ export const DateRanges: React.FC<Props> = ({changeMode, dashboard, ranges, setR
     const [editedNames, setEditedNames] = React.useState<Record<number, string>>({});
     const [openMenu, setOpenMenu] = React.useState<null | [HTMLButtonElement, number]>(null);
 
-    const removeRange = useMutation<RemoveDashboardRange, RemoveDashboardRangeVariables>(gqlDashboard.RemoveDashboardRange, {
+    const [removeRange] = useMutation<RemoveDashboardRange, RemoveDashboardRangeVariables>(gqlDashboard.RemoveDashboardRange, {
         refetchQueries: [{query: gqlDashboard.Dashboards}],
     });
-    const updateRange = useMutation<UpdateDashboardRange, UpdateDashboardRangeVariables>(gqlDashboard.UpdateDashboardRange, {
+    const [updateRange] = useMutation<UpdateDashboardRange, UpdateDashboardRangeVariables>(gqlDashboard.UpdateDashboardRange, {
         refetchQueries: [{query: gqlDashboard.Dashboards}],
     });
-    const addRange = useMutation<AddDashboardRange, AddDashboardRangeVariables>(gqlDashboard.AddDashboardRange, {
+    const [addRange] = useMutation<AddDashboardRange, AddDashboardRangeVariables>(gqlDashboard.AddDashboardRange, {
         refetchQueries: [{query: gqlDashboard.Dashboards}],
     });
     const saveRanges = (range: Dashboards_dashboards_ranges, newRange: Range, newName: string) => {

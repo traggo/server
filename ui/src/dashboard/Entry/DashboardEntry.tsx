@@ -2,7 +2,7 @@ import {Dashboards_dashboards_items} from '../../gql/__generated__/Dashboards';
 import * as React from 'react';
 import {DashboardPieChart} from './DashboardPieChart';
 import {Stats_stats_entries} from '../../gql/__generated__/Stats';
-import {useQuery} from 'react-apollo-hooks';
+import {useQuery} from '@apollo/react-hooks';
 import * as gqlStats from '../../gql/statistics';
 import {Paper} from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';

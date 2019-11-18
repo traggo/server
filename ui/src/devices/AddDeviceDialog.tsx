@@ -7,8 +7,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import * as gqlDevice from '../gql/device';
-import {FetchResult} from 'react-apollo/Mutation';
-import {useMutation} from 'react-apollo-hooks';
+import {MutationFetchResult} from 'react-apollo';
+import {useMutation} from '@apollo/react-hooks';
 import {CreateDevice, CreateDeviceVariables} from '../gql/__generated__/CreateDevice';
 import {useSnackbar} from 'notistack';
 import {handleError} from '../utils/errors';
@@ -30,13 +30,13 @@ export const AddDeviceDialog: React.FC<AddTagDialogProps> = ({close, open, initi
     const [deviceType, setDeviceType] = React.useState(DeviceType.NoExpiry);
     const {enqueueSnackbar} = useSnackbar();
 
-    const addDevice = useMutation<CreateDevice, CreateDeviceVariables>(gqlDevice.CreateDevice, {
+    const [addDevice] = useMutation<CreateDevice, CreateDeviceVariables>(gqlDevice.CreateDevice, {
         refetchQueries: [{query: gqlDevice.Devices}],
     });
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         addDevice({variables: {deviceType, name}})
-            .then((result: FetchResult<CreateDevice>) => {
+            .then((result: MutationFetchResult<CreateDevice>) => {
                 if (result.data && result.data.device) {
                     enqueueSnackbar('Client created', {variant: 'success'});
                     setToken(result.data.device.token);

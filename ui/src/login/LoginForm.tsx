@@ -7,7 +7,7 @@ import * as gqlUser from '../gql/user';
 import {StyleRulesCallback, WithStyles} from '@material-ui/core/styles';
 import withStyles from '@material-ui/core/styles/withStyles';
 import {Login, LoginVariables} from '../gql/__generated__/Login';
-import {useMutation} from 'react-apollo-hooks';
+import {useMutation} from '@apollo/react-hooks';
 import {Checkbox} from '@material-ui/core';
 import {DeviceType} from '../gql/__generated__/globalTypes';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -19,7 +19,7 @@ const styles: StyleRulesCallback = (theme) => ({
 });
 
 export const LoginForm = withStyles(styles)(({classes}: WithStyles<typeof styles>) => {
-    const login = useMutation<Login, LoginVariables>(gqlUser.Login, {
+    const [login] = useMutation<Login, LoginVariables>(gqlUser.Login, {
         update: (cache, {data}) => {
             cache.writeQuery({query: gqlUser.CurrentUser, data: {user: data && data.login && data.login.user}});
         },

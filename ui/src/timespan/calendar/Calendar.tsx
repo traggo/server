@@ -1,7 +1,7 @@
 import * as React from 'react';
 import BigCalendar, {DateRangeFormatFunction, View} from 'react-big-calendar';
 import moment from 'moment';
-import {useMutation, useQuery} from 'react-apollo-hooks';
+import {useMutation, useQuery} from '@apollo/react-hooks';
 import * as gqlTimeSpan from '../../gql/timeSpan';
 import * as gqlTag from '../../gql/tags';
 import {TimeSpans} from '../../gql/__generated__/TimeSpans';
@@ -37,10 +37,10 @@ export const Calendar = () => {
     const trackersResult = useQuery<Trackers>(gqlTimeSpan.Trackers);
     const tagsResult = useQuery<Tags>(gqlTag.Tags);
     const [currentDate, setCurrentDate] = React.useState(moment());
-    const addTimeSpan = useMutation<AddTimeSpan, AddTimeSpanVariables>(gqlTimeSpan.AddTimeSpan, {
+    const [addTimeSpan] = useMutation<AddTimeSpan, AddTimeSpanVariables>(gqlTimeSpan.AddTimeSpan, {
         refetchQueries: [{query: gqlTimeSpan.TimeSpans}],
     });
-    const updateTimeSpanMutation = useMutation<UpdateTimeSpan, UpdateTimeSpanVariables>(gqlTimeSpan.UpdateTimeSpan);
+    const [updateTimeSpanMutation] = useMutation<UpdateTimeSpan, UpdateTimeSpanVariables>(gqlTimeSpan.UpdateTimeSpan);
     useInterval(
         () => {
             setCurrentDate(moment());

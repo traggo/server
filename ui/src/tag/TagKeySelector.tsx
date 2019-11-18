@@ -5,7 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import Chip from '@material-ui/core/Chip';
-import {useQuery} from 'react-apollo-hooks';
+import {useQuery} from '@apollo/react-hooks';
 import {Tags} from '../gql/__generated__/Tags';
 import * as gqlTags from '../gql/tags';
 import {useSuggest} from './suggest';

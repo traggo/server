@@ -2,7 +2,7 @@ import * as React from 'react';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Paper from '@material-ui/core/Paper';
 import {StyleRulesCallback, WithStyles} from '@material-ui/core/styles';
-import {useMutation, useQuery} from 'react-apollo-hooks';
+import {useMutation, useQuery} from '@apollo/react-hooks';
 import * as gqlUser from '../gql/user';
 import {CenteredSpinner} from '../common/CenteredSpinner';
 import Table from '@material-ui/core/Table';
@@ -43,11 +43,11 @@ export const UsersPage = withStyles(styles)(({classes}: WithStyles<typeof styles
     const [addUser, setAddUser] = React.useState(false);
     const refetch = {refetchQueries: [{query: gqlUser.Users}, {query: gqlUser.CurrentUser}]};
     const {enqueueSnackbar} = useSnackbar();
-    const removeUser = useMutation<RemoveUser, RemoveUserVariables>(gqlUser.RemoveUser, refetch);
+    const [removeUser] = useMutation<RemoveUser, RemoveUserVariables>(gqlUser.RemoveUser, refetch);
     const [[editId, editName, editPass, editAdmin], setEditing] = React.useState<Readonly<[number, string, string, boolean]>>(
         NoEdit
     );
-    const updateUser = useMutation<UpdateUser, UpdateUserVariables>(gqlUser.UpdateUser, refetch);
+    const [updateUser] = useMutation<UpdateUser, UpdateUserVariables>(gqlUser.UpdateUser, refetch);
     if (loading || !data || !data.currentUser || !data.users) {
         return <CenteredSpinner />;
     }
