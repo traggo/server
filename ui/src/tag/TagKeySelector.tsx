@@ -1,6 +1,6 @@
 import React from 'react';
 import Downshift from 'downshift';
-import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
+import {makeStyles, Theme} from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -10,35 +10,33 @@ import {Tags} from '../gql/__generated__/Tags';
 import * as gqlTags from '../gql/tags';
 import {useSuggest} from './suggest';
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
-            flexGrow: 1,
-            height: 250,
-        },
-        container: {
-            flexGrow: 1,
-            position: 'relative',
-        },
-        paper: {
-            position: 'absolute',
-            zIndex: 1,
-            marginTop: theme.spacing(1),
-            left: 0,
-            right: 0,
-        },
-        chip: {
-            margin: theme.spacing(0.5, 0.25),
-        },
-        inputRoot: {
-            flexWrap: 'wrap',
-        },
-        inputInput: {
-            width: 'auto',
-            flexGrow: 1,
-        },
-    })
-);
+const useStyles = makeStyles((theme: Theme) => ({
+    root: {
+        flexGrow: 1,
+        height: 250,
+    },
+    container: {
+        flexGrow: 1,
+        position: 'relative',
+    },
+    paper: {
+        position: 'absolute',
+        zIndex: 1,
+        marginTop: theme.spacing(1),
+        left: 0,
+        right: 0,
+    },
+    chip: {
+        margin: theme.spacing(0.5, 0.25),
+    },
+    inputRoot: {
+        flexWrap: 'wrap',
+    },
+    inputInput: {
+        width: 'auto',
+        flexGrow: 1,
+    },
+}));
 
 interface TagKeySelectorProps {
     value: string[];
