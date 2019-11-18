@@ -40,7 +40,11 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
     const container = React.useRef<null | HTMLDivElement>(null);
 
     const tagsResult = useQuery<Tags>(gqlTags.Tags);
-    const suggestions = useSuggest(tagsResult, currentValue, selectedEntries.map((t) => t.tag.key));
+    const suggestions = useSuggest(
+        tagsResult,
+        currentValue,
+        selectedEntries.map((t) => t.tag.key)
+    );
 
     if (tagsResult.error || tagsResult.loading || !tagsResult.data || !tagsResult.data.tags) {
         return null;

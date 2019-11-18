@@ -50,7 +50,7 @@
     "@types/react-router-dom": "^4.3.2",
     "@types/recharts": "^1.1.16",
     "apollo": "^2.21.0",
-    "prettier": "^1.16.4",
+    "prettier": "^1.19.1",
     "react-scripts": "^3.1.0",
     "tslint": "^5.14.0",
     "tslint-sonarts": "^1.9.0"
