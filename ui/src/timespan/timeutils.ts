@@ -1,17 +1,9 @@
-// @ts-ignore
-import Duration from 'duration';
 import moment from 'moment-timezone';
+import prettyMs from 'pretty-ms';
 
 export const timeRunning = (date: moment.Moment, now: moment.Moment) => {
-    const d = new Duration(inUserTz(date).toDate(), inUserTz(now).toDate());
-
-    if (d.minutes < 5) {
-        return d.toString(1, 1);
-    }
-    if (d.hours < 24) {
-        return d.toString(1, 2);
-    }
-    return d.toString(1, 3);
+    const d = inUserTz(now).unix() - inUserTz(date).unix();
+    return prettyMs(d * 1000, {unitCount: 2}).substring(1);
 };
 
 export const uglyConvertToLocalTime = (m: moment.Moment): moment.Moment => {

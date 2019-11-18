@@ -12,7 +12,6 @@
     "@rooks/use-timeout": "^3.0.1",
     "apollo-boost": "^0.4.4",
     "downshift": "^3.2.10",
-    "duration": "^0.2.2",
     "get-best-contrast-color": "^0.2.2",
     "graphql": "^14.5.8",
     "lodash.clonedeep": "^4.5.0",
