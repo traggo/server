@@ -50,7 +50,7 @@ func sessionCallbacks(request *http.Request, writer http.ResponseWriter) *http.R
 	return request.WithContext(WithDestroySession(WithCreateSession(request.Context(), createSession), destroySession))
 }
 
-func reqisterUser(request *http.Request, _ http.ResponseWriter, db *gorm.DB) *http.Request {
+func reqisterUser(request *http.Request, writer http.ResponseWriter, db *gorm.DB) *http.Request {
 	if token, err := getToken(request); err == nil {
 		device := &model.Device{}
 		if db.Where("token = ?", token).Find(device).RecordNotFound() {
@@ -67,6 +67,11 @@ func reqisterUser(request *http.Request, _ http.ResponseWriter, db *gorm.DB) *ht
 			log.Debug().Int("deviceId", device.ID).Str("deviceName", device.Name).Msg("update device activeAt")
 			device.ActiveAt = timeNow()
 			db.Save(device)
+
+			if cookie, err := request.Cookie(traggoSession); err == nil && cookie != nil {
+				cookie.MaxAge = device.Type.Seconds()
+				http.SetCookie(writer, cookie)
+			}
 		}
 
 		return request.WithContext(WithUser(WithDevice(request.Context(), device), user))
