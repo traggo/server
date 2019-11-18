@@ -16,6 +16,10 @@ func InternalEntryType(entryType gqlmodel.EntryType) model.DashboardType {
 		return model.TypeStackedBarChart
 	case gqlmodel.EntryTypeLineChart:
 		return model.TypeLineChart
+	case gqlmodel.EntryTypeHorizontalTable:
+		return model.HorizontalTable
+	case gqlmodel.EntryTypeVerticalTable:
+		return model.VerticalTable
 	default:
 		panic("unknown entry type " + entryType)
 	}
@@ -32,6 +36,10 @@ func ExternalEntryType(entryType model.DashboardType) gqlmodel.EntryType {
 		return gqlmodel.EntryTypeStackedBarChart
 	case model.TypeLineChart:
 		return gqlmodel.EntryTypeLineChart
+	case model.HorizontalTable:
+		return gqlmodel.EntryTypeHorizontalTable
+	case model.VerticalTable:
+		return gqlmodel.EntryTypeVerticalTable
 	default:
 		panic("unknown entry type " + entryType)
 	}

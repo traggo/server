@@ -81,6 +81,8 @@ const (
 	TypePieChart        DashboardType = "piechart"
 	TypeBarChart        DashboardType = "barchart"
 	TypeLineChart       DashboardType = "linechart"
+	HorizontalTable     DashboardType = "horizontaltable"
+	VerticalTable       DashboardType = "verticaltable"
 	TypeStackedBarChart DashboardType = "stackedbarchart"
 
 	IntervalHourly  Interval = "hourly"
