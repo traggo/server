@@ -16,6 +16,7 @@
     "class-name": true,
     "curly": [true],
     "forin": true,
+    "object-literal-shorthand": true,
     "label-position": true,
     "member-access": [true],
     "new-parens": true,
