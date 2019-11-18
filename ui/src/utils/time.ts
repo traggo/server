@@ -123,10 +123,10 @@ export const failure = (error: string): Failure => {
 };
 
 const isOperation = (char: string): char is Operation => {
-    return Object.values(Operation).indexOf(char) !== -1;
+    return Object.values(Operation).indexOf(char as Operation) !== -1;
 };
 const isUnit = (char: string): char is Unit => {
-    return Object.values(Unit).indexOf(char) !== -1;
+    return Object.values(Unit).indexOf(char as Unit) !== -1;
 };
 
 export const isValidDate = (value: string, format?: string) => {

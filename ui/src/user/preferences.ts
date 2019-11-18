@@ -3,7 +3,7 @@ import {UserPreferences} from '../gql/preferences.local';
 
 const prefKey = '__preferences';
 
-export const bootPreferences = (client: ApolloClient<{}>) => {
+export const bootPreferences = (client: ApolloClient<unknown>) => {
     setPreferences(client, cachedPreferences());
 };
 
@@ -20,7 +20,7 @@ export const cachedPreferences = (): UserPreferences => {
     };
 };
 
-export const setPreferences = (client: ApolloClient<{}>, pref: UserPreferences) => {
+export const setPreferences = (client: ApolloClient<unknown>, pref: UserPreferences) => {
     client.writeData<UserPreferences>({data: pref});
 
     localStorage.setItem(prefKey, JSON.stringify(pref));
