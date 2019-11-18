@@ -4,7 +4,7 @@ import {TagSelector} from '../tag/TagSelector';
 import moment from 'moment';
 import Paper from '@material-ui/core/Paper';
 import {DateTimeSelector} from '../common/DateTimeSelector';
-import {Button} from '@material-ui/core';
+import {Button, Typography} from '@material-ui/core';
 import {inUserTz} from './timeutils';
 import {useMutation} from '@apollo/react-hooks';
 import {StopTimer, StopTimerVariables} from '../gql/__generated__/StopTimer';
@@ -21,7 +21,7 @@ import {isSameDate} from '../utils/time';
 import {Trackers} from '../gql/__generated__/Trackers';
 import {addTimeSpanToCache} from '../gql/utils';
 import {StartTimer, StartTimerVariables} from '../gql/__generated__/StartTimer';
-import {RelativeToNow} from '../common/RelativeTime';
+import {RelativeTime, RelativeToNow} from '../common/RelativeTime';
 
 interface Range {
     from: moment.Moment;
@@ -186,14 +186,21 @@ export const TimeSpan: React.FC<TimeSpanProps> = ({
                 />
             ) : (
                 <Button
-                    style={{minWidth: 120}}
                     onClick={() => {
                         stopTimer({variables: {id, end: inUserTz(moment()).format()}}).then(stopped);
                     }}>
-                    Stop <RelativeToNow from={from} />
+                    Stop
                 </Button>
             )}
             <>
+                {
+                    <Typography
+                        variant="subtitle1"
+                        style={{width: 70, textAlign: 'right'}}
+                        title="The amount of time between from and to">
+                        {to ? <RelativeTime from={from} to={to} /> : <RelativeToNow from={from} />}
+                    </Typography>
+                }
                 <IconButton onClick={(e: React.MouseEvent<HTMLElement>) => setOpenMenu(e.currentTarget)}>
                     <MoreVert />
                 </IconButton>

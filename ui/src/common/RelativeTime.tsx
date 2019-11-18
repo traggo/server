@@ -13,5 +13,9 @@ export const RelativeToNow: React.FC<{from: moment.Moment}> = ({from}) => {
         1000,
         true
     );
-    return <>{timeRunning(from, now)}</>;
+    return <RelativeTime from={from} to={now} />;
+};
+
+export const RelativeTime: React.FC<{from: moment.Moment; to: moment.Moment}> = ({from, to}) => {
+    return <>{timeRunning(from, to)}</>;
 };
