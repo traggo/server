@@ -1,7 +1,5 @@
 import * as React from 'react';
-import withStyles from '@material-ui/core/styles/withStyles';
 import Paper from '@material-ui/core/Paper';
-import {StyleRulesCallback, WithStyles} from '@material-ui/core/styles';
 import {useMutation, useQuery} from '@apollo/react-hooks';
 import {CenteredSpinner} from '../common/CenteredSpinner';
 import Table from '@material-ui/core/Table';
@@ -22,8 +20,9 @@ import {Dashboards} from '../gql/__generated__/Dashboards';
 import {RemoveDashboard, RemoveDashboardVariables} from '../gql/__generated__/RemoveDashboard';
 import {UpdateDashboard, UpdateDashboardVariables} from '../gql/__generated__/UpdateDashboard';
 import {AddDashboardDialog} from './AddDashboardDialog';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 
-const styles: StyleRulesCallback = (theme) => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         ...theme.mixins.gutters(),
         paddingTop: theme.spacing(3),
@@ -33,11 +32,12 @@ const styles: StyleRulesCallback = (theme) => ({
         minWidth: 500,
         margin: '0 auto',
     },
-});
+}));
 
 const NoEdit = [-1, ''] as const;
 
-export const DashboardsPage = withStyles(styles)(({classes}: WithStyles<typeof styles>) => {
+export const DashboardsPage = () => {
+    const classes = useStyles();
     const {loading, data} = useQuery<Dashboards>(gqlDashboard.Dashboards);
     const [addUser, setAddUser] = React.useState(false);
     const refetch = {refetchQueries: [{query: gqlDashboard.Dashboards}]};
@@ -132,4 +132,4 @@ export const DashboardsPage = withStyles(styles)(({classes}: WithStyles<typeof s
             </Table>
         </Paper>
     );
-});
+};

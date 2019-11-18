@@ -1,9 +1,8 @@
-import withStyles from '@material-ui/core/styles/withStyles';
 import Paper from '@material-ui/core/Paper';
-import {StyleRulesCallback, WithStyles} from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import * as React from 'react';
 
-const styles: StyleRulesCallback = (theme) => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         ...theme.mixins.gutters(),
         paddingTop: theme.spacing(4),
@@ -12,11 +11,12 @@ const styles: StyleRulesCallback = (theme) => ({
         maxWidth: 400,
         borderTop: `5px solid ${theme.palette.primary.main}`,
     },
-});
-export const DefaultPaper = withStyles(styles)(({children, classes}: WithStyles<typeof styles> & {children: React.ReactNode}) => {
+}));
+export const DefaultPaper: React.FC = ({children}) => {
+    const classes = useStyles();
     return (
         <Paper elevation={10} square={true} className={classes.root}>
             {children}
         </Paper>
     );
-});
+};

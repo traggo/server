@@ -19,7 +19,6 @@ import TimeLineIcon from '@material-ui/icons/Timeline';
 import CalendarIcon from '@material-ui/icons/CalendarToday';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import {StyleRulesCallback, WithStyles, withStyles} from '@material-ui/core/styles';
 import {ListSubheader, Menu} from '@material-ui/core';
 import HrefLink from '@material-ui/core/Link';
 import * as gqlUser from '../gql/user';
@@ -36,10 +35,11 @@ import {Version} from '../gql/__generated__/Version';
 import {CurrentUser} from '../gql/__generated__/CurrentUser';
 import * as gqlDashboard from '../gql/dashboard';
 import {Dashboards} from '../gql/__generated__/Dashboards';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 
 const drawerWidth = 240;
 
-const styles: StyleRulesCallback = (theme) => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
         height: '100%',
@@ -93,14 +93,15 @@ const styles: StyleRulesCallback = (theme) => ({
             display: 'none',
         },
     },
-});
+}));
 
 // tslint:disable-next-line:no-any
 const routerLink = (to: string): any => {
     return React.forwardRef<HTMLAnchorElement>((props, ref) => <Link innerRef={ref} to={to} {...props} />);
 };
 
-export const Page = withStyles(styles)(({children, classes}: React.PropsWithChildren<WithStyles<typeof styles>>) => {
+export const Page: React.FC = ({children}) => {
+    const classes = useStyles();
     const {data} = useQuery<CurrentUser>(gqlUser.CurrentUser);
 
     const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -272,4 +273,4 @@ export const Page = withStyles(styles)(({children, classes}: React.PropsWithChil
             </main>
         </div>
     );
-});
+};

@@ -1,7 +1,5 @@
 import * as React from 'react';
-import withStyles from '@material-ui/core/styles/withStyles';
 import Paper from '@material-ui/core/Paper';
-import {StyleRulesCallback, WithStyles} from '@material-ui/core/styles';
 import {useMutation, useQuery} from '@apollo/react-hooks';
 import * as gqlUser from '../gql/user';
 import {CenteredSpinner} from '../common/CenteredSpinner';
@@ -23,8 +21,9 @@ import {UpdateUser, UpdateUserVariables} from '../gql/__generated__/UpdateUser';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import {AddUserDialog} from './AddUserDialog';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 
-const styles: StyleRulesCallback = (theme) => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         ...theme.mixins.gutters(),
         paddingTop: theme.spacing(3),
@@ -34,11 +33,12 @@ const styles: StyleRulesCallback = (theme) => ({
         minWidth: 500,
         margin: '0 auto',
     },
-});
+}));
 
 const NoEdit = [-1, '', '', false] as const;
 
-export const UsersPage = withStyles(styles)(({classes}: WithStyles<typeof styles>) => {
+export const UsersPage = () => {
+    const classes = useStyles();
     const {data, loading} = useQuery<Users>(gqlUser.Users);
     const [addUser, setAddUser] = React.useState(false);
     const refetch = {refetchQueries: [{query: gqlUser.Users}, {query: gqlUser.CurrentUser}]};
@@ -159,4 +159,4 @@ export const UsersPage = withStyles(styles)(({classes}: WithStyles<typeof styles
             </Table>
         </Paper>
     );
-});
+};

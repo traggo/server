@@ -1,8 +1,6 @@
 import * as React from 'react';
-import {StyleRulesCallback, WithStyles} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import withStyles from '@material-ui/core/styles/withStyles';
 import {LoginForm} from './LoginForm';
 import {ToggleTheme} from '../common/ToggleTheme';
 import Link from '@material-ui/core/Link';
@@ -10,8 +8,9 @@ import {DefaultPaper} from '../common/DefaultPaper';
 import * as gqlVersion from '../gql/version';
 import {useQuery} from '@apollo/react-hooks';
 import {Version} from '../gql/__generated__/Version';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 
-const styles: StyleRulesCallback = () => ({
+const useStyles = makeStyles(() => ({
     footerLink: {
         margin: '0 2px',
     },
@@ -20,9 +19,10 @@ const styles: StyleRulesCallback = () => ({
         top: 5,
         right: 5,
     },
-});
+}));
 
-export const LoginPage = withStyles(styles, {withTheme: true})(({classes}: WithStyles<typeof styles>) => {
+export const LoginPage = () => {
+    const classes = useStyles();
     const {data: {version = gqlVersion.VersionDefault.version} = gqlVersion.VersionDefault} = useQuery<Version>(
         gqlVersion.Version
     );
@@ -56,4 +56,4 @@ export const LoginPage = withStyles(styles, {withTheme: true})(({classes}: WithS
             <ToggleTheme className={classes.themeButton} />
         </Grid>
     );
-});
+};
