@@ -36,7 +36,11 @@ export const DashboardLineChart: React.FC<DashboardPieChartProps> = ({entries, i
         })
         .sort((left, right) => moment(left.start).diff(right.start));
     const dataMax = indexedEntries.reduce((max, entry) => {
-        return Math.max(max, Object.values(entry.data).reduce((a: number, b: number) => Math.max(a, b), 0), 0);
+        return Math.max(
+            max,
+            Object.values(entry.data).reduce((a: number, b: number) => Math.max(a, b), 0),
+            0
+        );
     }, 0);
     const unit = ofSeconds(dataMax);
     const dateFormat = ofInterval(interval);

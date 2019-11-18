@@ -122,13 +122,11 @@ export const DoneTrackers: React.FC<DoneTrackersProps> = ({addTagsToTracker}) =>
     );
 };
 
-const DatedTimeSpans: React.FC<
-    {
-        name: string;
-        setHeight: (cb: (height: Record<string, number>) => Record<string, number>) => void;
-        timeSpans: TimeSpanProps[];
-    } & DoneTrackersProps
-> = ({name, timeSpans, addTagsToTracker, setHeight}) => {
+const DatedTimeSpans: React.FC<{
+    name: string;
+    setHeight: (cb: (height: Record<string, number>) => Record<string, number>) => void;
+    timeSpans: TimeSpanProps[];
+} & DoneTrackersProps> = ({name, timeSpans, addTagsToTracker, setHeight}) => {
     const [ref, setRef] = React.useState<HTMLDivElement | null>();
     React.useEffect(() => {
         if (ref) {
