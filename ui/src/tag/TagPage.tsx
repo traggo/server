@@ -26,6 +26,7 @@ import {AddTagDialog} from './AddTagDialog';
 import {SliderPicker} from 'react-color';
 import {TagChip} from '../common/TagChip';
 import {handleError} from '../utils/errors';
+import {ConfirmDialog} from '../common/ConfirmDialog';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -42,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
 export const TagPage = () => {
     const classes = useStyles();
     const {data, loading} = useQuery<Tags>(gqlTag.Tags);
+    const [removeTagConfirm, setRemoveTagConfirm] = React.useState('');
     const refetch = {refetchQueries: [{query: gqlTag.Tags}, {query: gqlDashboard.Dashboards}]};
     const {enqueueSnackbar} = useSnackbar();
     const [removeTag] = useMutation<RemoveTag, RemoveTagVariables>(gqlTag.RemoveTag, refetch);
@@ -56,12 +58,13 @@ export const TagPage = () => {
     if (loading || !data || !data.tags) {
         return <CenteredSpinner />;
     }
+    const onClickDelete = () => {
+        return removeTag({variables: {key: removeTagConfirm}})
+            .then(() => enqueueSnackbar('tag deleted', {variant: 'success'}))
+            .catch(handleError('Delete Tag', enqueueSnackbar));
+    };
 
     const tags = data.tags.map((tag) => {
-        const onClickDelete = () =>
-            removeTag({variables: {key: tag.key}})
-                .then(() => enqueueSnackbar('tag deleted', {variant: 'success'}))
-                .catch(handleError('Delete Tag', enqueueSnackbar));
         const onClickSubmit = () => {
             setEditing(['', '', '', TagDefinitionType.singlevalue]);
             updateTag({
@@ -115,7 +118,7 @@ export const TagPage = () => {
                             <IconButton onClick={() => setEditing([tag.key, tag.key, tag.color, tag.type])} title="Edit">
                                 <EditIcon />
                             </IconButton>
-                            <IconButton onClick={onClickDelete} title="Delete">
+                            <IconButton onClick={() => setRemoveTagConfirm(tag.key)} title="Delete">
                                 <DeleteIcon />
                             </IconButton>
                         </>
@@ -148,6 +151,14 @@ export const TagPage = () => {
                 <TableBody>
                     {addActive ? <AddTagDialog initialName={''} open={true} close={() => setAddActive(false)} /> : null}
                     {tags}
+                    {removeTagConfirm ? (
+                        <ConfirmDialog
+                            title={`Delete Tag ${removeTagConfirm}`}
+                            fClose={() => setRemoveTagConfirm('')}
+                            fOnSubmit={onClickDelete}>
+                            <b>This operation cannot be undone.</b> Deleting the tag will remove all references in time spans.
+                        </ConfirmDialog>
+                    ) : null}
                 </TableBody>
             </Table>
         </Paper>
