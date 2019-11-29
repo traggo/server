@@ -28,7 +28,7 @@ func (r *ResolverForTag) UpdateTag(ctx context.Context, key string, newKey *stri
 		UserID: userID,
 	}
 
-	if newKey != nil {
+	if newKey != nil && *newKey != key {
 		newValue.Key = strings.ToLower(*newKey)
 		timeSpansIdsOfUser := tx.Model(new(model.TimeSpan)).
 			Select("id").
