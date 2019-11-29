@@ -21,6 +21,7 @@ import {RemoveDashboard, RemoveDashboardVariables} from '../gql/__generated__/Re
 import {UpdateDashboard, UpdateDashboardVariables} from '../gql/__generated__/UpdateDashboard';
 import {AddDashboardDialog} from './AddDashboardDialog';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import {ConfirmDialog} from '../common/ConfirmDialog';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -39,7 +40,8 @@ const NoEdit = [-1, ''] as const;
 export const DashboardsPage = () => {
     const classes = useStyles();
     const {loading, data} = useQuery<Dashboards>(gqlDashboard.Dashboards);
-    const [addUser, setAddUser] = React.useState(false);
+    const [addDashboard, setAddDashboard] = React.useState(false);
+    const [removeDashboardConfirm, setRemoveDashboardConfirm] = React.useState<false | [number, string]>(false);
     const refetch = {refetchQueries: [{query: gqlDashboard.Dashboards}]};
     const {enqueueSnackbar} = useSnackbar();
     const [removeDashboard] = useMutation<RemoveDashboard, RemoveDashboardVariables>(gqlDashboard.RemoveDashboard, refetch);
@@ -48,12 +50,15 @@ export const DashboardsPage = () => {
     if (loading || !data || !data.dashboards) {
         return <CenteredSpinner />;
     }
-
-    const users = data.dashboards.map((dashboard) => {
-        const onClickDelete = () =>
-            removeDashboard({variables: {id: dashboard.id}}).then(() =>
+    const onClickDelete = () => {
+        if (removeDashboardConfirm) {
+            removeDashboard({variables: {id: removeDashboardConfirm[0]}}).then(() =>
                 enqueueSnackbar('dashboard deleted', {variant: 'success'})
             );
+        }
+    };
+
+    const dashboards = data.dashboards.map((dashboard) => {
         const onClickSubmit = () => {
             setEditing(NoEdit);
             updateDashboard({
@@ -98,7 +103,7 @@ export const DashboardsPage = () => {
                             <IconButton onClick={() => setEditing([dashboard.id, dashboard.name])} title="Edit">
                                 <EditIcon />
                             </IconButton>
-                            <IconButton onClick={onClickDelete} title="Delete">
+                            <IconButton onClick={() => setRemoveDashboardConfirm([dashboard.id, dashboard.name])} title="Delete">
                                 <DeleteIcon />
                             </IconButton>
                         </>
@@ -114,12 +119,12 @@ export const DashboardsPage = () => {
                 color={'primary'}
                 variant={'outlined'}
                 size="small"
-                onClick={() => setAddUser(true)}
+                onClick={() => setAddDashboard(true)}
                 fullWidth
                 style={{marginBottom: 10}}>
                 Create Dashboard
             </Button>
-            {addUser && <AddDashboardDialog open={true} close={() => setAddUser(false)} />}
+            {addDashboard && <AddDashboardDialog open={true} close={() => setAddDashboard(false)} />}
             <Table>
                 <TableHead>
                     <TableRow>
@@ -128,8 +133,16 @@ export const DashboardsPage = () => {
                         <TableCell style={{width: 150}} />
                     </TableRow>
                 </TableHead>
-                <TableBody>{users}</TableBody>
+                <TableBody>{dashboards}</TableBody>
             </Table>
+            {removeDashboardConfirm ? (
+                <ConfirmDialog
+                    title={`Delete Dashboard ${removeDashboardConfirm[1]}`}
+                    fClose={() => setRemoveDashboardConfirm(false)}
+                    fOnSubmit={onClickDelete}>
+                    <b>This operation cannot be undone.</b> Deleting the dashboard will remove all its dashboard entries.
+                </ConfirmDialog>
+            ) : null}
         </Paper>
     );
 };
