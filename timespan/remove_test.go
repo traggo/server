@@ -33,6 +33,20 @@ func TestRemoveTimeSpan_succeeds_removesTimeSpan(t *testing.T) {
 	assertTimeSpanCount(t, db, 0)
 }
 
+func TestRemoveTimeSpan_succeeds_removesTags(t *testing.T) {
+	db := test.InMemoryDB(t)
+	defer db.Close()
+	user := db.User(3)
+	ts := user.TimeSpan("2019-06-11T18:00:00Z", "2019-06-11T18:00:00Z")
+	ts.Tag("hello", "world")
+
+	resolver := ResolverForTimeSpan{DB: db.DB}
+	_, err := resolver.RemoveTimeSpan(fake.User(3), ts.TimeSpan.ID)
+	require.NoError(t, err)
+
+	ts.AssertHasTag("hello", "world", false)
+}
+
 func TestRemoveTimeSpan_fails_notExistingTimeSpan(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
