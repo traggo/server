@@ -38,7 +38,6 @@ func TestUpdate_withKey(t *testing.T) {
 }
 
 func TestUpdate_withoutKey(t *testing.T) {
-	test.LogDebug()
 	db := test.InMemoryDB(t)
 	defer db.Close()
 	left := db.User(5)
@@ -61,7 +60,6 @@ func TestUpdate_withoutKey(t *testing.T) {
 }
 
 func TestUpdate_dashboardEntryKey(t *testing.T) {
-	test.LogDebug()
 	db := test.InMemoryDB(t)
 	defer db.Close()
 	left := db.User(5)
@@ -82,7 +80,6 @@ func TestUpdate_dashboardEntryKey(t *testing.T) {
 }
 
 func TestUpdate_noPermissions(t *testing.T) {
-	test.LogDebug()
 	db := test.InMemoryDB(t)
 	defer db.Close()
 	left := db.User(5)
