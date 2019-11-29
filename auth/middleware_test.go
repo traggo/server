@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/traggo/server/model"
 	"github.com/traggo/server/test"
 )
 
@@ -206,21 +205,6 @@ func TestGetCreateSession_panicsWhenMiddlewareWasNotExecuted(t *testing.T) {
 func TestGetDestroySession_panicsWhenMiddlewareWasNotExecuted(t *testing.T) {
 	assert.Panics(t, func() {
 		GetDestroySession(context.Background())
-	})
-}
-
-func TestMiddleware_panicsWhenDeviceExistButUserDoesNot(t *testing.T) {
-	db := test.InMemoryDB(t)
-	defer db.Close()
-	db.Create(&model.Device{
-		ID:     1,
-		UserID: 5,
-		Token:  "abc",
-	})
-	spy := &requestSpy{}
-
-	assert.Panics(t, func() {
-		Middleware(db.DB)(spy).ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/test?token=abc", nil))
 	})
 }
 

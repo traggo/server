@@ -14,6 +14,7 @@ import (
 func TestGQL_CreateTag_succeeds_addsTag(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
+	db.User(5)
 
 	resolver := ResolverForTag{DB: db.DB}
 	tag, err := resolver.CreateTag(fake.User(5), "new tag", "#fff", gqlmodel.TagDefinitionTypeSinglevalue)

@@ -19,6 +19,8 @@ func TestEntries(t *testing.T) {
 	// initial no dashboards
 	user1 := fake.User(1)
 	user2 := fake.User(2)
+	db.User(1)
+	db.User(2)
 	dashboards, err := resolver.Dashboards(user1)
 	require.NoError(t, err)
 	require.Empty(t, dashboards)

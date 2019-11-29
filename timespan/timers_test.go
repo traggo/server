@@ -11,6 +11,7 @@ import (
 
 func TestTimers(t *testing.T) {
 	db := test.InMemoryDB(t)
+	db.User(5)
 	db.Create(timeSpan1)
 	db.Create(runningTimeSpan)
 	defer db.Close()

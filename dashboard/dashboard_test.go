@@ -13,6 +13,8 @@ func TestDashboard(t *testing.T) {
 
 	db := test.InMemoryDB(t)
 	defer db.Close()
+	db.User(1)
+	db.User(2)
 
 	resolver := NewResolverForDashboard(db.DB)
 

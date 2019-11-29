@@ -199,6 +199,7 @@ func TestStats(t *testing.T) {
 			db := test.InMemoryDB(t)
 			defer db.Close()
 
+			db.User(1)
 			for _, timespan := range entry.timespans {
 				db.Create(&timespan)
 			}

@@ -14,6 +14,7 @@ import (
 func Test_Create_withoutEnd(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
+	db.User(5)
 
 	resolver := ResolverForTimeSpan{DB: db.DB}
 	timeSpan, err := resolver.CreateTimeSpan(fake.User(5), test.ModelTime("2019-06-10T18:30:00+02:00"), nil, nil)
@@ -38,6 +39,7 @@ func Test_Create_withoutEnd(t *testing.T) {
 func Test_Create(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
+	db.User(5)
 
 	resolver := ResolverForTimeSpan{DB: db.DB}
 	timeSpan, err := resolver.CreateTimeSpan(fake.User(5), test.ModelTime("2019-06-10T18:30:00+02:00"),
@@ -90,6 +92,7 @@ func Test_Create_fail_notExistingTag(t *testing.T) {
 func Test_Create_withTag(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
+	db.User(5)
 	db.Create(&model.TagDefinition{Key: "test", UserID: 5})
 
 	resolver := ResolverForTimeSpan{DB: db.DB}
@@ -115,6 +118,7 @@ func Test_Create_withTag(t *testing.T) {
 func Test_Create_fail_tagAddedMultipleTimes(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
+	db.User(5)
 	db.Create(&model.TagDefinition{Key: "test", UserID: 5})
 
 	resolver := ResolverForTimeSpan{DB: db.DB}

@@ -13,7 +13,8 @@ import (
 
 func Test_Update_withoutEnd(t *testing.T) {
 	db := test.InMemoryDB(t)
-	db.User(5)
+	defer db.Close()
+	db.User(3)
 	db.Create(&model.TimeSpan{
 		ID:            1,
 		UserID:        3,
@@ -22,7 +23,6 @@ func Test_Update_withoutEnd(t *testing.T) {
 		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
 	})
-	defer db.Close()
 
 	resolver := ResolverForTimeSpan{DB: db.DB}
 	timeSpan, err := resolver.UpdateTimeSpan(fake.User(3), 1, test.ModelTime("2019-06-10T19:30:00+02:00"), nil, nil, nil)
@@ -47,6 +47,8 @@ func Test_Update_withoutEnd(t *testing.T) {
 
 func Test_Update(t *testing.T) {
 	db := test.InMemoryDB(t)
+	defer db.Close()
+	db.User(5)
 	db.Create(&model.TimeSpan{
 		ID:            3,
 		UserID:        5,
@@ -55,7 +57,6 @@ func Test_Update(t *testing.T) {
 		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
 	})
-	defer db.Close()
 
 	resolver := ResolverForTimeSpan{DB: db.DB}
 	timeSpan, err := resolver.UpdateTimeSpan(fake.User(5), 3, test.ModelTime("2019-06-10T18:30:00+02:00"),
@@ -84,6 +85,8 @@ func Test_Update(t *testing.T) {
 
 func Test_Update_fail_endBeforeStart(t *testing.T) {
 	db := test.InMemoryDB(t)
+	defer db.Close()
+	db.User(5)
 	db.Create(&model.TimeSpan{
 		ID:            3,
 		UserID:        5,
@@ -94,7 +97,6 @@ func Test_Update_fail_endBeforeStart(t *testing.T) {
 		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
 	})
-	defer db.Close()
 
 	resolver := ResolverForTimeSpan{DB: db.DB}
 	timeSpan, err := resolver.UpdateTimeSpan(fake.User(5), 3, test.ModelTime("2019-06-10T18:30:00+02:00"),
@@ -106,6 +108,8 @@ func Test_Update_fail_endBeforeStart(t *testing.T) {
 
 func Test_Update_fail_notExistingTag(t *testing.T) {
 	db := test.InMemoryDB(t)
+	defer db.Close()
+	db.User(5)
 	db.Create(&model.TimeSpan{
 		ID:            3,
 		UserID:        5,
@@ -116,7 +120,6 @@ func Test_Update_fail_notExistingTag(t *testing.T) {
 		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
 	})
-	defer db.Close()
 
 	resolver := ResolverForTimeSpan{DB: db.DB}
 	timeSpan, err := resolver.UpdateTimeSpan(fake.User(5), 3, test.ModelTime("2019-06-10T18:30:00+02:00"),
@@ -138,6 +141,8 @@ func Test_Update_fail_notExistingTag(t *testing.T) {
 
 func Test_Update_withTag(t *testing.T) {
 	db := test.InMemoryDB(t)
+	defer db.Close()
+	db.User(5)
 	db.Create(&model.TimeSpan{
 		ID:            3,
 		UserID:        5,
@@ -148,7 +153,6 @@ func Test_Update_withTag(t *testing.T) {
 		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
 	})
-	defer db.Close()
 	db.Create(&model.TagDefinition{Key: "test", UserID: 5})
 
 	resolver := ResolverForTimeSpan{DB: db.DB}
@@ -173,6 +177,8 @@ func Test_Update_withTag(t *testing.T) {
 
 func Test_Update_fail_tagAddedMultipleTimes(t *testing.T) {
 	db := test.InMemoryDB(t)
+	defer db.Close()
+	db.User(5)
 	db.Create(&model.TimeSpan{
 		ID:            3,
 		UserID:        5,
@@ -183,7 +189,6 @@ func Test_Update_fail_tagAddedMultipleTimes(t *testing.T) {
 		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
 	})
-	defer db.Close()
 	db.Create(&model.TagDefinition{Key: "test", UserID: 5})
 
 	resolver := ResolverForTimeSpan{DB: db.DB}
@@ -197,6 +202,7 @@ func Test_Update_fail_tagAddedMultipleTimes(t *testing.T) {
 func Test_Update_fail_notExisting(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
+	db.User(5)
 	db.Create(&model.TagDefinition{Key: "test", UserID: 5})
 
 	resolver := ResolverForTimeSpan{DB: db.DB}
@@ -211,6 +217,7 @@ func Test_Update_fail_noPermission(t *testing.T) {
 	db := test.InMemoryDB(t)
 	db.User(3)
 	db.User(2)
+	db.User(5)
 	db.Create(&model.TimeSpan{
 		ID:            3,
 		UserID:        3,

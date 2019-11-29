@@ -13,6 +13,7 @@ import (
 func TestCopy_noPermission(t *testing.T) {
 	db := test.InMemoryDB(t)
 	db.User(3)
+	db.User(5)
 	db.User(2)
 	db.Create(&model.TimeSpan{
 		ID:            3,
@@ -86,6 +87,7 @@ func TestCopy_notFound(t *testing.T) {
 	db := test.InMemoryDB(t)
 	db.User(3)
 	db.User(2)
+	db.User(5)
 	defer db.Close()
 	db.Create(&model.TagDefinition{Key: "test", UserID: 5})
 

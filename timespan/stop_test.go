@@ -13,6 +13,7 @@ import (
 func Test_Stop_fail_notExisting(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
+	db.User(5)
 	db.Create(&model.TagDefinition{Key: "test", UserID: 5})
 
 	resolver := ResolverForTimeSpan{DB: db.DB}
@@ -26,6 +27,7 @@ func Test_Stop_fail_noPermission(t *testing.T) {
 	db := test.InMemoryDB(t)
 	db.User(3)
 	db.User(2)
+	db.User(5)
 	db.Create(&model.TimeSpan{
 		ID:            3,
 		UserID:        3,
@@ -47,6 +49,7 @@ func Test_Stop_fail_noPermission(t *testing.T) {
 func Test_Stop_fail_alreadyFinished(t *testing.T) {
 	db := test.InMemoryDB(t)
 	db.User(2)
+	db.User(5)
 	db.Create(&model.TimeSpan{
 		ID:            3,
 		UserID:        2,
@@ -70,6 +73,7 @@ func Test_Stop_fail_alreadyFinished(t *testing.T) {
 func Test_Stop(t *testing.T) {
 	db := test.InMemoryDB(t)
 	db.User(2)
+	db.User(5)
 	db.Create(&model.TimeSpan{
 		ID:            3,
 		UserID:        2,

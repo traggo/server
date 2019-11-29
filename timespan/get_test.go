@@ -244,6 +244,7 @@ func TestGet(t *testing.T) {
 		t.Run(fmt.Sprintf("%d>%s", i, testData), func(t *testing.T) {
 			db := test.InMemoryDB(t)
 			db.User(5)
+			db.User(2)
 			defer db.Close()
 			for _, entry := range testData.DB {
 				db.Create(entry)
