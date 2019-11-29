@@ -25,9 +25,11 @@ func TestDatabase(t *testing.T) {
 
 	ts := user.TimeSpan("2009-06-30T18:30:00Z", "2009-06-30T18:40:00Z")
 
+	ts.AssertHasTagIgnoreValue("abc", false)
 	ts.AssertHasTag("abc", "def", false)
 	ts.Tag("abc", "def")
 	ts.AssertHasTag("abc", "def", true)
+	ts.AssertHasTagIgnoreValue("abc", true)
 
 	db.NewUser(2, "abc", true)
 	db.NewUserPass(3, "xxx", []byte{5, 5}, true)

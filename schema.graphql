@@ -28,6 +28,7 @@ type RootMutation {
     createTimeSpan(start: Time!, end: Time, tags: [InputTimeSpanTag!]): TimeSpan @hasRole(role: USER)
     updateTimeSpan(id: Int!, start: Time!, end: Time, tags: [InputTimeSpanTag!], oldStart: Time): TimeSpan @hasRole(role: USER)
     removeTimeSpan(id: Int!): TimeSpan @hasRole(role: USER)
+    replaceTimeSpanTags(from: InputTimeSpanTag!, to: InputTimeSpanTag!, opt: InputReplaceOptions!): Boolean @hasRole(role: USER)
     copyTimeSpan(id: Int!, start: Time!, end: Time): TimeSpan @hasRole(role: USER)
     stopTimeSpan(id: Int!, end: Time!): TimeSpan @hasRole(role: USER)
 
@@ -62,6 +63,14 @@ type RootQuery {
     settings(namespace: String!): [Setting!] @hasRole(role: USER)
     settingGet(namespace: String!, key: String!): String! @hasRole(role: USER)
     dashboards: [Dashboard!] @hasRole(role: USER)
+}
+
+input InputReplaceOptions {
+    override: OverrideMode!
+}
+
+enum OverrideMode {
+    Override, Discard
 }
 
 input InputCursor {

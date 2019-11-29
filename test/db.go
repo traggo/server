@@ -230,6 +230,16 @@ func (d *TimeSpanWithDatabase) AssertHasTag(key, value string, exist bool) *Time
 	return d
 }
 
+// AssertHasTagIgnoreValue asserts if the tag exists or not.
+func (d *TimeSpanWithDatabase) AssertHasTagIgnoreValue(key string, exist bool) *TimeSpanWithDatabase {
+	existActual := !d.DB.
+		Where(&model.TimeSpanTag{Key: key, TimeSpanID: d.TimeSpan.ID}).
+		Find(new(model.TimeSpanTag)).
+		RecordNotFound()
+	assert.True(d.t, exist == existActual)
+	return d
+}
+
 // AssertExists asserts if the tag exists or not.
 func (d *TimeSpanWithDatabase) AssertExists(exist bool) *TimeSpanWithDatabase {
 	existActual := !d.DB.

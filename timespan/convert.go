@@ -63,12 +63,16 @@ func tagsToExternal(tags []model.TimeSpanTag) []*gqlmodel.TimeSpanTag {
 func tagsToInternal(gqls []*gqlmodel.InputTimeSpanTag) []model.TimeSpanTag {
 	result := make([]model.TimeSpanTag, 0)
 	for _, tag := range gqls {
-		result = append(result, model.TimeSpanTag{
-			Key:         tag.Key,
-			StringValue: tag.StringValue,
-		})
+		result = append(result, tagToInternal(*tag))
 	}
 	return result
+}
+
+func tagToInternal(gqls gqlmodel.InputTimeSpanTag) model.TimeSpanTag {
+	return model.TimeSpanTag{
+		Key:         gqls.Key,
+		StringValue: gqls.StringValue,
+	}
 }
 
 func tagsToInputTag(tags []model.TimeSpanTag) []*gqlmodel.InputTimeSpanTag {
