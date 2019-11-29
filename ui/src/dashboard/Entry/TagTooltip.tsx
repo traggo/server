@@ -9,18 +9,11 @@ import * as React from 'react';
 export const TagTooltip = ({active, payload, dateFormat}: TooltipProps & {dateFormat: FInterval}) => {
     if (active && payload) {
         const first = payload[0];
+        const start = dateFormat(moment(first.payload.start));
+        const end = dateFormat(moment(first.payload.end));
         return (
             <Paper style={{padding: 10}} elevation={4}>
-                {first && (
-                    <Typography variant={'subtitle2'}>
-                        {(() => {
-                            const start = dateFormat(moment(first.payload.start));
-                            const end = dateFormat(moment(first.payload.end));
-                            console.log(first.payload);
-                            return start === end ? `${start}` : `${start} - ${end}`;
-                        })()}
-                    </Typography>
-                )}
+                {first && <Typography variant={'subtitle2'}>{start === end ? `${start}` : `${start} - ${end}`}</Typography>}
                 {payload.map((entry) => {
                     return (
                         <Typography key={entry.name}>

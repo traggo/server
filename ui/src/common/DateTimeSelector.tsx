@@ -55,7 +55,6 @@ export const DateTimeSelector: React.FC<DateTimeSelectorProps> = React.memo(
                 format={showDate ? 'YYYY/MM/DD HH:mm' : 'HH:mm'}
                 label={label}
                 openTo={showDate ? 'date' : 'hours'}
-                onError={console.log}
             />
         );
     }

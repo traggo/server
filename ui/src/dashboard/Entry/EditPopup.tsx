@@ -59,7 +59,6 @@ export const EditPopup: React.FC<EditPopupProps> = ({entry, anchorEl, onChange: 
                                 variant={'contained'}
                                 disabled={!valid}
                                 onClick={() => {
-                                    console.log(entry.statsSelection);
                                     updateEntry({
                                         variables: {
                                             entryId: entry.id,
