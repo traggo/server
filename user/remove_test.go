@@ -21,7 +21,6 @@ func TestGQL_RemoveUser_succeeds_removesUser(t *testing.T) {
 }
 
 func TestGQL_RemoveUser_succeeds_removesDevices(t *testing.T) {
-	test.LogDebug()
 	db := test.InMemoryDB(t)
 	defer db.Close()
 	user := db.User(1)

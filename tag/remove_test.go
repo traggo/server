@@ -21,7 +21,6 @@ func TestGQL_RemoveTag_succeeds_removesTag(t *testing.T) {
 }
 
 func TestGQL_RemoveTag_succeeds_removesTimespans(t *testing.T) {
-	test.LogDebug()
 	db := test.InMemoryDB(t)
 	defer db.Close()
 	left := db.User(3)

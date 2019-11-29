@@ -32,7 +32,6 @@ func TestCleanUp_stops(t *testing.T) {
 }
 
 func TestCleanUp_removeExpiredDevices(t *testing.T) {
-	test.LogDebug()
 	now := test.Time("2018-06-30T18:30:00Z")
 	timeDispose := fakeTime(now)
 	defer timeDispose()
