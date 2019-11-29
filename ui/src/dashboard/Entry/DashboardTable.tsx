@@ -43,15 +43,17 @@ export const DashboardTable: React.FC<DashboardTableProps> = ({entries, interval
                 {mode === 'vertical' ? (
                     <>
                         <TableHead>
-                            <TableCell>Date</TableCell>
-                            {keys.map((key) => {
-                                return <TableCell key={key}>{key}</TableCell>;
-                            })}
+                            <TableRow>
+                                <TableCell>Date</TableCell>
+                                {keys.map((key) => {
+                                    return <TableCell key={key}>{key}</TableCell>;
+                                })}
+                            </TableRow>
                         </TableHead>
                         <TableBody>
                             {indexedEntries.map((entry) => {
                                 return (
-                                    <TableRow>
+                                    <TableRow key={entry.start}>
                                         <TableCell>{dateFormat(moment(entry.start))}</TableCell>
                                         {keys.map((key) => {
                                             return (
@@ -66,26 +68,24 @@ export const DashboardTable: React.FC<DashboardTableProps> = ({entries, interval
                 ) : (
                     <>
                         <TableHead>
-                            <TableCell>Date</TableCell>
-                            {indexedEntries.map((entry) => {
-                                return <TableCell key={entry.start}>{dateFormat(moment(entry.start))}</TableCell>;
-                            })}
+                            <TableRow>
+                                <TableCell>Date</TableCell>
+                                {indexedEntries.map((entry) => {
+                                    return <TableCell key={entry.start}>{dateFormat(moment(entry.start))}</TableCell>;
+                                })}
+                            </TableRow>
                         </TableHead>
                         <TableBody>
                             {keys.map((key) => {
                                 return (
-                                    <>
-                                        <TableRow>
-                                            <TableCell>{key}</TableCell>
-                                            {indexedEntries.map((entry) => {
-                                                return (
-                                                    <TableCell key={key + entry.start}>
-                                                        {prettyMs(entry.data[key] * 1000)}
-                                                    </TableCell>
-                                                );
-                                            })}
-                                        </TableRow>
-                                    </>
+                                    <TableRow key={key}>
+                                        <TableCell>{key}</TableCell>
+                                        {indexedEntries.map((entry) => {
+                                            return (
+                                                <TableCell key={key + entry.start}>{prettyMs(entry.data[key] * 1000)}</TableCell>
+                                            );
+                                        })}
+                                    </TableRow>
                                 );
                             })}
                         </TableBody>
