@@ -43,6 +43,30 @@ func (r *ResolverForTag) UpdateTag(ctx context.Context, key string, newKey *stri
 			tx.Rollback()
 			return nil, err
 		}
+		usedInEntries := []model.DashboardEntry{}
+
+		// Do not read the next statements, not proud of it.
+		if err := tx.Where("keys LIKE ?", "%"+key).
+			Or("keys like ?", "%"+key+"%").
+			Or("keys like ?", key+"%").
+			Find(&usedInEntries).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+
+		for _, entry := range usedInEntries {
+			tags := strings.Split(entry.Keys, ",")
+			for index, tagInEntry := range tags {
+				if tagInEntry == key {
+					tags[index] = *newKey
+				}
+			}
+			entry.Keys = strings.Join(tags, ",")
+			if err := tx.Save(&entry).Error; err != nil {
+				tx.Rollback()
+				return nil, err
+			}
+		}
 	}
 
 	if err := tx.Model(new(model.TagDefinition)).Where(&model.TagDefinition{UserID: userID, Key: key}).Updates(&newValue).Error; err != nil {

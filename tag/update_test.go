@@ -60,6 +60,27 @@ func TestUpdate_withoutKey(t *testing.T) {
 	}, tag)
 }
 
+func TestUpdate_dashboardEntryKey(t *testing.T) {
+	test.LogDebug()
+	db := test.InMemoryDB(t)
+	defer db.Close()
+	left := db.User(5)
+	left.NewTagDefinition("coolio")
+	dashboard := left.Dashboard("yeah")
+	dashboard.Entry("entry")
+	entry := dashboard.Dashboard.Entries[0]
+	entry.Keys = "abc,coolio,chicken"
+	db.Save(&entry)
+
+	newTag := "yes"
+	resolver := ResolverForTag{DB: db.DB}
+	_, err := resolver.UpdateTag(fake.User(left.User.ID), "coolio", &newTag, "#abc", gqlmodel.TagDefinitionTypeSinglevalue)
+	require.NoError(t, err)
+
+	db.Find(&entry)
+	require.Equal(t, "abc,yes,chicken", entry.Keys)
+}
+
 func TestUpdate_noPermissions(t *testing.T) {
 	test.LogDebug()
 	db := test.InMemoryDB(t)
