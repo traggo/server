@@ -25,7 +25,7 @@ export const DateTimeSelector: React.FC<DateTimeSelectorProps> = React.memo(
                 onChange={(date: moment.Moment) => {
                     if (!showDate) {
                         date = date.set({
-                            day: selectedDate.day(),
+                            date: selectedDate.date(),
                             month: selectedDate.month(),
                             year: selectedDate.year(),
                         });
