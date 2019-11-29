@@ -12,7 +12,7 @@ type Device struct {
 	ID        int    `gorm:"primary_key;unique_index;AUTO_INCREMENT"`
 	Token     string `gorm:"unique"`
 	Name      string
-	UserID    int
+	UserID    int `gorm:"type:int REFERENCES users(id) ON DELETE CASCADE"`
 	CreatedAt time.Time
 	Type      DeviceType
 	ActiveAt  time.Time

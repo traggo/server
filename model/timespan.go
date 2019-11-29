@@ -10,13 +10,13 @@ type TimeSpan struct {
 	StartUserTime time.Time
 	EndUserTime   *time.Time
 	OffsetUTC     int
-	UserID        int
+	UserID        int `gorm:"type:int REFERENCES users(id) ON DELETE CASCADE"`
 	Tags          []TimeSpanTag
 }
 
 // TimeSpanTag is a tag for a time range
 type TimeSpanTag struct {
-	TimeSpanID  int
+	TimeSpanID  int `gorm:"type:int REFERENCES time_spans(id) ON DELETE CASCADE"`
 	Key         string
 	StringValue *string
 }

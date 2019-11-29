@@ -83,3 +83,22 @@ func TestDashboard(t *testing.T) {
 	require.NoError(t, err)
 	require.Empty(t, dashboards)
 }
+
+func TestDeleteDashboard(t *testing.T) {
+	db := test.InMemoryDB(t)
+	defer db.Close()
+
+	dbOne := db.User(1).Dashboard("test")
+	dbOne.Range("r")
+	dbOne.Entry("e")
+	dbTwo := db.User(2).Dashboard("test")
+	dbTwo.Range("r")
+	dbTwo.Entry("e")
+
+	resolver := NewResolverForDashboard(db.DB)
+	_, err := resolver.RemoveDashboard(fake.User(dbOne.User.ID), dbOne.Dashboard.ID)
+	require.NoError(t, err)
+
+	dbOne.AssertExists(false).AssertHasEntry("e", false).AssertHasRange("r", false)
+	dbTwo.AssertExists(true).AssertHasEntry("e", true).AssertHasRange("r", true)
+}

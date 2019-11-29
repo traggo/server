@@ -18,7 +18,9 @@ func TestDatabase(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
 	user := db.User(1)
+	user.AssertHasDevice("test device", false)
 	user.NewDevice(1, "lol", "test device")
+	user.AssertHasDevice("test device", true)
 	ts := user.TimeSpan("2009-06-30T18:30:00Z", "2009-06-30T18:40:00Z")
 
 	ts.AssertHasTag("abc", "def", false)
@@ -77,4 +79,21 @@ func TestDatabase(t *testing.T) {
 	user.NewTagDefinition("oops")
 	user.AssertHasTagDefinition("oops", true)
 
+	user.AssertExists(true)
+	db.Delete(new(model.User), "id = ?", user.User.ID)
+	user.AssertExists(false)
+
+	dash := user.Dashboard("hello")
+
+	dash.AssertHasRange("hello", false)
+	dash.Range("hello")
+	dash.AssertHasRange("hello", true)
+
+	dash.AssertHasEntry("abc", false)
+	dash.Entry("abc")
+	dash.AssertHasEntry("abc", true)
+
+	dash.AssertExists(true)
+	db.Delete(new(model.Dashboard), "id = ?", dash.Dashboard.ID)
+	dash.AssertExists(false)
 }

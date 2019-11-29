@@ -9,7 +9,7 @@ import (
 type DashboardRange struct {
 	ID          int `gorm:"primary_key;unique_index;AUTO_INCREMENT"`
 	Name        string
-	DashboardID int
+	DashboardID int `gorm:"type:int REFERENCES dashboards(id) ON DELETE CASCADE"`
 	Editable    bool
 	From        string
 	To          string
@@ -18,7 +18,7 @@ type DashboardRange struct {
 // Dashboard a dashboard
 type Dashboard struct {
 	ID      int `gorm:"primary_key;unique_index;AUTO_INCREMENT"`
-	UserID  int
+	UserID  int `gorm:"type:int REFERENCES users(id) ON DELETE CASCADE"`
 	Name    string
 	Entries []DashboardEntry
 	Ranges  []DashboardRange
@@ -27,7 +27,7 @@ type Dashboard struct {
 // DashboardEntry an entry which represents a diagram in a dashboard.
 type DashboardEntry struct {
 	ID          int `gorm:"primary_key;unique_index;AUTO_INCREMENT"`
-	DashboardID int
+	DashboardID int `gorm:"type:int REFERENCES dashboards(id) ON DELETE CASCADE"`
 	Title       string
 	Type        DashboardType
 	Keys        string

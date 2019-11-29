@@ -16,19 +16,7 @@ func (r *ResolverForTimeSpan) RemoveTimeSpan(ctx context.Context, id int) (*gqlm
 		return nil, fmt.Errorf("timespan with id %d does not exist", timeSpan.ID)
 	}
 
-	tx := r.DB.Begin()
-
-	if err := tx.Delete(&timeSpan).Error; err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-
-	if err := tx.Where(&model.TimeSpanTag{TimeSpanID: timeSpan.ID}).Delete(new(model.TimeSpanTag)).Error; err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-
-	remove := tx.Commit()
+	remove := r.DB.Where(&model.TimeSpan{ID: id}).Delete(new(model.TimeSpan))
 
 	external := timeSpanToExternal(timeSpan)
 	return external, remove.Error

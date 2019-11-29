@@ -36,6 +36,7 @@ func New(dialect, connection string) (*gorm.DB, error) {
 		// concurrent writes, so we limit sqlite to one connection.
 		// see https://github.com/mattn/go-sqlite3/issues/274
 		db.DB().SetMaxOpenConns(1)
+		db.Exec("PRAGMA foreign_keys = ON")
 	}
 
 	log.Debug().Msg("Auto migrating schema's")
