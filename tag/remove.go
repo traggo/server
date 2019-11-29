@@ -17,6 +17,22 @@ func (r *ResolverForTag) RemoveTag(ctx context.Context, key string) (*gqlmodel.T
 	if r.DB.Where(&model.TagDefinition{UserID: userID, Key: key}).Find(&tag).RecordNotFound() {
 		return nil, fmt.Errorf("tag with key '%s' does not exist", key)
 	}
+
+	usedInEntries := []model.DashboardEntry{}
+	// Do not read the next statements, not proud of it.
+	if err := r.DB.Where("keys LIKE ?", "%"+key).
+		Or("keys like ?", "%"+key+"%").
+		Or("keys like ?", key+"%").
+		Find(&usedInEntries).Error; err != nil {
+		return nil, err
+	}
+
+	if len(usedInEntries) > 0 {
+		dashboard := &model.Dashboard{ID: usedInEntries[0].DashboardID}
+		r.DB.Find(dashboard)
+		return nil, fmt.Errorf("tag '%s' is used in dashboard '%s' entry '%s', remove this reference before deleting the tag", key, dashboard.Name, usedInEntries[0].Title)
+	}
+
 	tx := r.DB.Begin()
 	if err := tx.Where(model.TagDefinition{Key: key, UserID: userID}).
 		Delete(new(model.TagDefinition)).Error; err != nil {

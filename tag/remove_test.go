@@ -20,6 +20,22 @@ func TestGQL_RemoveTag_succeeds_removesTag(t *testing.T) {
 	user.AssertHasTagDefinition("existing", false)
 }
 
+func TestRemove_referencedInDashboardEntry(t *testing.T) {
+	db := test.InMemoryDB(t)
+	defer db.Close()
+	left := db.User(5)
+	left.NewTagDefinition("coolio")
+	dashboard := left.Dashboard("yeah")
+	dashboard.Entry("entry")
+	entry := dashboard.Dashboard.Entries[0]
+	entry.Keys = "abc,coolio,chicken"
+	db.Save(&entry)
+
+	resolver := ResolverForTag{DB: db.DB}
+	_, err := resolver.RemoveTag(fake.User(left.User.ID), "coolio")
+	require.EqualError(t, err, "tag 'coolio' is used in dashboard 'yeah' entry 'entry', remove this reference before deleting the tag")
+}
+
 func TestGQL_RemoveTag_succeeds_removesTimespans(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
