@@ -22,6 +22,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import {AddUserDialog} from './AddUserDialog';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import {ConfirmDialog} from '../common/ConfirmDialog';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -43,6 +44,7 @@ export const UsersPage = () => {
     const [addUser, setAddUser] = React.useState(false);
     const refetch = {refetchQueries: [{query: gqlUser.Users}, {query: gqlUser.CurrentUser}]};
     const {enqueueSnackbar} = useSnackbar();
+    const [removeUserConfirmation, setRemoveUserConfirmation] = React.useState<false | [number, string]>(false);
     const [removeUser] = useMutation<RemoveUser, RemoveUserVariables>(gqlUser.RemoveUser, refetch);
     const [[editId, editName, editPass, editAdmin], setEditing] = React.useState<Readonly<[number, string, string, boolean]>>(
         NoEdit
@@ -51,10 +53,15 @@ export const UsersPage = () => {
     if (loading || !data || !data.currentUser || !data.users) {
         return <CenteredSpinner />;
     }
+    const onClickDelete = () => {
+        if (removeUserConfirmation) {
+            removeUser({variables: {id: removeUserConfirmation[0]}}).then(() =>
+                enqueueSnackbar('user deleted', {variant: 'success'})
+            );
+        }
+    };
 
     const users = data.users.map((user) => {
-        const onClickDelete = () =>
-            removeUser({variables: {id: user.id}}).then(() => enqueueSnackbar('user deleted', {variant: 'success'}));
         const onClickSubmit = () => {
             setEditing(NoEdit);
             updateUser({
@@ -123,7 +130,7 @@ export const UsersPage = () => {
                             <IconButton onClick={() => setEditing([user.id, user.name, '', user.admin])} title="Edit">
                                 <EditIcon />
                             </IconButton>
-                            <IconButton onClick={onClickDelete} title="Delete">
+                            <IconButton onClick={() => setRemoveUserConfirmation([user.id, user.name])} title="Delete">
                                 <DeleteIcon />
                             </IconButton>
                         </>
@@ -157,6 +164,15 @@ export const UsersPage = () => {
                 </TableHead>
                 <TableBody>{users}</TableBody>
             </Table>
+            {removeUserConfirmation ? (
+                <ConfirmDialog
+                    title={`Are you sure you want to delete the user '${removeUserConfirmation[1]}'?`}
+                    fClose={() => setRemoveUserConfirmation(false)}
+                    fOnSubmit={onClickDelete}>
+                    <b>This operation cannot be undone.</b> Deleting the user includes deleting dashboards, time spans, tags and
+                    devices of that user.
+                </ConfirmDialog>
+            ) : null}
         </Paper>
     );
 };
