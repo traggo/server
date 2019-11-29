@@ -3,6 +3,7 @@ package tag
 import (
 	"context"
 	"fmt"
+
 	"github.com/jinzhu/copier"
 	"github.com/traggo/server/auth"
 	"github.com/traggo/server/generated/gqlmodel"
@@ -14,7 +15,7 @@ func (r *ResolverForTag) RemoveTag(ctx context.Context, key string) (*gqlmodel.T
 	tag := model.TagDefinition{}
 	userId := auth.GetUser(ctx).ID
 	if r.DB.Where(&model.TagDefinition{UserID: userId, Key: key}).Find(&tag).RecordNotFound() {
-		return nil, fmt.Errorf("tag with key '%s' does not exist", tag.Key)
+		return nil, fmt.Errorf("tag with key '%s' does not exist", key)
 	}
 	tx := r.DB.Begin()
 	if err := tx.Where(model.TagDefinition{Key: key, UserID: userId}).
