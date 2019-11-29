@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {Tags} from '../gql/__generated__/Tags';
-import Chip from '@material-ui/core/Chip';
 import {TagDefinitionType} from '../gql/__generated__/globalTypes';
 import * as gqlTags from '../gql/tags';
 import {useQuery} from '@apollo/react-hooks';
@@ -13,10 +12,9 @@ import {TagSelectorEntry, itemLabel, label, addValues} from './tagSelectorEntry'
 import {useSuggest} from './suggest';
 import Paper from '@material-ui/core/Paper';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-// @ts-ignore
-import bestContrast from 'get-best-contrast-color';
 import Input from '@material-ui/core/Input';
 import {useStateAndDelegateWithDelayOnChange} from '../utils/hooks';
+import {TagChip} from '../common/TagChip';
 
 export interface TagSelectorProps {
     onSelectedEntriesChanged: (entries: TagSelectorEntry[]) => void;
@@ -224,17 +222,5 @@ const Item: React.FC<ItemProps> = ({entry, selected, onClick}) => {
 };
 
 const toChips = (entries: TagSelectorEntry[]) => {
-    return entries.map((entry) => <TagChip key={label(entry)} entry={entry} />);
-};
-
-const TagChip = ({entry}: {entry: TagSelectorEntry}) => {
-    const color = bestContrast(entry.tag.color, ['#fff', '#000']);
-    return (
-        <Chip
-            tabIndex={-1}
-            variant="outlined"
-            style={{background: entry.tag.color, margin: '5px', color, cursor: 'text'}}
-            label={label(entry)}
-        />
-    );
+    return entries.map((entry) => <TagChip key={label(entry)} label={label(entry)} color={entry.tag.color} />);
 };
