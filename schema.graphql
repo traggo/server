@@ -122,6 +122,7 @@ type TagDefinition {
     key: String!
     type: TagDefinitionType!
     user: User!
+    usages: Int!
 }
 
 enum TagDefinitionType {

@@ -51,7 +51,7 @@ const suggestTag = (
     }
 
     return availableTags
-        .sort((a, b) => a.key.localeCompare(b.key))
+        .sort((a, b) => b.usages - a.usages)
         .slice(0, 5)
         .map((tag) => ({tag}));
 };

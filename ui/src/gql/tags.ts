@@ -16,6 +16,7 @@ export const Tags = gql`
             color
             key
             type
+            usages
         }
     }
 `;

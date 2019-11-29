@@ -8,7 +8,7 @@ export interface TagInputError {
 }
 
 export interface TagSelectorEntry {
-    tag: Tags_tags & {create?: boolean; alreadyUsed?: boolean};
+    tag: Omit<Tags_tags, 'usages'> & {create?: boolean; alreadyUsed?: boolean};
     value?: string;
 }
 
@@ -33,7 +33,7 @@ export const toTagSelectorEntry = (tags: Array<TagSelectorEntry['tag']>, entries
     );
 };
 
-export const specialTag = (name: string, state: 'used' | 'new'): TagSelectorEntry['tag'] => {
+export const specialTag = (name: string, state: 'used' | 'new'): TagSelectorEntry['tag'] & {usages: 0} => {
     return {
         key: name,
         __typename: 'TagDefinition',
@@ -41,6 +41,7 @@ export const specialTag = (name: string, state: 'used' | 'new'): TagSelectorEntr
         type: TagDefinitionType.novalue,
         create: state === 'new',
         alreadyUsed: state === 'used',
+        usages: 0,
     };
 };
 

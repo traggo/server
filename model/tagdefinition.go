@@ -6,6 +6,7 @@ type TagDefinition struct {
 	UserID int `gorm:"type:int REFERENCES users(id) ON DELETE CASCADE"`
 	Color  string
 	Type   TagDefinitionType
+	Usages int `gorm:"-"`
 }
 
 // TagDefinitionType describes a tag type.
