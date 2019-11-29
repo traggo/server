@@ -11,6 +11,7 @@ schema {
 
 type RootMutation {
     createTag(key: String!, color: String!, type: TagDefinitionType!): TagDefinition @hasRole(role: USER)
+    updateTag(key: String!, newKey: String, color: String!, type: TagDefinitionType!): TagDefinition @hasRole(role: USER)
     removeTag(key: String!): TagDefinition @hasRole(role: USER)
 
     createUser(name: String!, pass: String!, admin: Boolean!): User @hasRole(role: ADMIN)
