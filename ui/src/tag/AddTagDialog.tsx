@@ -21,12 +21,12 @@ interface AddTagDialogProps {
     initialName: string;
     open: boolean;
     close: () => void;
-    onAdded: (tag: TagSelectorEntry['tag']) => void;
+    onAdded?: (tag: TagSelectorEntry['tag']) => void;
 }
 
-export const AddTagDialog: React.FC<AddTagDialogProps> = ({close, open, initialName, onAdded}) => {
+export const AddTagDialog: React.FC<AddTagDialogProps> = ({close, open, initialName, onAdded = () => {}}) => {
     const [name, setName] = React.useState(initialName);
-    const [color, setColor] = React.useState('#ffffff');
+    const [color, setColor] = React.useState('#e6b3b3');
     const [type, setType] = React.useState(TagDefinitionType.singlevalue);
 
     const [addTag] = useMutation<AddTag, AddTagVariables>(gqlTags.AddTag, {refetchQueries: [{query: gqlTags.Tags}]});

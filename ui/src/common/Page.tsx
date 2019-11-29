@@ -14,6 +14,7 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import MenuIcon from '@material-ui/icons/Menu';
 import SettingsIcon from '@material-ui/icons/Settings';
 import DevicesIcon from '@material-ui/icons/DevicesOther';
+import LabelIcon from '@material-ui/icons/Label';
 import ViewQuitIcon from '@material-ui/icons/ViewQuilt';
 import TimeLineIcon from '@material-ui/icons/Timeline';
 import CalendarIcon from '@material-ui/icons/CalendarToday';
@@ -175,6 +176,12 @@ export const Page: React.FC = ({children}) => {
                         <DevicesIcon />
                     </ListItemIcon>
                     <ListItemText primary="Devices" />
+                </ListItem>
+                <ListItem button component={routerLink('/user/tags')}>
+                    <ListItemIcon>
+                        <LabelIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Tags" />
                 </ListItem>
                 <ListItem button component={routerLink(`/dashboards`)}>
                     <ListItemIcon>

@@ -35,3 +35,23 @@ export const AddTag = gql`
         }
     }
 `;
+
+export const UpdateTag = gql`
+    mutation UpdateTag($key: String!, $newKey: String, $color: String!, $type: TagDefinitionType!) {
+        updateTag(key: $key, newKey: $newKey, color: $color, type: $type) {
+            color
+            key
+            type
+        }
+    }
+`;
+
+export const RemoveTag = gql`
+    mutation RemoveTag($key: String!) {
+        removeTag(key: $key) {
+            color
+            key
+            type
+        }
+    }
+`;
