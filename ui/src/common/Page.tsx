@@ -15,7 +15,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import SettingsIcon from '@material-ui/icons/Settings';
 import DevicesIcon from '@material-ui/icons/DevicesOther';
 import LabelIcon from '@material-ui/icons/Label';
-import ViewQuitIcon from '@material-ui/icons/ViewQuilt';
+import DashboardManageIcon from '@material-ui/icons/ListAlt';
 import TimeLineIcon from '@material-ui/icons/Timeline';
 import CalendarIcon from '@material-ui/icons/CalendarToday';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -147,6 +147,12 @@ export const Page: React.FC = ({children}) => {
                         <ListItemText primary={'no dashboards added'} />
                     </ListItem>
                 ) : null}
+                <ListItem button component={routerLink(`/dashboards`)}>
+                    <ListItemIcon>
+                        <DashboardManageIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={'Manage'} />
+                </ListItem>
             </List>
             <Divider />
             <List subheader={<ListSubheader>Timesheet</ListSubheader>} dense={true}>
@@ -182,12 +188,6 @@ export const Page: React.FC = ({children}) => {
                         <LabelIcon />
                     </ListItemIcon>
                     <ListItemText primary="Tags" />
-                </ListItem>
-                <ListItem button component={routerLink(`/dashboards`)}>
-                    <ListItemIcon>
-                        <ViewQuitIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={'Dashboards'} />
                 </ListItem>
             </List>
             {admin ? (
