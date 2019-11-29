@@ -105,7 +105,7 @@ export const DevicesPage = () => {
                     )}
                 </TableCell>
                 <TableCell title={device.activeAt}>{moment(device.activeAt).fromNow()}</TableCell>
-                <TableCell>
+                <TableCell align="right">
                     {isEdited ? (
                         <>
                             <IconButton onClick={onClickSubmit} title="Save">

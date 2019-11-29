@@ -115,7 +115,7 @@ export const UsersPage = () => {
                         'No'
                     )}
                 </TableCell>
-                <TableCell>
+                <TableCell align="right">
                     {isEdited ? (
                         <>
                             <IconButton onClick={onClickSubmit} title="Save">

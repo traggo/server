@@ -88,7 +88,7 @@ export const DashboardsPage = () => {
                         dashboard.name
                     )}
                 </TableCell>
-                <TableCell>
+                <TableCell align="right">
                     {isEdited ? (
                         <>
                             <IconButton onClick={onClickSubmit} title="Save">
