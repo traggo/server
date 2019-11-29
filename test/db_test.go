@@ -19,7 +19,12 @@ func TestDatabase(t *testing.T) {
 	defer db.Close()
 	user := db.User(1)
 	user.NewDevice(1, "lol", "test device")
-	user.TimeSpan("2009-06-30T18:30:00Z", "2009-06-30T18:40:00Z").Tag("abc", "def")
+	ts := user.TimeSpan("2009-06-30T18:30:00Z", "2009-06-30T18:40:00Z")
+
+	ts.AssertHasTag("abc", "def", false)
+	ts.Tag("abc", "def")
+	ts.AssertHasTag("abc", "def", true)
+
 	db.NewUser(2, "abc", true)
 	db.NewUserPass(3, "xxx", []byte{5, 5}, true)
 
@@ -63,4 +68,13 @@ func TestDatabase(t *testing.T) {
 	var timeSpans []model.TimeSpan
 	db.Preload("Tags").Find(&timeSpans)
 	assert.Equal(t, expectedTimeSpans, timeSpans)
+
+	ts.AssertExists(true)
+	db.Delete(new(model.TimeSpan), "id = ?", ts.TimeSpan.ID)
+	ts.AssertExists(false)
+
+	user.AssertHasTagDefinition("oops", false)
+	user.NewTagDefinition("oops")
+	user.AssertHasTagDefinition("oops", true)
+
 }

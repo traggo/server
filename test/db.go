@@ -13,12 +13,13 @@ import (
 func InMemoryDB(t assert.TestingT) *Database {
 	db, err := database.New("sqlite3", "file::memory:?mode=memory&cache=shared")
 	assert.Nil(t, err)
-	return &Database{DB: db}
+	return &Database{DB: db, t: t}
 }
 
 // Database wraps the gorm.DB and provides helper methods
 type Database struct {
 	*gorm.DB
+	t assert.TestingT
 }
 
 // User creates a user
@@ -27,6 +28,7 @@ func (d *Database) User(id int) *UserWithDatabase {
 	return &UserWithDatabase{
 		User: user,
 		DB:   d.DB,
+		t:    d.t,
 	}
 }
 
@@ -34,6 +36,7 @@ func (d *Database) User(id int) *UserWithDatabase {
 type UserWithDatabase struct {
 	User model.User
 	*gorm.DB
+	t assert.TestingT
 }
 
 // NewDevice creates a device.
@@ -49,6 +52,27 @@ func (d *UserWithDatabase) NewDevice(id int, token string, name string) model.De
 	}
 	d.Create(&device)
 	return device
+}
+
+// NewTagDefinition creates a tag definition.
+func (d *UserWithDatabase) NewTagDefinition(key string) model.TagDefinition {
+	tagDefinition := model.TagDefinition{
+		UserID: d.User.ID,
+		Key:    key,
+		Type:   model.TypeSingleValue,
+	}
+	d.Create(&tagDefinition)
+	return tagDefinition
+}
+
+// AssertHasTagDefinition asserts if a tag definition exists.
+func (d *UserWithDatabase) AssertHasTagDefinition(key string, exist bool) *UserWithDatabase {
+	existActual := !d.DB.
+		Where(&model.TagDefinition{Key: key, UserID: d.User.ID}).
+		Find(new(model.TagDefinition)).
+		RecordNotFound()
+	assert.True(d.t, exist == existActual)
+	return d
 }
 
 // NewUser creates a user
@@ -82,6 +106,7 @@ func (d *UserWithDatabase) RunningTimeSpan(from string) *TimeSpanWithDatabase {
 		User:     d.User,
 		TimeSpan: timeSpan,
 		DB:       d.DB,
+		t:        d.t,
 	}
 }
 
@@ -100,7 +125,28 @@ func (d *UserWithDatabase) TimeSpan(from string, to string) *TimeSpanWithDatabas
 type TimeSpanWithDatabase struct {
 	User     model.User
 	TimeSpan model.TimeSpan
+	t        assert.TestingT
 	*gorm.DB
+}
+
+// AssertHasTag asserts if the tag exists or not.
+func (d *TimeSpanWithDatabase) AssertHasTag(key, value string, exist bool) *TimeSpanWithDatabase {
+	existActual := !d.DB.
+		Where(&model.TimeSpanTag{Key: key, StringValue: &value, TimeSpanID: d.TimeSpan.ID}).
+		Find(new(model.TimeSpanTag)).
+		RecordNotFound()
+	assert.True(d.t, exist == existActual)
+	return d
+}
+
+// AssertExists asserts if the tag exists or not.
+func (d *TimeSpanWithDatabase) AssertExists(exist bool) *TimeSpanWithDatabase {
+	existActual := !d.DB.
+		Where(&model.TimeSpan{ID: d.TimeSpan.ID}).
+		Find(new(model.TimeSpan)).
+		RecordNotFound()
+	assert.True(d.t, exist == existActual)
+	return d
 }
 
 // Tag adds a tag to the time span.
