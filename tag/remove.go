@@ -13,12 +13,12 @@ import (
 // RemoveTag removes a tag.
 func (r *ResolverForTag) RemoveTag(ctx context.Context, key string) (*gqlmodel.TagDefinition, error) {
 	tag := model.TagDefinition{}
-	userId := auth.GetUser(ctx).ID
-	if r.DB.Where(&model.TagDefinition{UserID: userId, Key: key}).Find(&tag).RecordNotFound() {
+	userID := auth.GetUser(ctx).ID
+	if r.DB.Where(&model.TagDefinition{UserID: userID, Key: key}).Find(&tag).RecordNotFound() {
 		return nil, fmt.Errorf("tag with key '%s' does not exist", key)
 	}
 	tx := r.DB.Begin()
-	if err := tx.Where(model.TagDefinition{Key: key, UserID: userId}).
+	if err := tx.Where(model.TagDefinition{Key: key, UserID: userID}).
 		Delete(new(model.TagDefinition)).Error; err != nil {
 		tx.Rollback()
 		return nil, err
@@ -26,7 +26,7 @@ func (r *ResolverForTag) RemoveTag(ctx context.Context, key string) (*gqlmodel.T
 
 	timeSpansIdsOfUser := tx.Model(new(model.TimeSpan)).
 		Select("id").
-		Where(&model.TimeSpan{UserID: userId}).
+		Where(&model.TimeSpan{UserID: userID}).
 		SubQuery()
 
 	if err := tx.

@@ -130,7 +130,7 @@ func (d *UserWithDatabase) RunningTimeSpan(from string) *TimeSpanWithDatabase {
 	}
 }
 
-// RunningTimeSpan adds a time span without end.
+// Dashboard adds a dashboard.
 func (d *UserWithDatabase) Dashboard(name string) *DashboardWithDatabase {
 	dashboard := model.Dashboard{
 		UserID: d.User.ID,
