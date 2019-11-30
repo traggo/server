@@ -12,19 +12,22 @@ import {MuiPickersUtilsProvider} from '@material-ui/pickers';
 import MomentUtils from '@date-io/moment';
 import {Router} from './Router';
 import {HashRouter} from 'react-router-dom';
+import {BootUserSettings} from './provider/UserSettingsProvider';
 
 export const Root = () => {
     return (
         <ApolloProvider>
-            <ThemeProvider>
-                <MuiPickersUtilsProvider utils={MomentUtils}>
-                    <SnackbarProvider>
-                        <HashRouter>
-                            <Router />
-                        </HashRouter>
-                    </SnackbarProvider>
-                </MuiPickersUtilsProvider>
-            </ThemeProvider>
+            <BootUserSettings>
+                <ThemeProvider>
+                    <MuiPickersUtilsProvider utils={MomentUtils}>
+                        <SnackbarProvider>
+                            <HashRouter>
+                                <Router />
+                            </HashRouter>
+                        </SnackbarProvider>
+                    </MuiPickersUtilsProvider>
+                </ThemeProvider>
+            </BootUserSettings>
         </ApolloProvider>
     );
 };
