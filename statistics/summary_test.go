@@ -93,6 +93,18 @@ func TestStats(t *testing.T) {
 			Expected(
 				result("2019-06-11T10:00:00Z", "2019-06-11T10:02:00Z",
 					entry("type", "review", 10*time.Second))),
+		name("fill empty range").
+			Load(
+				ts("2019-06-11T10:00:00Z", 10*time.Second, tag("type", "review")),
+			).Keys("type").
+			Ranges(
+				rangex("2019-06-10T09:58:00Z", "2019-06-10T09:59:59Z"),
+				rangex("2019-06-10T10:00:00Z", "2019-06-11T10:02:00Z")).
+			Expected(
+				result("2019-06-10T09:58:00Z", "2019-06-10T09:59:59Z",
+					entry("type", "review", 0*time.Second)),
+				result("2019-06-10T10:00:00Z", "2019-06-11T10:02:00Z",
+					entry("type", "review", 10*time.Second))),
 		name("multiple 3").
 			Load(
 				ts("2019-06-11T10:00:00Z", 10*time.Second, tag("proj", "gotify"), tag("type", "review"), tag("issue", "13")),
@@ -208,8 +220,8 @@ func TestStats(t *testing.T) {
 
 			stats, err := resolver.Stats(fake.User(1), entry.ranges, entry.keys, entry.exclude, entry.include)
 			require.NoError(t, err)
-			require.Len(t, stats, len(entry.expected))
 			require.Equal(t, entry.expected, stats)
+			require.Len(t, stats, len(entry.expected))
 		})
 	}
 }

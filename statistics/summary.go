@@ -105,20 +105,24 @@ func fillEmptyTags(statisticsEntries []*gqlmodel.RangedStatisticsEntries) {
 }
 
 func fillEmptyRanges(ranges []*gqlmodel.Range, statisticsEntries []*gqlmodel.RangedStatisticsEntries) []*gqlmodel.RangedStatisticsEntries {
+	result := make([]*gqlmodel.RangedStatisticsEntries, len(ranges))
+	statsIdx := 0
 	for idx, r := range ranges {
-		if len(statisticsEntries) > idx && statisticsEntries[idx].Start.UTC().Equal(r.Start.UTC()) && statisticsEntries[idx].End.UTC().Equal(r.End.UTC()) {
+		if statsIdx < len(statisticsEntries) &&
+			statisticsEntries[statsIdx].Start.UTC().Equal(r.Start.UTC()) &&
+			statisticsEntries[statsIdx].End.UTC().Equal(r.End.UTC()) {
+			result[idx] = statisticsEntries[statsIdx]
+			statsIdx++
 			continue
 		}
 
-		old := statisticsEntries[idx:]
-		statisticsEntries = append(statisticsEntries[:idx], &gqlmodel.RangedStatisticsEntries{
+		result[idx] = &gqlmodel.RangedStatisticsEntries{
 			Start:   model.Time(r.Start.UTC()),
 			End:     model.Time(r.End.UTC()),
 			Entries: []*gqlmodel.StatisticsEntry{},
-		})
-		statisticsEntries = append(statisticsEntries, old...)
+		}
 	}
-	return statisticsEntries
+	return result
 }
 
 type statReturn struct {
