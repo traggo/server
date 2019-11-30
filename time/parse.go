@@ -23,12 +23,12 @@ type StaticRange struct {
 }
 
 // ParseRange parses a range and converts it to static ranges.
-func ParseRange(now time.Time, r RelativeRange, interval model.Interval) ([]StaticRange, error) {
-	from, err := ParseTime(now, r.From, true, time.Monday)
+func ParseRange(now time.Time, r RelativeRange, interval model.Interval, startOf, endOf time.Weekday) ([]StaticRange, error) {
+	from, err := ParseTime(now, r.From, true, startOf)
 	if err != nil {
 		return nil, fmt.Errorf("range from: %s", err)
 	}
-	to, err := ParseTime(now, r.To, false, time.Sunday)
+	to, err := ParseTime(now, r.To, false, endOf)
 	if err != nil {
 		return nil, fmt.Errorf("range to: %s", err)
 	}

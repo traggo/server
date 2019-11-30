@@ -3,21 +3,27 @@ package statistics
 import (
 	"context"
 
-	"github.com/traggo/server/time"
-
 	"github.com/traggo/server/generated/gqlmodel"
 	"github.com/traggo/server/model"
+	"github.com/traggo/server/setting"
+	"github.com/traggo/server/time"
 )
 
 // Stats2 another version of the stats endpoint
 func (r *ResolverForStatistics) Stats2(ctx context.Context, now model.Time, stats gqlmodel.InputStatsSelection) ([]*gqlmodel.RangedStatisticsEntries, error) {
 
+	settings, err := setting.Get(ctx, r.DB)
+	if err != nil {
+		return nil, err
+	}
+
 	var ranges []*gqlmodel.Range
 
-	staticRanges, err := time.ParseRange(now.OmitTimeZone(), time.RelativeRange{
-		From: stats.Range.From,
-		To:   stats.Range.To,
-	}, time.InternalInterval(stats.Interval))
+	staticRanges, err := time.ParseRange(now.OmitTimeZone(),
+		time.RelativeRange{From: stats.Range.From, To: stats.Range.To},
+		time.InternalInterval(stats.Interval),
+		settings.FirstDayOfTheWeekTimeWeekday(),
+		settings.LastDayOfTheWeekTimeWeekday())
 	if err != nil {
 		return nil, err
 	}

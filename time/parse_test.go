@@ -163,7 +163,7 @@ func TestParseRange(t *testing.T) {
 
 	for _, entry := range entries {
 		t.Run(fmt.Sprintf("now=%s;%s_to_%s;%s", entry.now, entry.from, entry.to, entry.interval), func(t *testing.T) {
-			result, err := ParseRange(entry.now, RelativeRange{From: entry.from, To: entry.to}, entry.interval)
+			result, err := ParseRange(entry.now, RelativeRange{From: entry.from, To: entry.to}, entry.interval, time.Monday, time.Sunday)
 			assert.NoError(t, err)
 			assert.Equal(t, entry.expectRanges, result)
 		})
@@ -179,12 +179,12 @@ func TestStuff(t *testing.T) {
 	_, err := ParseRange(time.Now(), RelativeRange{
 		From: "invalid",
 		To:   "invalid",
-	}, model.IntervalDaily)
+	}, model.IntervalDaily, time.Monday, time.Sunday)
 	assert.NotNil(t, err)
 	_, err = ParseRange(time.Now(), RelativeRange{
 		From: "now-1d",
 		To:   "invalid",
-	}, model.IntervalDaily)
+	}, model.IntervalDaily, time.Monday, time.Sunday)
 	assert.NotNil(t, err)
 }
 
