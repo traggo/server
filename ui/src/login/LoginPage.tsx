@@ -2,7 +2,6 @@ import * as React from 'react';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import {LoginForm} from './LoginForm';
-import {ToggleTheme} from '../common/ToggleTheme';
 import Link from '@material-ui/core/Link';
 import {DefaultPaper} from '../common/DefaultPaper';
 import * as gqlVersion from '../gql/version';
@@ -13,11 +12,6 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 const useStyles = makeStyles(() => ({
     footerLink: {
         margin: '0 2px',
-    },
-    themeButton: {
-        position: 'absolute',
-        top: 5,
-        right: 5,
     },
 }));
 
@@ -53,7 +47,6 @@ export const LoginPage = () => {
                     {version.name}@{version.commit.slice(0, 8)}
                 </Typography>
             </div>
-            <ToggleTheme className={classes.themeButton} />
         </Grid>
     );
 };
