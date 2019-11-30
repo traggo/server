@@ -29,7 +29,7 @@ const group = (startOfTomorrow: moment.Moment, startOfToday: moment.Moment, star
     current: TimeSpans_timeSpans_timeSpans
 ): GroupedByIndex => {
     const startTime = moment(current.oldStart || current.start);
-    let date = `${startTime.format('dddd')}, ${startTime.format('DD. MMMM YY')}`;
+    let date = `${startTime.format('dddd')}, ${startTime.format('LL')}`;
     if (startTime.isBetween(startOfToday, startOfTomorrow)) {
         date = `${date} (today)`;
     } else if (startTime.isBetween(startOfYesterday, startOfToday)) {
