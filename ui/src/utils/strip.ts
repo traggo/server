@@ -1,5 +1,5 @@
 export const stripTypename = <T>(value: T): T => {
-    if (typeof value !== 'object') {
+    if (typeof value !== 'object' || value === null) {
         return value;
     }
 
