@@ -171,11 +171,11 @@ export const Page: React.FC = ({children}) => {
             </List>
             <Divider />
             <List subheader={<ListSubheader>User</ListSubheader>} dense={true}>
-                <ListItem button component={routerLink('/user/settings')}>
+                <ListItem button component={routerLink('/user/tags')}>
                     <ListItemIcon>
-                        <SettingsIcon />
+                        <LabelIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Settings" />
+                    <ListItemText primary="Tags" />
                 </ListItem>
                 <ListItem button component={routerLink('/user/devices')}>
                     <ListItemIcon>
@@ -183,11 +183,11 @@ export const Page: React.FC = ({children}) => {
                     </ListItemIcon>
                     <ListItemText primary="Devices" />
                 </ListItem>
-                <ListItem button component={routerLink('/user/tags')}>
+                <ListItem button component={routerLink('/user/settings')}>
                     <ListItemIcon>
-                        <LabelIcon />
+                        <SettingsIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Tags" />
+                    <ListItemText primary="Settings" />
                 </ListItem>
             </List>
             {admin ? (
