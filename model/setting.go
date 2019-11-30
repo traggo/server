@@ -38,5 +38,5 @@ func (s UserSetting) FirstDayOfTheWeekTimeWeekday() time.Weekday {
 
 // LastDayOfTheWeekTimeWeekday returns the configured last day of the week.
 func (s UserSetting) LastDayOfTheWeekTimeWeekday() time.Weekday {
-	return daysOfWeek[s.FirstDayOfTheWeek] - 1
+	return daysOfWeek[(daysOfWeek[s.FirstDayOfTheWeek] - 1).String()]
 }
