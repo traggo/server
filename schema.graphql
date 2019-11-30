@@ -32,8 +32,6 @@ type RootMutation {
     copyTimeSpan(id: Int!, start: Time!, end: Time): TimeSpan @hasRole(role: USER)
     stopTimeSpan(id: Int!, end: Time!): TimeSpan @hasRole(role: USER)
 
-    settingPut(namespace: String!, key: String!, value: String!): String! @hasRole(role: USER)
-
     createDashboard(name: String!): Dashboard! @hasRole(role: USER)
     updateDashboard(id: Int!, name: String!): Dashboard! @hasRole(role: USER)
     removeDashboard(id: Int!): Dashboard! @hasRole(role: USER)
@@ -60,8 +58,6 @@ type RootQuery {
     stats(ranges: [Range!], tags: [String!], excludeTags: [InputTimeSpanTag!], requireTags: [InputTimeSpanTag!]): [RangedStatisticsEntries!] @hasRole(role: USER)
     stats2(now: Time!, stats: InputStatsSelection!): [RangedStatisticsEntries!] @hasRole(role: USER)
     version: Version!
-    settings(namespace: String!): [Setting!] @hasRole(role: USER)
-    settingGet(namespace: String!, key: String!): String! @hasRole(role: USER)
     dashboards: [Dashboard!] @hasRole(role: USER)
 }
 
@@ -84,11 +80,6 @@ type Cursor {
     offset: Int!
     startId: Int!
     pageSize: Int!
-}
-
-type Setting {
-    key: String!
-    value: String!
 }
 
 type Version {
