@@ -14,13 +14,17 @@ interface DateTimeSelectorProps {
 export const DateTimeSelector: React.FC<DateTimeSelectorProps> = React.memo(
     ({selectedDate, onSelectDate, showDate, label, popoverOpen = () => {}}) => {
         const [open, setOpen] = React.useState(false);
+        const localeData = moment.localeData();
+        const time = localeData.longDateFormat('LT').replace('A', 'a');
+        const ampm = time.indexOf('a') !== -1;
+        const format = showDate ? localeData.longDateFormat('L') + ' ' + time : time;
 
         return (
             <KeyboardDateTimePicker
                 variant="inline"
                 InputProps={{disableUnderline: true}}
                 title={selectedDate.format()}
-                style={{width: showDate ? 185 : 95}}
+                style={{width: (showDate ? 185 : 95) + (ampm ? 20 : 0)}}
                 PopoverProps={{
                     onEntered: () => {
                         popoverOpen(true);
@@ -51,8 +55,8 @@ export const DateTimeSelector: React.FC<DateTimeSelectorProps> = React.memo(
 
                     onSelectDate(date);
                 }}
-                ampm={false}
-                format={showDate ? 'YYYY/MM/DD HH:mm' : 'HH:mm'}
+                ampm={ampm}
+                format={format}
                 label={label}
                 openTo={showDate ? 'date' : 'hours'}
             />
