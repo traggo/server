@@ -43,6 +43,8 @@ type RootMutation {
     addDashboardEntry(dashboardId: Int!, entryType: EntryType!, title: String!, stats: InputStatsSelection!, pos: InputResponsiveDashboardEntryPos): DashboardEntry @hasRole(role: USER)
     updateDashboardEntry(entryId: Int!, entryType: EntryType, title: String, stats: InputStatsSelection, pos: InputResponsiveDashboardEntryPos): DashboardEntry @hasRole(role: USER)
     removeDashboardEntry(id: Int!): DashboardEntry! @hasRole(role: USER)
+
+    setUserSettings(settings: InputUserSettings!): UserSettings! @hasRole(role: USER)
 }
 
 type RootQuery {
@@ -59,6 +61,31 @@ type RootQuery {
     stats2(now: Time!, stats: InputStatsSelection!): [RangedStatisticsEntries!] @hasRole(role: USER)
     version: Version!
     dashboards: [Dashboard!] @hasRole(role: USER)
+    userSettings: UserSettings!
+}
+
+input InputUserSettings {
+    theme: Theme!
+    dateLocale: DateLocale!
+    firstDayOfTheWeek: WeekDay!
+}
+
+type UserSettings {
+    theme: Theme!
+    dateLocale: DateLocale!
+    firstDayOfTheWeek: WeekDay!
+}
+
+enum WeekDay {
+    Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
+}
+
+enum Theme {
+    GruvboxDark, GruvboxLight, MaterialDark, MaterialLight
+}
+
+enum DateLocale {
+    English, German
 }
 
 input InputReplaceOptions {
