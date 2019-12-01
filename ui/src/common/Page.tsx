@@ -157,13 +157,13 @@ export const Page: React.FC = ({children}) => {
                     <ListItemIcon>
                         <TimeLineIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Daily" />
+                    <ListItemText primary="List" />
                 </ListItem>
                 <ListItem button component={routerLink('/timesheet/weekly')}>
                     <ListItemIcon>
                         <CalendarIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Weekly" />
+                    <ListItemText primary="Calendar" />
                 </ListItem>
             </List>
             <Divider />
