@@ -19,7 +19,7 @@ func (r *ResolverForTimeSpan) Timers(ctx context.Context) ([]*gqlmodel.TimeSpan,
 		Order("start_user_time DESC").
 		Find(&timeSpans)
 
-	var result []*gqlmodel.TimeSpan
+	result := []*gqlmodel.TimeSpan{}
 	for _, span := range timeSpans {
 		result = append(result, timeSpanToExternal(span))
 	}

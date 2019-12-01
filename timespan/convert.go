@@ -50,7 +50,7 @@ func timeSpanToExternal(span model.TimeSpan) *gqlmodel.TimeSpan {
 }
 
 func tagsToExternal(tags []model.TimeSpanTag) []*gqlmodel.TimeSpanTag {
-	var result []*gqlmodel.TimeSpanTag
+	result := []*gqlmodel.TimeSpanTag{}
 	for _, tag := range tags {
 		result = append(result, &gqlmodel.TimeSpanTag{
 			Key:         tag.Key,
