@@ -32,6 +32,7 @@ func Test_Update_withoutEnd(t *testing.T) {
 		ID:       1,
 		Start:    test.ModelTime("2019-06-10T19:30:00+02:00"),
 		OldStart: test.ModelTimeP("2019-06-10T18:30:00+02:00"),
+		Tags:     []*gqlmodel.TimeSpanTag{},
 	}
 	require.Equal(t, expected, timeSpan)
 	assertTimeSpanCount(t, db, 1)
@@ -68,6 +69,7 @@ func Test_Update(t *testing.T) {
 		Start:    test.ModelTime("2019-06-10T18:30:00+02:00"),
 		OldStart: test.ModelTimeP("2019-06-10T18:30:00+02:00"),
 		End:      test.ModelTimeP("2019-06-10T20:30:00+02:00"),
+		Tags:     []*gqlmodel.TimeSpanTag{},
 	}
 	require.Equal(t, expected, timeSpan)
 	assertTimeSpanCount(t, db, 1)

@@ -23,6 +23,7 @@ func Test_Create_withoutEnd(t *testing.T) {
 	expected := &gqlmodel.TimeSpan{
 		ID:    1,
 		Start: test.ModelTime("2019-06-10T18:30:00+02:00"),
+		Tags:  []*gqlmodel.TimeSpanTag{},
 	}
 	require.Equal(t, expected, timeSpan)
 	assertTimeSpanCount(t, db, 1)
@@ -50,6 +51,7 @@ func Test_Create(t *testing.T) {
 		ID:    1,
 		Start: test.ModelTime("2019-06-10T18:30:00+02:00"),
 		End:   test.ModelTimeP("2019-06-10T19:30:00+02:00"),
+		Tags:  []*gqlmodel.TimeSpanTag{},
 	}
 	require.Equal(t, expected, timeSpan)
 	assertTimeSpanCount(t, db, 1)
