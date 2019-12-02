@@ -12,13 +12,13 @@ import {DefaultPaper} from './common/DefaultPaper';
 import {Page} from './common/Page';
 import {Redirect, Route, Switch} from 'react-router';
 import {DailyPage} from './timespan/DailyPage';
-import {Calendar} from './timespan/calendar/Calendar';
 import {DevicesPage} from './devices/DevicesPage';
 import {UsersPage} from './user/UsersPage';
 import {DashboardPage} from './dashboard/DashboardPage';
 import {DashboardsPage} from './dashboard/DashboardsPage';
 import {TagPage} from './tag/TagPage';
 import {SettingsPage} from './setting/SettingsPage';
+import {CalendarPage} from './timespan/calendar/CalendarPage';
 
 export const Router = () => {
     const {loading, error, data, refetch} = useQuery<CurrentUser>(gqlUser.CurrentUser);
@@ -40,7 +40,7 @@ export const Router = () => {
                 <Route path="/dashboards" component={DashboardsPage} />
                 <Route path="/dashboard/:id" component={DashboardPage} />
                 <Route exact path="/timesheet/daily" component={DailyPage} />
-                <Route exact path="/timesheet/weekly" component={Calendar} />
+                <Route exact path="/timesheet/weekly" component={CalendarPage} />
                 <Route exact path="/user/settings" component={SettingsPage} />
                 <Route exact path="/user/devices" component={DevicesPage} />
                 <Route exact path="/user/tags" component={TagPage} />

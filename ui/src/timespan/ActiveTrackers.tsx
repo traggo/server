@@ -9,8 +9,8 @@ import {toTimeSpanProps} from './timespanutils';
 import {Typography} from '@material-ui/core';
 
 export const ActiveTrackers = () => {
-    const trackersResult = useQuery<Trackers>(gqlTimeSpan.Trackers);
-    const tagsResult = useQuery<Tags>(gqlTag.Tags);
+    const trackersResult = useQuery<Trackers>(gqlTimeSpan.Trackers, {fetchPolicy: 'cache-and-network'});
+    const tagsResult = useQuery<Tags>(gqlTag.Tags, {fetchPolicy: 'cache-and-network'});
     const values = React.useMemo(() => {
         if (
             trackersResult.error ||

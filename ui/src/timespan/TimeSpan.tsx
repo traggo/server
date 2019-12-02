@@ -19,7 +19,7 @@ import {useStateAndDelegateWithDelayOnChange} from '../utils/hooks';
 import {TimeSpans} from '../gql/__generated__/TimeSpans';
 import {isSameDate} from '../utils/time';
 import {Trackers} from '../gql/__generated__/Trackers';
-import {addTimeSpanToCache} from '../gql/utils';
+import {addTimeSpanToCache, removeFromTrackersCache} from '../gql/utils';
 import {StartTimer, StartTimerVariables} from '../gql/__generated__/StartTimer';
 import {RelativeTime, RelativeToNow} from '../common/RelativeTime';
 
@@ -35,7 +35,9 @@ export interface TimeSpanProps {
     dateSelectorOpen?: React.Dispatch<React.SetStateAction<boolean>>;
     deleted?: () => void;
     stopped?: () => void;
+    continued?: () => void;
     addTagsToTracker?: (tags: TagSelectorEntry[]) => void;
+    elevation?: number;
 }
 
 export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
@@ -46,6 +48,8 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
         dateSelectorOpen = () => {},
         deleted = () => {},
         stopped = () => {},
+        continued = () => {},
+        elevation = 1,
         addTagsToTracker,
     }) => {
         const [selectedEntries, setSelectedEntries] = React.useState<TagSelectorEntry[]>(initialTags);
@@ -54,16 +58,10 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
         );
         const [stopTimer] = useMutation<StopTimer, StopTimerVariables>(gqlTimeSpan.StopTimer, {
             update: (cache, {data}) => {
-                const oldTrackers = cache.readQuery<Trackers>({query: gqlTimeSpan.Trackers});
-                if (!oldTrackers || !data || !data.stopTimeSpan) {
+                if (!data || !data.stopTimeSpan) {
                     return;
                 }
-                cache.writeQuery<Trackers>({
-                    query: gqlTimeSpan.Trackers,
-                    data: {
-                        timers: (oldTrackers.timers || []).filter((tracker) => tracker.id !== data.stopTimeSpan!.id),
-                    },
-                });
+                removeFromTrackersCache(cache, data);
                 addTimeSpanToCache(cache, data.stopTimeSpan);
             },
         });
@@ -73,28 +71,36 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
         const [updateTimeSpan] = useMutation<UpdateTimeSpan, UpdateTimeSpanVariables>(gqlTimeSpan.UpdateTimeSpan);
         const [removeTimeSpan] = useMutation<RemoveTimeSpan, RemoveTimeSpanVariables>(gqlTimeSpan.RemoveTimeSpan, {
             update: (cache, {data}) => {
-                const oldData = cache.readQuery<TimeSpans>({query: gqlTimeSpan.TimeSpans});
+                let oldData: TimeSpans | null = null;
+                try {
+                    oldData = cache.readQuery<TimeSpans>({query: gqlTimeSpan.TimeSpans});
+                } catch (e) {}
+
                 const oldTrackers = cache.readQuery<Trackers>({query: gqlTimeSpan.Trackers});
-                if (!oldData || !oldTrackers || !data || !data.removeTimeSpan) {
+                if (!data || !data.removeTimeSpan) {
                     return;
                 }
                 const removedId = data.removeTimeSpan.id;
-                cache.writeQuery<Trackers>({
-                    query: gqlTimeSpan.Trackers,
-                    data: {
-                        timers: (oldTrackers.timers || []).filter((tracker) => tracker.id !== removedId),
-                    },
-                });
-                cache.writeQuery<TimeSpans>({
-                    query: gqlTimeSpan.TimeSpans,
-                    data: {
-                        timeSpans: {
-                            __typename: 'PagedTimeSpans',
-                            timeSpans: oldData.timeSpans.timeSpans.filter((ts) => ts.id !== removedId),
-                            cursor: oldData.timeSpans.cursor,
+                if (oldTrackers) {
+                    cache.writeQuery<Trackers>({
+                        query: gqlTimeSpan.Trackers,
+                        data: {
+                            timers: (oldTrackers.timers || []).filter((tracker) => tracker.id !== removedId),
                         },
-                    },
-                });
+                    });
+                }
+                if (oldData) {
+                    cache.writeQuery<TimeSpans>({
+                        query: gqlTimeSpan.TimeSpans,
+                        data: {
+                            timeSpans: {
+                                __typename: 'PagedTimeSpans',
+                                timeSpans: oldData.timeSpans.timeSpans.filter((ts) => ts.id !== removedId),
+                                cursor: oldData.timeSpans.cursor,
+                            },
+                        },
+                    });
+                }
             },
         });
 
@@ -102,6 +108,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
         const showDate = to !== undefined && (!isSameDate(from, to) || wasMoved);
         return (
             <Paper
+                elevation={elevation}
                 style={{display: 'flex', alignItems: 'center', padding: '10px', margin: '10px 0', opacity: wasMoved ? 0.5 : 1}}>
                 <div style={{flex: '1', marginRight: 10}}>
                     <TagSelector
@@ -215,7 +222,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                                     setOpenMenu(null);
                                     startTimer({
                                         variables: {start: inUserTz(moment()).format(), tags: toInputTags(selectedEntries)},
-                                    });
+                                    }).then(() => continued());
                                 }}>
                                 Continue
                             </MenuItem>
@@ -232,8 +239,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                         <MenuItem
                             onClick={() => {
                                 setOpenMenu(null);
-                                removeTimeSpan({variables: {id}});
-                                deleted();
+                                removeTimeSpan({variables: {id}}).then(() => deleted());
                             }}>
                             Delete
                         </MenuItem>
