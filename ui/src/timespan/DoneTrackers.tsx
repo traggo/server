@@ -127,14 +127,14 @@ const DatedTimeSpans: React.FC<{
     setHeight: (cb: (height: Record<string, number>) => Record<string, number>) => void;
     timeSpans: TimeSpanProps[];
 } & DoneTrackersProps> = ({name, timeSpans, addTagsToTracker, setHeight}) => {
-    const [ref, setRef] = React.useState<HTMLDivElement | null>();
+    const ref = React.useRef<HTMLDivElement | null>();
     React.useEffect(() => {
-        if (ref) {
-            setHeight((old) => ({...old, [name]: ref.getBoundingClientRect().height}));
+        if (ref.current) {
+            setHeight((old) => ({...old, [name]: ref.current!.getBoundingClientRect().height}));
         }
     }, [ref, name, setHeight]);
     return (
-        <div key={name} ref={(r) => setRef(r)}>
+        <div key={name} ref={(r) => (ref.current = r)}>
             <Typography key={name} align="center" variant={'h5'}>
                 {name}
             </Typography>
