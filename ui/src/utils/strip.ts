@@ -1,5 +1,14 @@
 export const stripTypename = <T>(value: T): T => {
-    if (typeof value !== 'object' || value === null) {
+    if (value === null || value === undefined) {
+        return value;
+    }
+
+    if (Array.isArray(value)) {
+        // tslint:disable-next-line:no-any
+        return (value as any).map((x: any) => stripTypename(x));
+    }
+
+    if (typeof value !== 'object') {
         return value;
     }
 
