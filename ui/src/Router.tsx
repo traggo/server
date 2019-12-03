@@ -39,8 +39,8 @@ export const Router = () => {
             <Page>
                 <Route path="/dashboards" component={DashboardsPage} />
                 <Route path="/dashboard/:id" component={DashboardPage} />
-                <Route exact path="/timesheet/daily" component={DailyPage} />
-                <Route exact path="/timesheet/weekly" component={CalendarPage} />
+                <Route exact path="/timesheet/list" component={DailyPage} />
+                <Route exact path="/timesheet/calendar" component={CalendarPage} />
                 <Route exact path="/user/settings" component={SettingsPage} />
                 <Route exact path="/user/devices" component={DevicesPage} />
                 <Route exact path="/user/tags" component={TagPage} />

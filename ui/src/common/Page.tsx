@@ -153,13 +153,13 @@ export const Page: React.FC = ({children}) => {
             </List>
             <Divider />
             <List subheader={<ListSubheader>Timesheet</ListSubheader>} dense={true}>
-                <ListItem button component={routerLink('/timesheet/daily')}>
+                <ListItem button component={routerLink('/timesheet/list')}>
                     <ListItemIcon>
                         <TimeLineIcon />
                     </ListItemIcon>
                     <ListItemText primary="List" />
                 </ListItem>
-                <ListItem button component={routerLink('/timesheet/weekly')}>
+                <ListItem button component={routerLink('/timesheet/calendar')}>
                     <ListItemIcon>
                         <CalendarIcon />
                     </ListItemIcon>
