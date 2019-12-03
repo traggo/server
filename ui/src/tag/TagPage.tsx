@@ -18,7 +18,6 @@ import IconButton from '@material-ui/core/IconButton';
 import {useSnackbar} from 'notistack';
 import {TextField} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import {TagDefinitionType} from '../gql/__generated__/globalTypes';
 import {Tags} from '../gql/__generated__/Tags';
 import {RemoveTag, RemoveTagVariables} from '../gql/__generated__/RemoveTag';
 import {UpdateTag, UpdateTagVariables} from '../gql/__generated__/UpdateTag';
@@ -47,12 +46,7 @@ export const TagPage = () => {
     const refetch = {refetchQueries: [{query: gqlTag.Tags}, {query: gqlDashboard.Dashboards}]};
     const {enqueueSnackbar} = useSnackbar();
     const [removeTag] = useMutation<RemoveTag, RemoveTagVariables>(gqlTag.RemoveTag, refetch);
-    const [[editKey, editKeyNew, editColor, editType], setEditing] = React.useState<[string, string, string, TagDefinitionType]>([
-        '',
-        '',
-        '',
-        TagDefinitionType.singlevalue,
-    ]);
+    const [[editKey, editKeyNew, editColor], setEditing] = React.useState<[string, string, string]>(['', '', '']);
     const [addActive, setAddActive] = React.useState(false);
     const [updateTag] = useMutation<UpdateTag, UpdateTagVariables>(gqlTag.UpdateTag, refetch);
     if (loading || !data || !data.tags) {
@@ -66,13 +60,12 @@ export const TagPage = () => {
 
     const tags = data.tags.map((tag) => {
         const onClickSubmit = () => {
-            setEditing(['', '', '', TagDefinitionType.singlevalue]);
+            setEditing(['', '', '']);
             updateTag({
                 variables: {
                     key: editKey,
                     newKey: editKeyNew,
                     color: editColor,
-                    type: editType,
                 },
             }).then(() => enqueueSnackbar('tag edited', {variant: 'success'}));
         };
@@ -83,7 +76,7 @@ export const TagPage = () => {
                     {isEdited ? (
                         <TextField
                             value={editKeyNew}
-                            onChange={(e) => setEditing([editKey, e.target.value, editColor, editType])}
+                            onChange={(e) => setEditing([editKey, e.target.value, editColor])}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                     onClickSubmit();
@@ -97,7 +90,7 @@ export const TagPage = () => {
                 </TableCell>
                 <TableCell>
                     {isEdited ? (
-                        <SliderPicker onChange={(c) => setEditing([editKey, editKeyNew, c.hex, editType])} color={editColor} />
+                        <SliderPicker onChange={(c) => setEditing([editKey, editKeyNew, c.hex])} color={editColor} />
                     ) : (
                         <TagChip label={tag.color} color={tag.color} />
                     )}
@@ -109,13 +102,13 @@ export const TagPage = () => {
                             <IconButton onClick={onClickSubmit} title="Save">
                                 <DoneIcon />
                             </IconButton>
-                            <IconButton onClick={() => setEditing(['', '', '', TagDefinitionType.novalue])} title="Cancel">
+                            <IconButton onClick={() => setEditing(['', '', ''])} title="Cancel">
                                 <CloseIcon />
                             </IconButton>
                         </>
                     ) : (
                         <>
-                            <IconButton onClick={() => setEditing([tag.key, tag.key, tag.color, tag.type])} title="Edit">
+                            <IconButton onClick={() => setEditing([tag.key, tag.key, tag.color])} title="Edit">
                                 <EditIcon />
                             </IconButton>
                             <IconButton onClick={() => setRemoveTagConfirm(tag.key)} title="Delete">

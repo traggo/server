@@ -26,7 +26,7 @@ func TestRemoveTimeSpan_succeeds_removesTimeSpan(t *testing.T) {
 		Start: test.ModelTime("2019-06-11T18:00:00Z"),
 		End:   test.ModelTimeP("2019-06-11T18:00:00Z"),
 		Tags: []*gqlmodel.TimeSpanTag{
-			{Key: "hello", StringValue: ps("world")},
+			{Key: "hello", Value: "world"},
 		},
 	}
 	require.Equal(t, expected, actual)
@@ -75,8 +75,4 @@ func TestRemoveTimeSpan_fails_noPermission(t *testing.T) {
 	resolver := ResolverForTimeSpan{DB: db.DB}
 	_, err := resolver.RemoveTimeSpan(fake.User(5), 1)
 	require.EqualError(t, err, "timespan with id 1 does not exist")
-}
-
-func ps(s string) *string {
-	return &s
 }

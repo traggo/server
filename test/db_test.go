@@ -56,7 +56,6 @@ func TestDatabase(t *testing.T) {
 	db.Find(&devices)
 	assert.Equal(t, expectedDevices, devices)
 
-	value := "def"
 	expectedTimeSpans := []model.TimeSpan{{
 		ID:            1,
 		UserID:        1,
@@ -66,7 +65,7 @@ func TestDatabase(t *testing.T) {
 		EndUTC:        test.TimeP("2009-06-30T18:40:00Z"),
 		Tags: []model.TimeSpanTag{{
 			Key:         "abc",
-			StringValue: &value,
+			StringValue: "def",
 			TimeSpanID:  1,
 		}},
 	}}

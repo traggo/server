@@ -12,7 +12,7 @@ import (
 )
 
 // UpdateTag updates a tag.
-func (r *ResolverForTag) UpdateTag(ctx context.Context, key string, newKey *string, color string, typeArg gqlmodel.TagDefinitionType) (*gqlmodel.TagDefinition, error) {
+func (r *ResolverForTag) UpdateTag(ctx context.Context, key string, newKey *string, color string) (*gqlmodel.TagDefinition, error) {
 	tag := model.TagDefinition{}
 	userID := auth.GetUser(ctx).ID
 	if r.DB.Where(&model.TagDefinition{UserID: userID, Key: key}).Find(&tag).RecordNotFound() {
@@ -24,7 +24,6 @@ func (r *ResolverForTag) UpdateTag(ctx context.Context, key string, newKey *stri
 	newValue := model.TagDefinition{
 		Key:    strings.ToLower(key),
 		Color:  color,
-		Type:   model.TagDefinitionType(typeArg),
 		UserID: userID,
 	}
 

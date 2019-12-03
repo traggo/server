@@ -1,5 +1,4 @@
 import {Tags, Tags_tags} from '../gql/__generated__/Tags';
-import {TagDefinitionType} from '../gql/__generated__/globalTypes';
 import {QueryResult} from 'react-apollo';
 
 export interface TagInputError {
@@ -9,16 +8,16 @@ export interface TagInputError {
 
 export interface TagSelectorEntry {
     tag: Omit<Tags_tags, 'usages'> & {create?: boolean; alreadyUsed?: boolean};
-    value?: string;
+    value: string;
 }
 
 export interface InputTag {
     key: string;
-    stringValue: string | null;
+    value: string;
 }
 
 export const toInputTags = (entries: TagSelectorEntry[]): InputTag[] => {
-    return entries.map((entry) => ({key: entry.tag.key, stringValue: entry.value || null}));
+    return entries.map((entry) => ({key: entry.tag.key, value: entry.value}));
 };
 
 export const toTagSelectorEntry = (tags: Array<TagSelectorEntry['tag']>, entries: InputTag[]): TagSelectorEntry[] => {
@@ -27,7 +26,7 @@ export const toTagSelectorEntry = (tags: Array<TagSelectorEntry['tag']>, entries
             const definition = tags.find((tag) => tag.key === timerTag.key) || specialTag(timerTag.key, 'new');
             return {
                 tag: definition,
-                value: timerTag.stringValue || undefined,
+                value: timerTag.value,
             };
         }
     );
@@ -38,7 +37,6 @@ export const specialTag = (name: string, state: 'used' | 'new'): TagSelectorEntr
         key: name,
         __typename: 'TagDefinition',
         color: 'gray',
-        type: TagDefinitionType.novalue,
         create: state === 'new',
         alreadyUsed: state === 'used',
         usages: 0,
@@ -59,7 +57,7 @@ const tryAdd = (tagsResult: QueryResult<Tags, {}>, entry: string): TagSelectorEn
         return {error: `'${key}' does not exist`, value: entry};
     }
 
-    if (foundTag.type === TagDefinitionType.singlevalue && !value) {
+    if (!value) {
         return {error: `'${key}' requires a value`, value: entry};
     }
 
@@ -108,6 +106,5 @@ export const itemLabel = (tag: TagSelectorEntry) => {
 };
 
 export const label = (tag: TagSelectorEntry) => {
-    const suffix = tag.tag.type === TagDefinitionType.novalue ? '' : ':' + (tag.value || '');
-    return `${tag.tag.key}${suffix}`;
+    return `${tag.tag.key}:${tag.value}`;
 };

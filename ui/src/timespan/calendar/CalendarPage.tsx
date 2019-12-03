@@ -145,7 +145,7 @@ export const CalendarPage: React.FC = () => {
             .sort((a, b) => a.start.toString().localeCompare(b.start.toString()))
             .map((ts) => {
                 const colorKey = ts
-                    .tags!.map((t) => t.key + ':' + t.stringValue)
+                    .tags!.map((t) => t.key + ':' + t.value)
                     .sort((a, b) => a.localeCompare(b))
                     .join(' ');
                 const color = calculateColor(colorKey, ColorMode.Bold, theme.palette.type);
@@ -158,8 +158,8 @@ export const CalendarPage: React.FC = () => {
                     backgroundColor: color,
                     startEditable: true,
                     id: ts.id,
-                    tags: ts.tags!.map(({stringValue, key}) => ({key, value: stringValue!})),
-                    title: ts.tags!.map((t) => t.key + ':' + t.stringValue).join(' '),
+                    tags: ts.tags!.map(({value, key}) => ({key, value})),
+                    title: ts.tags!.map((t) => t.key + ':' + t.value).join(' '),
                     extendedProps: {ts},
                     textColor: theme.palette.getContrastText(color),
                     borderColor,
@@ -300,7 +300,7 @@ export const CalendarPage: React.FC = () => {
                                 }}
                                 initialTags={toTagSelectorEntry(
                                     tagsResult.data!.tags!,
-                                    selected.data!.tags!.map((tag) => ({key: tag.key, stringValue: tag.stringValue}))
+                                    selected.data!.tags!.map((tag) => ({key: tag.key, value: tag.value}))
                                 )}
                                 dateSelectorOpen={setIgnore}
                                 stopped={() => {

@@ -5,7 +5,6 @@ export const SuggestTag = gql`
         tags: suggestTag(query: $query) {
             color
             key
-            type
         }
     }
 `;
@@ -15,7 +14,6 @@ export const Tags = gql`
         tags {
             color
             key
-            type
             usages
         }
     }
@@ -27,21 +25,19 @@ export const SuggestTagValue = gql`
 `;
 
 export const AddTag = gql`
-    mutation AddTag($name: String!, $color: String!, $type: TagDefinitionType!) {
-        createTag(key: $name, color: $color, type: $type) {
+    mutation AddTag($name: String!, $color: String!) {
+        createTag(key: $name, color: $color) {
             color
             key
-            type
         }
     }
 `;
 
 export const UpdateTag = gql`
-    mutation UpdateTag($key: String!, $newKey: String, $color: String!, $type: TagDefinitionType!) {
-        updateTag(key: $key, newKey: $newKey, color: $color, type: $type) {
+    mutation UpdateTag($key: String!, $newKey: String, $color: String!) {
+        updateTag(key: $key, newKey: $newKey, color: $color) {
             color
             key
-            type
         }
     }
 `;
@@ -51,7 +47,6 @@ export const RemoveTag = gql`
         removeTag(key: $key) {
             color
             key
-            type
         }
     }
 `;

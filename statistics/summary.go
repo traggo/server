@@ -87,18 +87,18 @@ func fillEmptyTags(statisticsEntries []*gqlmodel.RangedStatisticsEntries) {
 	lookup := make(map[string]struct{})
 	for _, entry := range statisticsEntries {
 		for _, statEntry := range entry.Entries {
-			lookup[key(statEntry.Key, statEntry.StringValue)] = struct{}{}
+			lookup[key(statEntry.Key, statEntry.Value)] = struct{}{}
 		}
 	}
 	for _, entry := range statisticsEntries {
 		existing := make(map[string]struct{}, len(lookup))
 		for _, statEntry := range entry.Entries {
-			existing[key(statEntry.Key, statEntry.StringValue)] = struct{}{}
+			existing[key(statEntry.Key, statEntry.Value)] = struct{}{}
 		}
 		for identifier := range lookup {
 			if _, ok := existing[identifier]; !ok {
 				key, value := extract(identifier)
-				entry.Entries = append(entry.Entries, &gqlmodel.StatisticsEntry{Key: key, StringValue: value, TimeSpendInSeconds: 0})
+				entry.Entries = append(entry.Entries, &gqlmodel.StatisticsEntry{Key: key, Value: value, TimeSpendInSeconds: 0})
 			}
 		}
 	}
@@ -129,7 +129,7 @@ type statReturn struct {
 	QueryStart         string
 	QueryEnd           string
 	Key                string
-	StringValue        *string
+	StringValue        string
 	TimeSpendInSeconds float64
 }
 
@@ -150,7 +150,7 @@ func group(entries []statReturn) ([]*gqlmodel.RangedStatisticsEntries, error) {
 		}
 		stats[id].Entries = append(stats[id].Entries, &gqlmodel.StatisticsEntry{
 			Key:                entry.Key,
-			StringValue:        entry.StringValue,
+			Value:              entry.StringValue,
 			TimeSpendInSeconds: entry.TimeSpendInSeconds,
 		})
 	}
@@ -173,25 +173,17 @@ func build(tags []*gqlmodel.InputTimeSpanTag, noop string) (string, []interface{
 	var haveParams []interface{}
 	for _, tag := range tags {
 		have = append(have, "(tstx.key = ? AND tstx.string_value = ?)")
-		haveParams = append(haveParams, tag.Key, tag.StringValue)
+		haveParams = append(haveParams, tag.Key, tag.Value)
 	}
 
 	return strings.Join(have, " OR "), haveParams
 }
 
-func key(key string, value *string) string {
-	if value == nil {
-		return key
-	}
-	return fmt.Sprintf("%s:%s", key, *value)
+func key(key string, value string) string {
+	return fmt.Sprintf("%s:%s", key, value)
 }
 
-func extract(id string) (string, *string) {
+func extract(id string) (string, string) {
 	split := strings.Split(id, ":")
-	if len(split) == 1 {
-		return split[0], nil
-	}
-
-	value := split[1]
-	return split[0], &value
+	return split[0], split[1]
 }

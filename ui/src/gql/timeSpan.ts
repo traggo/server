@@ -8,7 +8,7 @@ export const Trackers = gql`
             end
             tags {
                 key
-                stringValue
+                value
             }
             oldStart
         }
@@ -24,7 +24,7 @@ export const TimeSpansInRange = gql`
                 end
                 tags {
                     key
-                    stringValue
+                    value
                 }
                 oldStart
             }
@@ -46,7 +46,7 @@ export const TimeSpans = gql`
                 end
                 tags {
                     key
-                    stringValue
+                    value
                 }
                 oldStart
             }
@@ -67,7 +67,7 @@ export const StartTimer = gql`
             end
             tags {
                 key
-                stringValue
+                value
             }
             oldStart
         }
@@ -82,7 +82,7 @@ export const StopTimer = gql`
             end
             tags {
                 key
-                stringValue
+                value
             }
             oldStart
         }
@@ -97,7 +97,7 @@ export const AddTimeSpan = gql`
             end
             tags {
                 key
-                stringValue
+                value
             }
             oldStart
         }
@@ -112,7 +112,7 @@ export const UpdateTimeSpan = gql`
             end
             tags {
                 key
-                stringValue
+                value
             }
             oldStart
         }

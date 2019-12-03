@@ -18,5 +18,5 @@ type TimeSpan struct {
 type TimeSpanTag struct {
 	TimeSpanID  int `gorm:"type:int REFERENCES time_spans(id) ON DELETE CASCADE"`
 	Key         string
-	StringValue *string
+	StringValue string
 }

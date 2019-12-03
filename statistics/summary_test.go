@@ -275,8 +275,8 @@ func (e *testEntry) Ranges(ranges ...*gqlmodel.Range) *testEntry {
 func (e *testEntry) Include(includes ...model.TimeSpanTag) *testEntry {
 	for _, entry := range includes {
 		e.include = append(e.include, &gqlmodel.InputTimeSpanTag{
-			Key:         entry.Key,
-			StringValue: entry.StringValue,
+			Key:   entry.Key,
+			Value: entry.StringValue,
 		})
 	}
 	return e
@@ -284,8 +284,8 @@ func (e *testEntry) Include(includes ...model.TimeSpanTag) *testEntry {
 func (e *testEntry) Exclude(excludes ...model.TimeSpanTag) *testEntry {
 	for _, entry := range excludes {
 		e.exclude = append(e.exclude, &gqlmodel.InputTimeSpanTag{
-			Key:         entry.Key,
-			StringValue: entry.StringValue,
+			Key:   entry.Key,
+			Value: entry.StringValue,
 		})
 	}
 	return e
@@ -294,7 +294,7 @@ func (e *testEntry) Exclude(excludes ...model.TimeSpanTag) *testEntry {
 func tag(key string, value string) model.TimeSpanTag {
 	return model.TimeSpanTag{
 		Key:         key,
-		StringValue: &value,
+		StringValue: value,
 	}
 }
 
@@ -316,7 +316,7 @@ func result(start, stop string, entries ...*gqlmodel.StatisticsEntry) *gqlmodel.
 func entry(key string, value string, duration time.Duration) *gqlmodel.StatisticsEntry {
 	return &gqlmodel.StatisticsEntry{
 		Key:                key,
-		StringValue:        &value,
+		Value:              value,
 		TimeSpendInSeconds: duration.Seconds(),
 	}
 }

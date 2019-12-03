@@ -59,7 +59,6 @@ func (d *UserWithDatabase) NewTagDefinition(key string) model.TagDefinition {
 	tagDefinition := model.TagDefinition{
 		UserID: d.User.ID,
 		Key:    key,
-		Type:   model.TypeSingleValue,
 	}
 	d.Create(&tagDefinition)
 	return tagDefinition
@@ -223,7 +222,7 @@ type TimeSpanWithDatabase struct {
 // AssertHasTag asserts if the tag exists or not.
 func (d *TimeSpanWithDatabase) AssertHasTag(key, value string, exist bool) *TimeSpanWithDatabase {
 	existActual := !d.DB.
-		Where(&model.TimeSpanTag{Key: key, StringValue: &value, TimeSpanID: d.TimeSpan.ID}).
+		Where(&model.TimeSpanTag{Key: key, StringValue: value, TimeSpanID: d.TimeSpan.ID}).
 		Find(new(model.TimeSpanTag)).
 		RecordNotFound()
 	assert.True(d.t, exist == existActual)
@@ -255,7 +254,7 @@ func (d *TimeSpanWithDatabase) Tag(key string, stringValue string) *TimeSpanWith
 	tag := model.TimeSpanTag{
 		TimeSpanID:  d.TimeSpan.ID,
 		Key:         key,
-		StringValue: &stringValue,
+		StringValue: stringValue,
 	}
 	d.TimeSpan.Tags = append(d.TimeSpan.Tags, tag)
 	d.DB.Save(tag)

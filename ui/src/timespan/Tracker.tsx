@@ -62,7 +62,7 @@ export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntr
 
     const submit = () => {
         const tags = selectedEntries.map(
-            (entry: TagSelectorEntry): InputTimeSpanTag => ({key: entry.tag.key, stringValue: entry.value})
+            (entry: TagSelectorEntry): InputTimeSpanTag => ({key: entry.tag.key, value: entry.value})
         );
         if (type === Type.Tracker) {
             startTimer({variables: {start: inUserTz(moment()).format(), tags}}).then(() => {

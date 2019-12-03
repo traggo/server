@@ -40,37 +40,31 @@ func main() {
 	log.Info().Msg("Creating Tags ...")
 
 	db.Create(&model.TagDefinition{
-		Type:   model.TypeSingleValue,
 		Key:    "type",
 		UserID: uID,
 		Color:  "#fff",
 	})
 	db.Create(&model.TagDefinition{
-		Type:   model.TypeSingleValue,
 		Key:    "issue",
 		UserID: uID,
 		Color:  "#fff",
 	})
 	db.Create(&model.TagDefinition{
-		Type:   model.TypeSingleValue,
 		Key:    "meeting",
 		UserID: uID,
 		Color:  "#fff",
 	})
 	db.Create(&model.TagDefinition{
-		Type:   model.TypeSingleValue,
 		Key:    "with",
 		UserID: uID,
 		Color:  "#fff",
 	})
 	db.Create(&model.TagDefinition{
-		Type:   model.TypeSingleValue,
 		Key:    "misc",
 		UserID: uID,
 		Color:  "#fff",
 	})
 	db.Create(&model.TagDefinition{
-		Type:   model.TypeSingleValue,
 		Key:    "proj",
 		UserID: uID,
 		Color:  "#fff",
@@ -164,9 +158,9 @@ func generateIssueType(proj, t string) []timeSpan {
 	for _, number := range numbers {
 		result = append(result, timeSpan{
 			Tags: []model.TimeSpanTag{
-				{Key: "proj", StringValue: &proj},
-				{Key: "type", StringValue: p(t)},
-				{Key: "issue", StringValue: p(fmt.Sprintf("%X-%d", proj, number))},
+				{Key: "proj", StringValue: proj},
+				{Key: "type", StringValue: t},
+				{Key: "issue", StringValue: fmt.Sprintf("%X-%d", proj, number)},
 			},
 			Runtime: gotime.Hour * 24 * 12,
 		})
@@ -181,8 +175,8 @@ func generateMeeting() []timeSpan {
 	for _, name := range names {
 		result = append(result, timeSpan{
 			Tags: []model.TimeSpanTag{
-				{Key: "type", StringValue: p("meeting")},
-				{Key: "meeting", StringValue: &name},
+				{Key: "type", StringValue: "meeting"},
+				{Key: "meeting", StringValue: name},
 			},
 			Runtime: gotime.Duration(-1),
 		})
@@ -197,8 +191,8 @@ func generateSupport() []timeSpan {
 	for _, name := range names {
 		result = append(result, timeSpan{
 			Tags: []model.TimeSpanTag{
-				{Key: "type", StringValue: p("support")},
-				{Key: "with", StringValue: &name},
+				{Key: "type", StringValue: "support"},
+				{Key: "with", StringValue: name},
 			},
 			Runtime: gotime.Duration(-1),
 		})
@@ -227,8 +221,4 @@ func noErr(err error) {
 
 func randInt(min int, max int) int {
 	return min + rand.Intn(max-min)
-}
-
-func p(s string) *string {
-	return &s
 }

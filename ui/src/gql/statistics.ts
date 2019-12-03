@@ -7,7 +7,7 @@ export const Stats = gql`
             end
             entries {
                 key
-                stringValue
+                value
                 timeSpendInSeconds
             }
         }
@@ -20,7 +20,7 @@ export const Stats2 = gql`
             end
             entries {
                 key
-                stringValue
+                value
                 timeSpendInSeconds
             }
         }

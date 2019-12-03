@@ -28,11 +28,11 @@ export const Dashboards = gql`
                     tags
                     excludeTags {
                         key
-                        stringValue
+                        value
                     }
                     includeTags {
                         key
-                        stringValue
+                        value
                     }
                 }
                 pos {

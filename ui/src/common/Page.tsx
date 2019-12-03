@@ -35,7 +35,7 @@ import {CurrentUser} from '../gql/__generated__/CurrentUser';
 import * as gqlDashboard from '../gql/dashboard';
 import {Dashboards} from '../gql/__generated__/Dashboards';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import {Route, RouteChildrenProps, Switch} from "react-router";
+import {Route, RouteChildrenProps, Switch} from 'react-router';
 
 const drawerWidth = 240;
 
@@ -242,8 +242,10 @@ export const Page: React.FC = ({children}) => {
                             </Route>
                             <Route exact path="/dashboard/:id/:name">
                                 {(props: RouteChildrenProps<{id: string}>) => {
-                                    const db = dashboards.find(dashboard => dashboard.id === parseInt(props.match!.params.id, 10));
-                                    return "Dashboards / " + (db ? db.name : '...');
+                                    const db = dashboards.find(
+                                        (dashboard) => dashboard.id === parseInt(props.match!.params.id, 10)
+                                    );
+                                    return 'Dashboards / ' + (db ? db.name : '...');
                                 }}
                             </Route>
                         </Switch>

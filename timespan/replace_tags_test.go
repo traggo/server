@@ -21,8 +21,8 @@ func TestReplace_simple(t *testing.T) {
 	resolver := ResolverForTimeSpan{DB: db.DB}
 
 	_, err := resolver.ReplaceTimeSpanTags(fake.User(1),
-		gqlmodel.InputTimeSpanTag{Key: "old", StringValue: ps("1")},
-		gqlmodel.InputTimeSpanTag{Key: "new", StringValue: ps("1.0")},
+		gqlmodel.InputTimeSpanTag{Key: "old", Value: "1"},
+		gqlmodel.InputTimeSpanTag{Key: "new", Value: "1.0"},
 		gqlmodel.InputReplaceOptions{Override: gqlmodel.OverrideModeDiscard})
 	require.NoError(t, err)
 
@@ -43,8 +43,8 @@ func TestReplace_discard(t *testing.T) {
 	resolver := ResolverForTimeSpan{DB: db.DB}
 
 	_, err := resolver.ReplaceTimeSpanTags(fake.User(1),
-		gqlmodel.InputTimeSpanTag{Key: "old", StringValue: ps("1")},
-		gqlmodel.InputTimeSpanTag{Key: "new", StringValue: ps("1.0")},
+		gqlmodel.InputTimeSpanTag{Key: "old", Value: "1"},
+		gqlmodel.InputTimeSpanTag{Key: "new", Value: "1.0"},
 		gqlmodel.InputReplaceOptions{Override: gqlmodel.OverrideModeDiscard})
 	require.NoError(t, err)
 
@@ -66,8 +66,8 @@ func TestReplace_override(t *testing.T) {
 	resolver := ResolverForTimeSpan{DB: db.DB}
 
 	_, err := resolver.ReplaceTimeSpanTags(fake.User(1),
-		gqlmodel.InputTimeSpanTag{Key: "old", StringValue: ps("1")},
-		gqlmodel.InputTimeSpanTag{Key: "new", StringValue: ps("1.0")},
+		gqlmodel.InputTimeSpanTag{Key: "old", Value: "1"},
+		gqlmodel.InputTimeSpanTag{Key: "new", Value: "1.0"},
 		gqlmodel.InputReplaceOptions{Override: gqlmodel.OverrideModeOverride})
 	require.NoError(t, err)
 
@@ -96,8 +96,8 @@ func TestReplace_multiuser(t *testing.T) {
 	resolver := ResolverForTimeSpan{DB: db.DB}
 
 	_, err := resolver.ReplaceTimeSpanTags(fake.User(1),
-		gqlmodel.InputTimeSpanTag{Key: "old", StringValue: ps("1")},
-		gqlmodel.InputTimeSpanTag{Key: "new", StringValue: ps("1.0")},
+		gqlmodel.InputTimeSpanTag{Key: "old", Value: "1"},
+		gqlmodel.InputTimeSpanTag{Key: "new", Value: "1.0"},
 		gqlmodel.InputReplaceOptions{Override: gqlmodel.OverrideModeOverride})
 	require.NoError(t, err)
 

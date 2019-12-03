@@ -27,11 +27,7 @@ export const DashboardBarChart: React.FC<DashboardPieChartProps> = ({entries, in
                 start: entry.start,
                 end: entry.end,
                 data: entry.entries!.reduce((all: Record<string, number>, current) => {
-                    if (current.stringValue === null) {
-                        return {...all, [current.key]: current.timeSpendInSeconds};
-                    } else {
-                        return {...all, [current.key + ':' + current.stringValue]: current.timeSpendInSeconds};
-                    }
+                    return {...all, [current.key + ':' + current.value]: current.timeSpendInSeconds};
                 }, {}),
             };
         })

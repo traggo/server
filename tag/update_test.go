@@ -24,12 +24,11 @@ func TestUpdate_withKey(t *testing.T) {
 
 	resolver := ResolverForTag{DB: db.DB}
 	newTagName := "mega"
-	tag, err := resolver.UpdateTag(fake.User(left.User.ID), "coolio", &newTagName, "#abc", gqlmodel.TagDefinitionTypeSinglevalue)
+	tag, err := resolver.UpdateTag(fake.User(left.User.ID), "coolio", &newTagName, "#abc")
 	require.NoError(t, err)
 	require.Equal(t, &gqlmodel.TagDefinition{
 		Color: "#abc",
 		Key:   "mega",
-		Type:  gqlmodel.TagDefinitionTypeSinglevalue,
 	}, tag)
 	left.AssertHasTagDefinition("coolio", false).AssertHasTagDefinition("mega", true)
 	right.AssertHasTagDefinition("coolio", true).AssertHasTagDefinition("mega", false)
@@ -50,12 +49,11 @@ func TestUpdate_withoutKey(t *testing.T) {
 	rightTs.Tag("coolio", "mama")
 
 	resolver := ResolverForTag{DB: db.DB}
-	tag, err := resolver.UpdateTag(fake.User(left.User.ID), "coolio", nil, "#abc", gqlmodel.TagDefinitionTypeSinglevalue)
+	tag, err := resolver.UpdateTag(fake.User(left.User.ID), "coolio", nil, "#abc")
 	require.NoError(t, err)
 	assert.Equal(t, &gqlmodel.TagDefinition{
 		Color: "#abc",
 		Key:   "coolio",
-		Type:  gqlmodel.TagDefinitionTypeSinglevalue,
 	}, tag)
 }
 
@@ -72,7 +70,7 @@ func TestUpdate_dashboardEntryKey(t *testing.T) {
 
 	newTag := "yes"
 	resolver := ResolverForTag{DB: db.DB}
-	_, err := resolver.UpdateTag(fake.User(left.User.ID), "coolio", &newTag, "#abc", gqlmodel.TagDefinitionTypeSinglevalue)
+	_, err := resolver.UpdateTag(fake.User(left.User.ID), "coolio", &newTag, "#abc")
 	require.NoError(t, err)
 
 	db.Find(&entry)
@@ -89,7 +87,7 @@ func TestUpdate_noPermissions(t *testing.T) {
 	rightTs.Tag("coolio", "mama")
 
 	resolver := ResolverForTag{DB: db.DB}
-	_, err := resolver.UpdateTag(fake.User(left.User.ID), "coolio", nil, "#abc", gqlmodel.TagDefinitionTypeSinglevalue)
+	_, err := resolver.UpdateTag(fake.User(left.User.ID), "coolio", nil, "#abc")
 	require.EqualError(t, err, "tag with key 'coolio' does not exist")
 	right.AssertHasTagDefinition("coolio", true)
 }

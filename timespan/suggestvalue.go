@@ -20,7 +20,7 @@ func (r *ResolverForTimeSpan) SuggestTagValue(ctx context.Context, key string, q
 		Find(&suggestions)
 	var result []string
 	for _, value := range suggestions {
-		result = append(result, *value.StringValue)
+		result = append(result, value.StringValue)
 	}
 
 	return result, find.Error

@@ -26,11 +26,7 @@ export const DashboardTable: React.FC<DashboardTableProps> = ({entries, interval
                 start: entry.start,
                 end: entry.end,
                 data: entry.entries!.reduce((all: Record<string, number>, current) => {
-                    if (current.stringValue === null) {
-                        return {...all, [current.key]: current.timeSpendInSeconds};
-                    } else {
-                        return {...all, [current.key + ':' + current.stringValue]: current.timeSpendInSeconds};
-                    }
+                    return {...all, [current.key + ':' + current.value]: current.timeSpendInSeconds};
                 }, {}),
             };
         })

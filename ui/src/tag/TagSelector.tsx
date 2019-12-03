@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {Tags} from '../gql/__generated__/Tags';
-import {TagDefinitionType} from '../gql/__generated__/globalTypes';
 import * as gqlTags from '../gql/tags';
 import {useQuery} from '@apollo/react-hooks';
 import {useError} from '../utils/errors';
@@ -92,7 +91,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
 
         focusInput();
 
-        if (entry.tag.type === TagDefinitionType.singlevalue && !entry.value) {
+        if (!entry.value) {
             const newValue = entry.tag.key + ':';
             if (currentValue !== newValue) {
                 setHighlightedIndex(0);
@@ -185,7 +184,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
                 ) : null}
                 {addDialogOpen && (
                     <AddTagDialog
-                        onAdded={(tag) => trySubmit({tag})}
+                        onAdded={(tag) => trySubmit({tag, value: ''})}
                         open={true}
                         initialName={currentValue.split(':')[0]}
                         close={() => {

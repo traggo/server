@@ -53,7 +53,7 @@ const suggestTag = (
     return availableTags
         .sort((a, b) => b.usages - a.usages)
         .slice(0, 5)
-        .map((tag) => ({tag}));
+        .map((tag) => ({tag, value: ''}));
 };
 
 const suggestTagValue = (
