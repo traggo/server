@@ -366,14 +366,19 @@ const getElementContent = (event: EventApi, stop: () => void): string => {
     }
     const clamp = (amount: number) =>
         `<span class="ellipsis" title="${event.title}" style="-webkit-line-clamp: ${amount}">${event.title}</span>`;
-    if (lines < 2) {
-        return `<span class="ellipsis-single" title="${event.title}">${event.title}</span>${stopButton}`;
-    }
-    if (lines === 2) {
-        return `${clamp(2)}${stopButton}`;
-    }
 
     const running = hasEnd ? `<span style="float: right">${timeRunningCalendar(start, end)}</span>` : '';
     const date = `${start.format('LT')} - ${hasEnd ? end.format('LT') : 'now'} ${running}`;
+    if (lines < 2) {
+        return event.title ? `<span class="ellipsis-single" title="${event.title}">${event.title}</span>${stopButton}` : date;
+    }
+    if (lines === 2) {
+        if (hasEnd) {
+            return `${date}<span class="ellipsis-single" title="${event.title}">${event.title}</span>${stopButton}`;
+        } else {
+            return `${clamp(2)}${stopButton}`;
+        }
+    }
+
     return `${date}<br/>${clamp(lines - 1)}${stopButton}`;
 };

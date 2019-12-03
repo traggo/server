@@ -13,7 +13,7 @@ export const timeRunningCalendar = (date: moment.Moment, now: moment.Moment) => 
         return '<1m';
     }
 
-    return prettyMs(d * 1000, {compact: true}).substring(1);
+    return prettyMs(d * 1000, {unitCount: d < 60 * 24 ? 1 : 2}).substring(1);
 };
 
 export const uglyConvertToLocalTime = (m: moment.Moment): moment.Moment => {
