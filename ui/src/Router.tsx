@@ -45,7 +45,7 @@ export const Router = () => {
                 <Route exact path="/user/devices" component={DevicesPage} />
                 <Route exact path="/user/tags" component={TagPage} />
                 {admin ? <Route exact path="/admin/users" component={UsersPage} /> : null}
-                <Route exact path="/" render={() => <Redirect to="/dashboard" />} />
+                <Route exact path="/" render={() => <Redirect to="/timesheet/list" />} />
             </Page>
         </Switch>
     );
