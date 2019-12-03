@@ -35,6 +35,7 @@ import {CurrentUser} from '../gql/__generated__/CurrentUser';
 import * as gqlDashboard from '../gql/dashboard';
 import {Dashboards} from '../gql/__generated__/Dashboards';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import {Route, RouteChildrenProps, Switch} from "react-router";
 
 const drawerWidth = 240;
 
@@ -217,7 +218,35 @@ export const Page: React.FC = ({children}) => {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" color="inherit" noWrap>
-                        timesheet / daily
+                        <Switch>
+                            <Route exact path="/timesheet/list">
+                                Timesheet / List
+                            </Route>
+                            <Route exact path="/timesheet/calendar">
+                                Timesheet / Calendar
+                            </Route>
+                            <Route exact path="/user/settings">
+                                User / Settings
+                            </Route>
+                            <Route exact path="/user/devices">
+                                User / Devices
+                            </Route>
+                            <Route exact path="/user/tags">
+                                User / Tags
+                            </Route>
+                            <Route exact path="/admin/users">
+                                Admin / Users
+                            </Route>
+                            <Route exact path="/dashboards">
+                                Dashboards / Manage
+                            </Route>
+                            <Route exact path="/dashboard/:id/:name">
+                                {(props: RouteChildrenProps<{id: string}>) => {
+                                    const db = dashboards.find(dashboard => dashboard.id === parseInt(props.match!.params.id, 10));
+                                    return "Dashboards / " + (db ? db.name : '...');
+                                }}
+                            </Route>
+                        </Switch>
                     </Typography>
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop}>
