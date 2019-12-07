@@ -6,11 +6,6 @@
 
 <h1 align="center">traggo/server</h1>
 <p align="center"><i>tag-based time tracking</i></p>
-<p align="center">
-    <a href="https://github.com/traggo/logo">
-        <img height="300px" src="https://raw.githubusercontent.com/traggo/logo/master/logo.png" />
-    </a>
-</p>
 
 <p align="center">
     <a href="https://travis-ci.com/traggo/server">
