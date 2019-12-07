@@ -17,7 +17,10 @@ export const DashboardPieChart: React.FC<DashboardPieChartProps> = ({entries}) =
                 <Pie
                     isAnimationActive={false}
                     dataKey="timeSpendInSeconds"
-                    nameKey={(entry) => entry.stringValue}
+                    nameKey={(entry) => {
+                        // tslint:disable-next-line:no-any
+                        return (entry.key + ':' + entry.value) as any;
+                    }}
                     data={entries}
                     labelLine={false}
                     fill="#8884d8"
@@ -39,7 +42,7 @@ const CustomTooltip = ({active, payload}: TooltipProps) => {
         return (
             <Paper style={{padding: 10}} elevation={4}>
                 <Typography>
-                    {first.name}: {prettyMs(first.payload.timeSpendInSeconds * 1000)}
+                    {first.payload.key}:{first.payload.value}: {prettyMs(first.payload.timeSpendInSeconds * 1000)}
                 </Typography>
             </Paper>
         );
