@@ -1,6 +1,5 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import {Button, makeStyles, Paper, useTheme} from '@material-ui/core';
+import {Paper, useTheme} from '@material-ui/core';
 import moment from 'moment';
 import {useApolloClient, useMutation, useQuery} from '@apollo/react-hooks';
 import {TimeSpans_timeSpans_timeSpans} from '../../gql/__generated__/TimeSpans';
@@ -38,6 +37,7 @@ import {StartTimer, StartTimerVariables} from '../../gql/__generated__/StartTime
 import {timeRunningCalendar} from '../timeutils';
 import {stripTypename} from '../../utils/strip';
 import {TimeSpansInRange, TimeSpansInRangeVariables} from '../../gql/__generated__/TimeSpansInRange';
+import {ExtendedEventSourceInput} from '@fullcalendar/core/structs/event-source';
 
 const toMoment = (date: Date): moment.Moment => {
     return moment(date).tz('utc');
@@ -50,25 +50,10 @@ declare global {
     }
 }
 
-const useStyles = makeStyles((theme) => {
-    return {
-        start: {
-            width: '50%',
-            float: 'right',
-            padding: '2px 0',
-            right: 0,
-            borderRadius: '0 0 10% 10px',
-            textAlign: 'center',
-            position: 'absolute',
-            boxShadow: theme.shadows[1],
-            borderTop: '1px solid red',
-        },
-    };
-});
+const StartTimerId = '-1';
 
 export const CalendarPage: React.FC = () => {
     const apollo = useApolloClient();
-    const classes = useStyles();
     const theme = useTheme();
     const timeSpansResult = useQuery<TimeSpansInRange, TimeSpansInRangeVariables>(gqlTimeSpan.TimeSpansInRange, {
         variables: {
@@ -123,7 +108,7 @@ export const CalendarPage: React.FC = () => {
         },
     });
 
-    const values = (() => {
+    const values: ExtendedEventSourceInput[] = (() => {
         if (
             timeSpansResult.error ||
             timeSpansResult.loading ||
@@ -200,16 +185,35 @@ export const CalendarPage: React.FC = () => {
     };
     const onClick: OptionsInput['eventClick'] = (data) => {
         data.jsEvent.preventDefault();
+        if (data.event.id === StartTimerId) {
+            startTimer({variables: {start: moment().format(), tags: []}}).then(() => {
+                setCurrentDate(moment());
+            });
+            return;
+        }
+
         // tslint:disable-next-line:no-any
         setSelected({data: data.event.extendedProps.ts, selected: data.jsEvent.target as any});
     };
+    if (trackersResult.data && !(trackersResult.data.timers || []).length) {
+        const startTimerEvent: ExtendedEventSourceInput = {
+            start: currentDate.toDate(),
+            end: moment(currentDate)
+                .add(15, 'minute')
+                .toDate(),
+            className: '__start',
+            editable: false,
+            id: StartTimerId,
+        };
+        values.push(startTimerEvent);
+    }
 
     return (
         <Paper style={{padding: 10, bottom: 10, top: 80, position: 'absolute'}} color="red">
             <FullCalendarStyling>
                 <FullCalendar
                     defaultView="timeGridWeek"
-                    rerenderDelay={10}
+                    rerenderDelay={30}
                     datesRender={(x) => {
                         const range = {start: moment(x.view.currentStart), end: moment(x.view.currentEnd)};
                         if (
@@ -250,7 +254,7 @@ export const CalendarPage: React.FC = () => {
                     eventClick={onClick}
                     eventDrop={onDrop}
                     slotLabelFormat={(s) => toMoment(s.start.marker).format('LT')}
-                    columnHeaderFormat={(s) => toMoment(s.start.marker).format('DD dddd')}
+                    columnHeaderFormat={(s) => toMoment(s.start.marker).format('D, dddd')}
                     nowIndicator={true}
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, momentPlugin]}
                     header={{
@@ -260,21 +264,6 @@ export const CalendarPage: React.FC = () => {
                     }}
                 />
             </FullCalendarStyling>
-            {!trackersResult.data || !(trackersResult.data.timers || []).length ? (
-                <NowIndicator>
-                    <Button
-                        className={classes.start}
-                        variant="contained"
-                        color="primary"
-                        onClick={() => {
-                            startTimer({variables: {start: moment().format(), tags: []}}).then(() => {
-                                setCurrentDate(moment());
-                            });
-                        }}>
-                        Start
-                    </Button>
-                </NowIndicator>
-            ) : null}
             {!!selected.selected && (
                 <Popper open={true} anchorEl={selected.selected} style={{zIndex: 1200, maxWidth: 700}}>
                     <ClickAwayListener
@@ -318,28 +307,15 @@ export const CalendarPage: React.FC = () => {
     );
 };
 
-const NowIndicator: React.FC = ({children}) => {
-    const [indicator, setIndicator] = React.useState<Element | null>(null);
-
-    useInterval(
-        () => {
-            if (!indicator) {
-                setIndicator(document.getElementsByClassName('fc-now-indicator').item(0));
-            }
-        },
-        500,
-        true
-    );
-    if (!indicator) {
-        return <></>;
-    }
-    return ReactDOM.createPortal(children, indicator);
-};
-
 const getElementContent = (event: EventApi, stop: () => void): string => {
     if (!event.start || !event.end) {
         return '';
     }
+
+    if (event.id === StartTimerId) {
+        return 'START';
+    }
+
     const start = moment(event.start);
     const end = moment(event.end);
     const diff = end.diff(start, 'minute');
@@ -370,7 +346,9 @@ const getElementContent = (event: EventApi, stop: () => void): string => {
     const running = hasEnd ? `<span style="float: right">${timeRunningCalendar(start, end)}</span>` : '';
     const date = `${start.format('LT')} - ${hasEnd ? end.format('LT') : 'now'} ${running}`;
     if (lines < 2) {
-        return event.title ? `<span class="ellipsis-single" title="${event.title}">${event.title}</span>${stopButton}` : date;
+        return event.title
+            ? `<span class="ellipsis-single" title="${event.title}">${event.title}</span>${stopButton}`
+            : `${date}${stopButton}`;
     }
     if (lines === 2) {
         if (hasEnd) {

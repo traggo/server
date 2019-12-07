@@ -179,6 +179,18 @@ const useStyle = makeStyles((theme) => {
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
             },
+            '& .fc .__start': {
+                background: theme.palette.primary.main,
+                color: theme.palette.primary.contrastText,
+                border: 0,
+                borderRadius: '0 0 10px 10px',
+                textAlign: 'center',
+                boxShadow: theme.shadows[1],
+                cursor: 'pointer',
+            },
+            '& .fc .__start:hover': {
+                background: theme.palette.primary.light,
+            },
             // tslint:disable-next-line:no-any important breaks it
         } as any,
     };
