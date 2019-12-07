@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gobuffalo/packr/v2"
@@ -15,6 +16,12 @@ func Register(r *mux.Router, box *packr.Box) {
 	r.Handle("/service-worker.js", serveFile("service-worker.js", "text/javascript", box))
 	r.Handle("/assets-manifest.json", serveFile("asserts-manifest.json", "application/json", box))
 	r.Handle("/static/{type}/{resource}", http.FileServer(box))
+
+	r.Handle("/favicon.ico", serveFile("favicon.ico", "image/x-icon", box))
+	for _, size := range []string{"16x16", "32x32", "192x192", "256x256"} {
+		fileName := fmt.Sprintf("/favicon-%s.png", size)
+		r.Handle(fileName, serveFile(fileName, "image/png", box))
+	}
 }
 
 func serveFile(name, contentType string, box *packr.Box) http.HandlerFunc {
