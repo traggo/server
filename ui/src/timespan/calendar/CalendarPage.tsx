@@ -278,6 +278,12 @@ export const CalendarPage: React.FC = () => {
                                 elevation={10}
                                 id={selected.data!.id}
                                 key={selected.data!.id}
+                                rangeChange={(range) => {
+                                    setSelected({
+                                        ...selected,
+                                        data: {...selected.data!, start: range.from.format(), end: range.to && range.to.format()},
+                                    });
+                                }}
                                 deleted={() => {
                                     removeFromTimeSpanInRangeCache(apollo.cache, selected.data!.id, timeSpansResult.variables);
                                     setSelected({selected: null, data: null});

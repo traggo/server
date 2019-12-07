@@ -33,6 +33,7 @@ export interface TimeSpanProps {
     range: Range & {oldFrom?: moment.Moment};
     initialTags: TagSelectorEntry[];
     dateSelectorOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+    rangeChange?: (r: Range) => void;
     deleted?: () => void;
     stopped?: () => void;
     continued?: () => void;
@@ -46,6 +47,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
         id,
         initialTags,
         dateSelectorOpen = () => {},
+        rangeChange = () => {},
         deleted = () => {},
         stopped = () => {},
         continued = () => {},
@@ -103,13 +105,18 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                 }
             },
         });
-
         const wasMoved = !isSameDate(from, oldFrom);
         const showDate = to !== undefined && (!isSameDate(from, to) || wasMoved);
         return (
             <Paper
                 elevation={elevation}
-                style={{display: 'flex', alignItems: 'center', padding: '10px', margin: '10px 0', opacity: wasMoved ? 0.5 : 1}}>
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '10px',
+                    margin: '10px 0',
+                    opacity: wasMoved ? 0.5 : 1,
+                }}>
                 <div style={{flex: '1', marginRight: 10}}>
                     <TagSelector
                         dialogOpen={dateSelectorOpen}
@@ -145,7 +152,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                                     end: inUserTz(newTo).format(),
                                     tags: toInputTags(selectedEntries),
                                 },
-                            });
+                            }).then(() => rangeChange({from: newFrom, to: newTo}));
                         } else {
                             updateTimeSpan({
                                 variables: {
@@ -155,7 +162,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                                     end: to && inUserTz(to).format(),
                                     tags: toInputTags(selectedEntries),
                                 },
-                            });
+                            }).then(() => rangeChange({from: newFrom, to}));
                         }
                     }}
                     showDate={showDate}
@@ -179,7 +186,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                                         end: inUserTz(newTo).format(),
                                         tags: toInputTags(selectedEntries),
                                     },
-                                });
+                                }).then(() => rangeChange({from: newFrom, to: newTo}));
                             } else {
                                 updateTimeSpan({
                                     variables: {
@@ -189,7 +196,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                                         end: inUserTz(newTo).format(),
                                         tags: toInputTags(selectedEntries),
                                     },
-                                });
+                                }).then(() => rangeChange({from, to: newTo}));
                             }
                         }}
                         showDate={showDate}
