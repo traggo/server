@@ -33,7 +33,7 @@ If you like to see statistics from the different things you do, you could add a 
 You can do it just as you like.
 
 If you want to use Traggo, you need to host it yourself. This way, you have the full control over your data and no third-party
-may be able to read it. Have a look at our [Install Guide](install.md).
+may be able to read it. Have a look at our [Install Guide](https://traggo.net/install/).
 
 ## Features
 
