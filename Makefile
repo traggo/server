@@ -166,7 +166,7 @@ licenses-go: license-dir
 	(cd vendor && find . -type f \( -iname "LICENSE*" -o -iname "NOTICE*" \) -exec echo The following software may be included in this product {} \; -exec echo  \; -exec cat {} \; -exec echo \; -exec echo -------- \; -exec echo \;) >> ${BUILD_LICENSE}
 
 package-zip: licenses-ui licenses-go
-	find build/* -maxdepth 0 -type f -exec zip -9 -j {}.zip {} build/license/3RD_PARTY_LICENSES build/license/UI_3RD_PARTY_LICENSES \;
+	find build/* -maxdepth 0 -type f -exec zip -9 -j {}.zip {} build/license/3RD_PARTY_LICENSES build/license/UI_3RD_PARTY_LICENSES LICENSE \;
 
 build-compress:
 	find build/* -maxdepth 0 -type f -exec upx {} \;
