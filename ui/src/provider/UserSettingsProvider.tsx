@@ -1,20 +1,34 @@
 import * as React from 'react';
 import {useSettings} from '../gql/settings';
 import {CenteredSpinner} from '../common/CenteredSpinner';
-import moment from 'moment';
+import moment, {LocaleSpecification} from 'moment';
 import {DateLocale, WeekDay} from '../gql/__generated__/globalTypes';
 import {expectNever} from '../utils/never';
 
-const setLocale = (locale: DateLocale) => {
+const setLocale = (locale: DateLocale, spec: LocaleSpecification) => {
     switch (locale) {
         case DateLocale.English:
-            moment.locale('en');
-            return true;
+            moment.locale('en', spec);
+            return;
+        case DateLocale.English24h:
+            moment.locale('en', {
+                ...spec,
+                longDateFormat: {
+                    LTS: 'HH:mm:ss',
+                    LT: 'HH:mm',
+                    L: 'MM/DD/YYYY',
+                    LL: 'MMMM D, YYYY',
+                    LLL: 'MMMM D, YYYY HH:mm',
+                    LLLL: 'dddd, MMMM D, YYYY HH:mm',
+                },
+            });
+            return;
         case DateLocale.German:
-            moment.locale('de');
-            return true;
+            moment.locale('de', spec);
+            return;
         default:
-            return expectNever(locale);
+            expectNever(locale);
+            return;
     }
 };
 
@@ -46,8 +60,7 @@ export const BootUserSettings: React.FC = ({children}): React.ReactElement => {
         if (!done) {
             return;
         }
-        setLocale(dateLocale);
-        moment.updateLocale(moment.locale(), {
+        setLocale(dateLocale, {
             week: {
                 dow: weekDayToMoment(firstDayOfTheWeek),
                 doy: moment.localeData(moment.locale()).firstDayOfYear(),
