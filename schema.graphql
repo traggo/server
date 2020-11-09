@@ -85,7 +85,7 @@ enum Theme {
 }
 
 enum DateLocale {
-    English, German
+    English, English24h, German
 }
 
 input InputReplaceOptions {
