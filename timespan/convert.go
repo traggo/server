@@ -8,7 +8,7 @@ import (
 	"github.com/traggo/server/model"
 )
 
-func timespanToInternal(userID int, start model.Time, end *model.Time, tags []*gqlmodel.InputTimeSpanTag) (model.TimeSpan, error) {
+func timespanToInternal(userID int, start model.Time, end *model.Time, tags []*gqlmodel.InputTimeSpanTag, note string) (model.TimeSpan, error) {
 	_, offset := start.Time().Zone()
 	span := model.TimeSpan{
 		StartUserTime: start.OmitTimeZone(),
@@ -16,6 +16,7 @@ func timespanToInternal(userID int, start model.Time, end *model.Time, tags []*g
 		UserID:        userID,
 		Tags:          tagsToInternal(tags),
 		OffsetUTC:     offset,
+		Note:          note,
 	}
 
 	if end != nil {
@@ -39,6 +40,7 @@ func timeSpanToExternal(span model.TimeSpan) *gqlmodel.TimeSpan {
 		End:   nil,
 		ID:    span.ID,
 		Tags:  tagsToExternal(span.Tags),
+		Note:  span.Note,
 	}
 	if span.EndUTC != nil && !span.EndUTC.IsZero() {
 		end := *span.EndUTC
