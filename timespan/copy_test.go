@@ -50,6 +50,7 @@ func TestCopy(t *testing.T) {
 		Tags: []model.TimeSpanTag{
 			{Key: "test", TimeSpanID: 3},
 		},
+		Note: "A special note",
 	})
 	defer db.Close()
 
@@ -64,6 +65,7 @@ func TestCopy(t *testing.T) {
 		Tags: []*gqlmodel.TimeSpanTag{
 			{Key: "test"},
 		},
+		Note: "A special note",
 	}
 
 	require.Equal(t, expected, timeSpan)
@@ -80,6 +82,7 @@ func TestCopy(t *testing.T) {
 		Tags: []model.TimeSpanTag{
 			{Key: "test", TimeSpanID: 4},
 		},
+		Note: "A special note",
 	})
 }
 

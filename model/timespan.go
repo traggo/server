@@ -12,6 +12,7 @@ type TimeSpan struct {
 	OffsetUTC     int
 	UserID        int `gorm:"type:int REFERENCES users(id) ON DELETE CASCADE"`
 	Tags          []TimeSpanTag
+	Note          string
 }
 
 // TimeSpanTag is a tag for a time range

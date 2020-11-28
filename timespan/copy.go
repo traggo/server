@@ -17,5 +17,5 @@ func (r *ResolverForTimeSpan) CopyTimeSpan(ctx context.Context, id int, start mo
 		return nil, fmt.Errorf("time span with id %d does not exist", id)
 	}
 
-	return r.CreateTimeSpan(ctx, start, end, tagsToInputTag(old.Tags))
+	return r.CreateTimeSpan(ctx, start, end, tagsToInputTag(old.Tags), old.Note)
 }

@@ -9,8 +9,8 @@ import (
 )
 
 // CreateTimeSpan creates a time span
-func (r *ResolverForTimeSpan) CreateTimeSpan(ctx context.Context, start model.Time, end *model.Time, tags []*gqlmodel.InputTimeSpanTag) (*gqlmodel.TimeSpan, error) {
-	timeSpan, err := timespanToInternal(auth.GetUser(ctx).ID, start, end, tags)
+func (r *ResolverForTimeSpan) CreateTimeSpan(ctx context.Context, start model.Time, end *model.Time, tags []*gqlmodel.InputTimeSpanTag, note string) (*gqlmodel.TimeSpan, error) {
+	timeSpan, err := timespanToInternal(auth.GetUser(ctx).ID, start, end, tags, note)
 	if err != nil {
 		return nil, err
 	}

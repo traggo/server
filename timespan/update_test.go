@@ -15,6 +15,7 @@ func Test_Update_withoutEnd(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
 	db.User(3)
+	note := "A note"
 	db.Create(&model.TimeSpan{
 		ID:            1,
 		UserID:        3,
@@ -22,10 +23,11 @@ func Test_Update_withoutEnd(t *testing.T) {
 		StartUTC:      test.Time("2019-06-10T16:30:00Z"),
 		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
+		Note:          note,
 	})
 
 	resolver := ResolverForTimeSpan{DB: db.DB}
-	timeSpan, err := resolver.UpdateTimeSpan(fake.User(3), 1, test.ModelTime("2019-06-10T19:30:00+02:00"), nil, nil, nil)
+	timeSpan, err := resolver.UpdateTimeSpan(fake.User(3), 1, test.ModelTime("2019-06-10T19:30:00+02:00"), nil, nil, nil, "")
 
 	require.Nil(t, err)
 	expected := &gqlmodel.TimeSpan{
@@ -33,6 +35,7 @@ func Test_Update_withoutEnd(t *testing.T) {
 		Start:    test.ModelTime("2019-06-10T19:30:00+02:00"),
 		OldStart: test.ModelTimeP("2019-06-10T18:30:00+02:00"),
 		Tags:     []*gqlmodel.TimeSpanTag{},
+		Note:     "",
 	}
 	require.Equal(t, expected, timeSpan)
 	assertTimeSpanCount(t, db, 1)
@@ -43,6 +46,7 @@ func Test_Update_withoutEnd(t *testing.T) {
 		StartUTC:      test.Time("2019-06-10T17:30:00Z"),
 		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
+		Note:          "",
 	})
 }
 
@@ -50,6 +54,7 @@ func Test_Update(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
 	db.User(5)
+	note := "A note"
 	db.Create(&model.TimeSpan{
 		ID:            3,
 		UserID:        5,
@@ -57,11 +62,13 @@ func Test_Update(t *testing.T) {
 		StartUTC:      test.Time("2019-06-10T16:30:00Z"),
 		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
+		Note:          note,
 	})
 
+	note = "An upated note"
 	resolver := ResolverForTimeSpan{DB: db.DB}
 	timeSpan, err := resolver.UpdateTimeSpan(fake.User(5), 3, test.ModelTime("2019-06-10T18:30:00+02:00"),
-		test.ModelTimeP("2019-06-10T20:30:00+02:00"), nil, nil)
+		test.ModelTimeP("2019-06-10T20:30:00+02:00"), nil, nil, note)
 	log.Debug().Msg("oops")
 	require.Nil(t, err)
 	expected := &gqlmodel.TimeSpan{
@@ -70,6 +77,7 @@ func Test_Update(t *testing.T) {
 		OldStart: test.ModelTimeP("2019-06-10T18:30:00+02:00"),
 		End:      test.ModelTimeP("2019-06-10T20:30:00+02:00"),
 		Tags:     []*gqlmodel.TimeSpanTag{},
+		Note:     note,
 	}
 	require.Equal(t, expected, timeSpan)
 	assertTimeSpanCount(t, db, 1)
@@ -82,6 +90,7 @@ func Test_Update(t *testing.T) {
 		EndUTC:        test.TimeP("2019-06-10T18:30:00Z"),
 		OffsetUTC:     7200,
 		Tags:          []model.TimeSpanTag{},
+		Note:          note,
 	})
 }
 
@@ -102,7 +111,7 @@ func Test_Update_fail_endBeforeStart(t *testing.T) {
 
 	resolver := ResolverForTimeSpan{DB: db.DB}
 	timeSpan, err := resolver.UpdateTimeSpan(fake.User(5), 3, test.ModelTime("2019-06-10T18:30:00+02:00"),
-		test.ModelTimeP("2019-06-10T17:30:00+02:00"), nil, nil)
+		test.ModelTimeP("2019-06-10T17:30:00+02:00"), nil, nil, "")
 	require.Nil(t, timeSpan)
 	require.EqualError(t, err, "start must be before end")
 	assertTimeSpanCount(t, db, 1)
@@ -125,7 +134,7 @@ func Test_Update_fail_notExistingTag(t *testing.T) {
 
 	resolver := ResolverForTimeSpan{DB: db.DB}
 	timeSpan, err := resolver.UpdateTimeSpan(fake.User(5), 3, test.ModelTime("2019-06-10T18:30:00+02:00"),
-		test.ModelTimeP("2019-06-10T18:35:00+02:00"), []*gqlmodel.InputTimeSpanTag{{Key: "test"}}, nil)
+		test.ModelTimeP("2019-06-10T18:35:00+02:00"), []*gqlmodel.InputTimeSpanTag{{Key: "test"}}, nil, "nil")
 	require.Nil(t, timeSpan)
 	require.EqualError(t, err, "tag 'test' does not exist")
 	assertTimeSpanCount(t, db, 1)
@@ -159,7 +168,7 @@ func Test_Update_withTag(t *testing.T) {
 
 	resolver := ResolverForTimeSpan{DB: db.DB}
 	timeSpan, err := resolver.UpdateTimeSpan(fake.User(5), 3, test.ModelTime("2019-06-10T18:30:00+02:00"),
-		test.ModelTimeP("2019-06-10T19:30:00+02:00"), []*gqlmodel.InputTimeSpanTag{{Key: "test"}}, nil)
+		test.ModelTimeP("2019-06-10T19:30:00+02:00"), []*gqlmodel.InputTimeSpanTag{{Key: "test"}}, nil, "")
 	require.NotNil(t, timeSpan)
 	require.NoError(t, err)
 	assertTimeSpanCount(t, db, 1)
@@ -195,7 +204,7 @@ func Test_Update_fail_tagAddedMultipleTimes(t *testing.T) {
 
 	resolver := ResolverForTimeSpan{DB: db.DB}
 	timeSpan, err := resolver.UpdateTimeSpan(fake.User(5), 3, test.ModelTime("2019-06-10T18:30:00+02:00"),
-		test.ModelTimeP("2019-06-10T18:35:00+02:00"), []*gqlmodel.InputTimeSpanTag{{Key: "test"}, {Key: "test"}}, nil)
+		test.ModelTimeP("2019-06-10T18:35:00+02:00"), []*gqlmodel.InputTimeSpanTag{{Key: "test"}, {Key: "test"}}, nil, "")
 	require.Nil(t, timeSpan)
 	require.EqualError(t, err, "tag 'test' is present multiple times")
 	assertTimeSpanCount(t, db, 1)
@@ -209,7 +218,7 @@ func Test_Update_fail_notExisting(t *testing.T) {
 
 	resolver := ResolverForTimeSpan{DB: db.DB}
 	timeSpan, err := resolver.UpdateTimeSpan(fake.User(5), 3, test.ModelTime("2019-06-10T18:30:00+02:00"),
-		test.ModelTimeP("2019-06-10T18:35:00+02:00"), []*gqlmodel.InputTimeSpanTag{{Key: "test"}, {Key: "test"}}, nil)
+		test.ModelTimeP("2019-06-10T18:35:00+02:00"), []*gqlmodel.InputTimeSpanTag{{Key: "test"}, {Key: "test"}}, nil, "")
 	require.Nil(t, timeSpan)
 	require.EqualError(t, err, "time span with id 3 does not exist")
 	assertTimeSpanCount(t, db, 0)
@@ -235,7 +244,7 @@ func Test_Update_fail_noPermission(t *testing.T) {
 
 	resolver := ResolverForTimeSpan{DB: db.DB}
 	timeSpan, err := resolver.UpdateTimeSpan(fake.User(2), 3, test.ModelTime("2019-06-10T18:30:00+02:00"),
-		test.ModelTimeP("2019-06-10T18:35:00+02:00"), []*gqlmodel.InputTimeSpanTag{{Key: "test"}, {Key: "test"}}, nil)
+		test.ModelTimeP("2019-06-10T18:35:00+02:00"), []*gqlmodel.InputTimeSpanTag{{Key: "test"}, {Key: "test"}}, nil, "")
 	require.Nil(t, timeSpan)
 	require.EqualError(t, err, "time span with id 3 does not exist")
 	assertTimeSpanCount(t, db, 1)
