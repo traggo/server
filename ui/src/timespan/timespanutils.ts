@@ -19,6 +19,7 @@ export const toTimeSpanProps = (timers: Trackers_timers[], tags: Tags_tags[]): T
                 oldFrom: timer.oldStart ? moment(timer.oldStart) : undefined,
             },
             initialTags: tagEntries,
+            note: timer.note,
         };
     });
 };

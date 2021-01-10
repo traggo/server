@@ -160,6 +160,7 @@ export const CalendarPage: React.FC = () => {
                 end: moment(data.event.end!).format(),
                 id: parseInt(data.event.id, 10),
                 tags: stripTypename(data.event.extendedProps.ts.tags),
+                note: data.event.extendedProps.ts.note,
             },
         });
     };
@@ -171,6 +172,7 @@ export const CalendarPage: React.FC = () => {
                 end: moment(data.event.end!).format(),
                 id: parseInt(data.event.id, 10),
                 tags: stripTypename(data.event.extendedProps.ts.tags),
+                note: data.event.extendedProps.ts.note,
             },
         });
     };
@@ -180,13 +182,14 @@ export const CalendarPage: React.FC = () => {
                 start: moment(data.start).format(),
                 end: moment(data.end).format(),
                 tags: [],
+                note: '',
             },
         });
     };
     const onClick: OptionsInput['eventClick'] = (data) => {
         data.jsEvent.preventDefault();
         if (data.event.id === StartTimerId) {
-            startTimer({variables: {start: moment().format(), tags: []}}).then(() => {
+            startTimer({variables: {start: moment().format(), tags: [], note: ''}}).then(() => {
                 setCurrentDate(moment());
             });
             return;
@@ -297,6 +300,7 @@ export const CalendarPage: React.FC = () => {
                                     tagsResult.data!.tags!,
                                     selected.data!.tags!.map((tag) => ({key: tag.key, value: tag.value}))
                                 )}
+                                note={selected.data!.note}
                                 dateSelectorOpen={setIgnore}
                                 stopped={() => {
                                     setSelected({
