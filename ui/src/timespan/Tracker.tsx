@@ -65,12 +65,12 @@ export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntr
             (entry: TagSelectorEntry): InputTimeSpanTag => ({key: entry.tag.key, value: entry.value})
         );
         if (type === Type.Tracker) {
-            startTimer({variables: {start: inUserTz(moment()).format(), tags}}).then(() => {
+            startTimer({variables: {start: inUserTz(moment()).format(), tags, note: ''}}).then(() => {
                 setSelectedEntries([]);
                 enqueueSnackbar('tracker started', {variant: 'success'});
             });
         } else {
-            addTimeSpan({variables: {start: inUserTz(from).format(), end: inUserTz(to).format(), tags}}).then(() => {
+            addTimeSpan({variables: {start: inUserTz(from).format(), end: inUserTz(to).format(), tags, note: ''}}).then(() => {
                 setSelectedEntries([]);
                 enqueueSnackbar('time span added', {variant: 'success'});
             });

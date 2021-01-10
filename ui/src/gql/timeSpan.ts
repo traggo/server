@@ -11,6 +11,7 @@ export const Trackers = gql`
                 value
             }
             oldStart
+            note
         }
     }
 `;
@@ -27,6 +28,7 @@ export const TimeSpansInRange = gql`
                     value
                 }
                 oldStart
+                note
             }
             cursor {
                 startId
@@ -49,6 +51,7 @@ export const TimeSpans = gql`
                     value
                 }
                 oldStart
+                note
             }
             cursor {
                 startId
@@ -60,8 +63,8 @@ export const TimeSpans = gql`
 `;
 
 export const StartTimer = gql`
-    mutation StartTimer($start: Time!, $tags: [InputTimeSpanTag!]) {
-        createTimeSpan(start: $start, tags: $tags) {
+    mutation StartTimer($start: Time!, $tags: [InputTimeSpanTag!], $note: String!) {
+        createTimeSpan(start: $start, tags: $tags, note: $note) {
             id
             start
             end
@@ -70,6 +73,7 @@ export const StartTimer = gql`
                 value
             }
             oldStart
+            note
         }
     }
 `;
@@ -85,13 +89,14 @@ export const StopTimer = gql`
                 value
             }
             oldStart
+            note
         }
     }
 `;
 
 export const AddTimeSpan = gql`
-    mutation AddTimeSpan($start: Time!, $end: Time!, $tags: [InputTimeSpanTag!]) {
-        createTimeSpan(start: $start, end: $end, tags: $tags) {
+    mutation AddTimeSpan($start: Time!, $end: Time!, $tags: [InputTimeSpanTag!], $note: String!) {
+        createTimeSpan(start: $start, end: $end, tags: $tags, note: $note) {
             id
             start
             end
@@ -100,13 +105,14 @@ export const AddTimeSpan = gql`
                 value
             }
             oldStart
+            note
         }
     }
 `;
 
 export const UpdateTimeSpan = gql`
-    mutation UpdateTimeSpan($id: Int!, $start: Time!, $end: Time, $tags: [InputTimeSpanTag!], $oldStart: Time) {
-        updateTimeSpan(id: $id, start: $start, end: $end, tags: $tags, oldStart: $oldStart) {
+    mutation UpdateTimeSpan($id: Int!, $start: Time!, $end: Time, $tags: [InputTimeSpanTag!], $oldStart: Time, $note: String!) {
+        updateTimeSpan(id: $id, start: $start, end: $end, tags: $tags, oldStart: $oldStart, note: $note) {
             id
             start
             end
@@ -115,6 +121,7 @@ export const UpdateTimeSpan = gql`
                 value
             }
             oldStart
+            note
         }
     }
 `;
