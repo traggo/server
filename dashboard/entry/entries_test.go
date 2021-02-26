@@ -13,6 +13,7 @@ import (
 func TestEntries(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
+	var bVal bool
 
 	resolver := dashboard.NewResolverForDashboard(db.DB)
 
@@ -35,7 +36,7 @@ func TestEntries(t *testing.T) {
 	}
 	require.Equal(t, expectAdded, dashboard)
 
-	_, err = resolver.AddDashboardEntry(user1, 5, gqlmodel.EntryTypeBarChart, "test", gqlmodel.InputStatsSelection{
+	_, err = resolver.AddDashboardEntry(user1, 5, gqlmodel.EntryTypeBarChart, "test", false, gqlmodel.InputStatsSelection{
 		Interval:    "",
 		Tags:        []string{"hhol"},
 		ExcludeTags: nil,
@@ -47,7 +48,7 @@ func TestEntries(t *testing.T) {
 		},
 	}, nil)
 	require.EqualError(t, err, "dashboard does not exist")
-	_, err = resolver.AddDashboardEntry(user1, 1, gqlmodel.EntryTypeBarChart, "test", gqlmodel.InputStatsSelection{
+	_, err = resolver.AddDashboardEntry(user1, 1, gqlmodel.EntryTypeBarChart, "test", false, gqlmodel.InputStatsSelection{
 		Interval:    gqlmodel.StatsIntervalHourly,
 		Tags:        []string{"hhol"},
 		ExcludeTags: nil,
@@ -59,7 +60,7 @@ func TestEntries(t *testing.T) {
 		},
 	}, nil)
 	require.EqualError(t, err, "dashboard range does not exist")
-	_, err = resolver.AddDashboardEntry(user2, 1, gqlmodel.EntryTypeBarChart, "test", gqlmodel.InputStatsSelection{
+	_, err = resolver.AddDashboardEntry(user2, 1, gqlmodel.EntryTypeBarChart, "test", false, gqlmodel.InputStatsSelection{
 		Interval:    "doubly",
 		Tags:        []string{"hhol"},
 		ExcludeTags: nil,
@@ -71,7 +72,7 @@ func TestEntries(t *testing.T) {
 		},
 	}, nil)
 	require.EqualError(t, err, "dashboard does not exist")
-	_, err = resolver.AddDashboardEntry(user1, 1, gqlmodel.EntryTypeBarChart, "test", gqlmodel.InputStatsSelection{
+	_, err = resolver.AddDashboardEntry(user1, 1, gqlmodel.EntryTypeBarChart, "test", false, gqlmodel.InputStatsSelection{
 		Interval:    gqlmodel.StatsIntervalDaily,
 		Tags:        []string{"hhol"},
 		ExcludeTags: nil,
@@ -83,7 +84,7 @@ func TestEntries(t *testing.T) {
 		},
 	}, nil)
 	require.EqualError(t, err, "range to (now-2) invalid: expected unit at the end but got nothing")
-	_, err = resolver.AddDashboardEntry(user1, 1, gqlmodel.EntryTypeBarChart, "test", gqlmodel.InputStatsSelection{
+	_, err = resolver.AddDashboardEntry(user1, 1, gqlmodel.EntryTypeBarChart, "test", false, gqlmodel.InputStatsSelection{
 		Interval:    gqlmodel.StatsIntervalDaily,
 		Tags:        []string{"hhol"},
 		ExcludeTags: nil,
@@ -95,7 +96,7 @@ func TestEntries(t *testing.T) {
 		},
 	}, nil)
 	require.EqualError(t, err, "range from (now-2) invalid: expected unit at the end but got nothing")
-	_, err = resolver.AddDashboardEntry(user1, 1, gqlmodel.EntryTypeBarChart, "test", gqlmodel.InputStatsSelection{
+	_, err = resolver.AddDashboardEntry(user1, 1, gqlmodel.EntryTypeBarChart, "test", false, gqlmodel.InputStatsSelection{
 		Interval:    gqlmodel.StatsIntervalDaily,
 		Tags:        []string{},
 		ExcludeTags: nil,
@@ -108,7 +109,7 @@ func TestEntries(t *testing.T) {
 	}, nil)
 	require.EqualError(t, err, "at least one tag is required")
 
-	entry, err := resolver.AddDashboardEntry(user1, 1, gqlmodel.EntryTypeBarChart, "test", gqlmodel.InputStatsSelection{
+	entry, err := resolver.AddDashboardEntry(user1, 1, gqlmodel.EntryTypeBarChart, "test", false, gqlmodel.InputStatsSelection{
 		Interval:    gqlmodel.StatsIntervalDaily,
 		Tags:        []string{"abc"},
 		ExcludeTags: nil,
@@ -128,6 +129,7 @@ func TestEntries(t *testing.T) {
 	expectedEntry := &gqlmodel.DashboardEntry{
 		ID:    1,
 		Title: "test",
+		Total: false,
 		StatsSelection: &gqlmodel.StatsSelection{
 			Interval:    gqlmodel.StatsIntervalDaily,
 			Tags:        []string{"abc"},
@@ -173,7 +175,7 @@ func TestEntries(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	_, err = resolver.AddDashboardEntry(user1, 1, gqlmodel.EntryTypeBarChart, "other", gqlmodel.InputStatsSelection{
+	_, err = resolver.AddDashboardEntry(user1, 1, gqlmodel.EntryTypeBarChart, "other", false, gqlmodel.InputStatsSelection{
 		Interval: gqlmodel.StatsIntervalDaily,
 		Tags:     []string{"abc"},
 		RangeID:  p(xrange.ID),
@@ -188,11 +190,11 @@ func TestEntries(t *testing.T) {
 	require.EqualError(t, err, "range is used in entries: other")
 
 	chart := gqlmodel.EntryTypePieChart
-	_, err = resolver.UpdateDashboardEntry(user2, 1, &chart, nil, nil, nil)
+	_, err = resolver.UpdateDashboardEntry(user2, 1, &chart, nil, nil, nil, nil)
 	require.EqualError(t, err, "dashboard does not exist")
-	_, err = resolver.UpdateDashboardEntry(user1, 3, &chart, nil, nil, nil)
+	_, err = resolver.UpdateDashboardEntry(user1, 3, &chart, nil, nil, nil, nil)
 	require.EqualError(t, err, "entry does not exist")
-	_, err = resolver.UpdateDashboardEntry(user1, 1, &chart, s("cool title"), &gqlmodel.InputStatsSelection{
+	_, err = resolver.UpdateDashboardEntry(user1, 1, &chart, s("cool title"), &bVal, &gqlmodel.InputStatsSelection{
 		Interval:    gqlmodel.StatsIntervalDaily,
 		Tags:        []string{"kek"},
 		ExcludeTags: nil,
@@ -204,7 +206,7 @@ func TestEntries(t *testing.T) {
 		},
 	}, nil)
 	require.EqualError(t, err, "range from (now-2) invalid: expected unit at the end but got nothing")
-	_, err = resolver.UpdateDashboardEntry(user1, 1, &chart, s("cool title"), &gqlmodel.InputStatsSelection{
+	_, err = resolver.UpdateDashboardEntry(user1, 1, &chart, s("cool title"), &bVal, &gqlmodel.InputStatsSelection{
 		Interval:    gqlmodel.StatsIntervalDaily,
 		Tags:        []string{"kek"},
 		ExcludeTags: nil,
@@ -222,6 +224,7 @@ func TestEntries(t *testing.T) {
 		{
 			ID:    1,
 			Title: "test",
+			Total: false,
 			StatsSelection: &gqlmodel.StatsSelection{
 				Interval:    gqlmodel.StatsIntervalDaily,
 				Tags:        []string{"abc"},
@@ -256,6 +259,7 @@ func TestEntries(t *testing.T) {
 		{
 			ID:    2,
 			Title: "other",
+			Total: false,
 			StatsSelection: &gqlmodel.StatsSelection{
 				Interval:    gqlmodel.StatsIntervalDaily,
 				Tags:        []string{"abc"},
@@ -284,7 +288,7 @@ func TestEntries(t *testing.T) {
 			EntryType: gqlmodel.EntryTypeBarChart,
 		},
 	}, dashboards[0].Items)
-	_, err = resolver.UpdateDashboardEntry(user1, 1, &chart, s("cool title"), &gqlmodel.InputStatsSelection{
+	_, err = resolver.UpdateDashboardEntry(user1, 1, &chart, s("cool title"), &bVal, &gqlmodel.InputStatsSelection{
 		Interval:    gqlmodel.StatsIntervalDaily,
 		Tags:        []string{"kek"},
 		ExcludeTags: nil,
@@ -308,6 +312,7 @@ func TestEntries(t *testing.T) {
 		{
 			ID:    1,
 			Title: "cool title",
+			Total: false,
 			StatsSelection: &gqlmodel.StatsSelection{
 				Interval:    gqlmodel.StatsIntervalDaily,
 				Tags:        []string{"kek"},
@@ -342,6 +347,7 @@ func TestEntries(t *testing.T) {
 		{
 			ID:    2,
 			Title: "other",
+			Total: false,
 			StatsSelection: &gqlmodel.StatsSelection{
 				Interval:    gqlmodel.StatsIntervalDaily,
 				Tags:        []string{"abc"},
@@ -371,7 +377,7 @@ func TestEntries(t *testing.T) {
 		},
 	}, dashboards[0].Items)
 
-	_, err = resolver.UpdateDashboardEntry(user1, 1, &chart, s("cool title"), &gqlmodel.InputStatsSelection{
+	_, err = resolver.UpdateDashboardEntry(user1, 1, &chart, s("cool title"), &bVal, &gqlmodel.InputStatsSelection{
 		Interval:    gqlmodel.StatsIntervalDaily,
 		Tags:        []string{"kek"},
 		ExcludeTags: nil,
@@ -385,7 +391,7 @@ func TestEntries(t *testing.T) {
 	}})
 	require.EqualError(t, err, "dashboard range does not exist")
 
-	_, err = resolver.UpdateDashboardEntry(user1, 1, &chart, s("cool title"), &gqlmodel.InputStatsSelection{
+	_, err = resolver.UpdateDashboardEntry(user1, 1, &chart, s("cool title"), &bVal, &gqlmodel.InputStatsSelection{
 		Interval:    gqlmodel.StatsIntervalDaily,
 		Tags:        []string{"kek"},
 		ExcludeTags: nil,
@@ -405,6 +411,7 @@ func TestEntries(t *testing.T) {
 		{
 			ID:    1,
 			Title: "cool title",
+			Total: false,
 			StatsSelection: &gqlmodel.StatsSelection{
 				Interval:    gqlmodel.StatsIntervalDaily,
 				Tags:        []string{"kek"},
@@ -435,6 +442,7 @@ func TestEntries(t *testing.T) {
 		{
 			ID:    2,
 			Title: "other",
+			Total: false,
 			StatsSelection: &gqlmodel.StatsSelection{
 				Interval:    gqlmodel.StatsIntervalDaily,
 				Tags:        []string{"abc"},
@@ -479,6 +487,7 @@ func TestEntries(t *testing.T) {
 		{
 			ID:    2,
 			Title: "other",
+			Total: false,
 			StatsSelection: &gqlmodel.StatsSelection{
 				Interval:    gqlmodel.StatsIntervalDaily,
 				Tags:        []string{"abc"},

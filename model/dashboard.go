@@ -29,6 +29,7 @@ type DashboardEntry struct {
 	ID          int `gorm:"primary_key;unique_index;AUTO_INCREMENT"`
 	DashboardID int `gorm:"type:int REFERENCES dashboards(id) ON DELETE CASCADE"`
 	Title       string
+	Total       bool
 	Type        DashboardType
 	Keys        string
 	Interval    Interval

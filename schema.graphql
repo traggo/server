@@ -40,8 +40,8 @@ type RootMutation {
     updateDashboardRange(rangeId: Int!, range: InputNamedDateRange!): NamedDateRange
     removeDashboardRange(rangeId: Int!): NamedDateRange
 
-    addDashboardEntry(dashboardId: Int!, entryType: EntryType!, title: String!, stats: InputStatsSelection!, pos: InputResponsiveDashboardEntryPos): DashboardEntry @hasRole(role: USER)
-    updateDashboardEntry(entryId: Int!, entryType: EntryType, title: String, stats: InputStatsSelection, pos: InputResponsiveDashboardEntryPos): DashboardEntry @hasRole(role: USER)
+    addDashboardEntry(dashboardId: Int!, entryType: EntryType!, title: String!, total: Boolean!, stats: InputStatsSelection!, pos: InputResponsiveDashboardEntryPos): DashboardEntry @hasRole(role: USER)
+    updateDashboardEntry(entryId: Int!, entryType: EntryType, title: String, total: Boolean, stats: InputStatsSelection, pos: InputResponsiveDashboardEntryPos): DashboardEntry @hasRole(role: USER)
     removeDashboardEntry(id: Int!): DashboardEntry! @hasRole(role: USER)
 
     setUserSettings(settings: InputUserSettings!): UserSettings! @hasRole(role: USER)
@@ -251,6 +251,7 @@ input InputRelativeOrStaticRange {
 type DashboardEntry {
     id: Int!
     title: String!
+    total: Boolean!
     statsSelection: StatsSelection!
     pos: ResponsiveDashboardEntryPos!
     entryType: EntryType!
