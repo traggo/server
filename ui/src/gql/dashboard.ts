@@ -17,6 +17,7 @@ export const Dashboards = gql`
             items {
                 id
                 title
+                total
                 entryType
                 statsSelection {
                     range {
@@ -90,8 +91,14 @@ export const UpdatePos = gql`
 `;
 
 export const UpdateDashboardEntry = gql`
-    mutation UpdateDashboardEntry($entryId: Int!, $entryType: EntryType!, $title: String!, $stats: InputStatsSelection!) {
-        updateDashboardEntry(entryId: $entryId, entryType: $entryType, title: $title, stats: $stats) {
+    mutation UpdateDashboardEntry(
+        $entryId: Int!
+        $entryType: EntryType!
+        $title: String!
+        $total: Boolean!
+        $stats: InputStatsSelection!
+    ) {
+        updateDashboardEntry(entryId: $entryId, entryType: $entryType, title: $title, total: $total, stats: $stats) {
             id
         }
     }
@@ -101,10 +108,18 @@ export const AddDashboardEntry = gql`
         $dashboardId: Int!
         $entryType: EntryType!
         $title: String!
+        $total: Boolean!
         $stats: InputStatsSelection!
         $pos: InputResponsiveDashboardEntryPos
     ) {
-        addDashboardEntry(dashboardId: $dashboardId, entryType: $entryType, title: $title, stats: $stats, pos: $pos) {
+        addDashboardEntry(
+            dashboardId: $dashboardId
+            entryType: $entryType
+            title: $title
+            total: $total
+            stats: $stats
+            pos: $pos
+        ) {
             id
         }
     }
