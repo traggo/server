@@ -6,13 +6,13 @@ LD_FLAGS=-s -w -linkmode external -extldflags "-static" -X main.BuildDate=$(DATE
 BUILD_DIR=./build
 BUILD_LICENSE=${BUILD_DIR}/license/3RD_PARTY_LICENSES
 UI_BUILD_LICENSE=${BUILD_DIR}/license/UI_3RD_PARTY_LICENSES
-
+PWD=$(shell pwd)
 GO_VERSION=1.13.1
 DOCKER_BUILD_IMAGE=traggo/build
 DOCKER_WORKDIR=/proj
-GOPATH_VOLUME=-v "`go env GOPATH`/pkg/mod/.:/go/pkg/mod:ro"
-WORKDIR_VOLUME=-v "$$PWD/.:${DOCKER_WORKDIR}"
-DOCKER_GO_BUILD=go build -mod=readonly -a -installsuffix cgo -ldflags '${LD_FLAGS}' -tags '${TAGS}'
+GOPATH_VOLUME=-v "`go env GOPATH`/pkg/mod/:/go/pkg/mod"
+WORKDIR_VOLUME=-v "${PWD}/:${DOCKER_WORKDIR}"
+DOCKER_GO_BUILD=go build -a -installsuffix cgo -ldflags '${LD_FLAGS}' -tags '${TAGS}'
 DOCKER_RUN=docker run --rm ${WORKDIR_VOLUME} ${GOPATH_VOLUME} -w ${DOCKER_WORKDIR}
 NEW_IMAGE_NAME=traggo/server
 DOCKER_MANIFEST=DOCKER_CLI_EXPERIMENTAL=enabled docker manifest
