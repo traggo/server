@@ -38,7 +38,7 @@ export const DateTimeSelector: React.FC<DateTimeSelectorProps> = React.memo(
                 margin="none"
                 value={uglyConvertToLocalTime(selectedDate).format()}
                 onChange={(date: moment.Moment) => {
-                    if (!date.isValid()) {
+                    if (!date || !date.isValid()) {
                         return;
                     }
 
