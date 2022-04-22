@@ -22,9 +22,9 @@ license-dir:
 	mkdir -p build/license || true
 
 download-tools:
-	GO111MODULE=off go get -u golang.org/x/lint/golint
-	GO111MODULE=off go get -u golang.org/x/tools/cmd/goimports
-	GO111MODULE=off go get -u github.com/gobuffalo/packr/v2/packr2
+	go install golang.org/x/tools/cmd/goimports@v0.1.10
+	go install github.com/gobuffalo/packr/v2/packr2@v2.7.1
+
 
 generate-go:
 	go run hack/gqlgen/gqlgen.go
@@ -36,7 +36,6 @@ generate: generate-go generate-js
 
 lint-go:
 	go vet ./...
-	golint -set_exit_status $(shell go list ./...)
 	goimports -l $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
 lint-js:
