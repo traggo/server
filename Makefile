@@ -133,7 +133,7 @@ docker-login-ci:
 	docker login -u "$$DOCKER_USER" -p "$$DOCKER_PASS";
 
 docker-push:
-	docker push ${NEW_IMAGE_NAME}
+	docker push --all-tags ${NEW_IMAGE_NAME}
 
 docker-push-manifest:
 	${DOCKER_MANIFEST} create "${NEW_IMAGE_NAME}:latest"     "${NEW_IMAGE_NAME}:amd64-latest"     "${NEW_IMAGE_NAME}:386-latest"     "${NEW_IMAGE_NAME}:arm-7-latest"     "${NEW_IMAGE_NAME}:arm64-latest"     "${NEW_IMAGE_NAME}:ppc64le-latest"     "${NEW_IMAGE_NAME}:s390x-latest"
