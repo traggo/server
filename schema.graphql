@@ -19,6 +19,7 @@ type RootMutation {
     updateUser(id: Int!, name: String!, pass: String, admin: Boolean!): User @hasRole(role: ADMIN)
 
     login(username: String!, pass: String!, deviceName: String!, type: DeviceType!, cookie: Boolean!): Login
+    impersonate(username: String!, deviceName: String!, type: DeviceType!, cookie: Boolean!): Login @hasRole(role: ADMIN)
 
     createDevice(name: String!, type: DeviceType!): Login @hasRole(role: USER)
     updateDevice(id: Int!, name: String!, type: DeviceType!): Device

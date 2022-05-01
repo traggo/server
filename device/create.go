@@ -37,6 +37,25 @@ func (r *ResolverForDevice) Login(ctx context.Context, username string, pass str
 	return r.createDeviceInternal(ctx, user, deviceName, deviceType, cookie)
 }
 
+
+// Impersonate creates a device.
+func (r *ResolverForDevice) Impersonate(ctx context.Context, username string, deviceName string, deviceType gqlmodel.DeviceType, cookie bool) (*gqlmodel.Login, error) {
+
+	current_user := auth.GetUser(ctx)
+
+    if current_user.Admin == false {
+		return nil, errors.New("needs to be admin to impersonate")
+    }
+
+	user := new(model.User)
+	find := r.DB.Where("name = ?", username).Find(user)
+	if find.RecordNotFound() {
+		return nil, errors.New("username does not exist")
+	}
+
+	return r.createDeviceInternal(ctx, user, deviceName, deviceType, cookie)
+}
+
 // CreateDevice creates a device.
 func (r *ResolverForDevice) CreateDevice(ctx context.Context, deviceName string, deviceType gqlmodel.DeviceType) (*gqlmodel.Login, error) {
 

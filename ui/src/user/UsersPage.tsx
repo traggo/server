@@ -10,6 +10,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import CameraFrontIcon from '@material-ui/icons/CameraFront';
 import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
@@ -18,8 +19,10 @@ import {TextField} from '@material-ui/core';
 import {Users} from '../gql/__generated__/Users';
 import {RemoveUser, RemoveUserVariables} from '../gql/__generated__/RemoveUser';
 import {UpdateUser, UpdateUserVariables} from '../gql/__generated__/UpdateUser';
+import {Impersonate, ImpersonateVariables} from '../gql/__generated__/Impersonate';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
+import {DeviceType} from '../gql/__generated__/globalTypes';
 import {AddUserDialog} from './AddUserDialog';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import {ConfirmDialog} from '../common/ConfirmDialog';
@@ -50,6 +53,11 @@ export const UsersPage = () => {
         NoEdit
     );
     const [updateUser] = useMutation<UpdateUser, UpdateUserVariables>(gqlUser.UpdateUser, refetch);
+    const [impersonate] = useMutation<Impersonate, ImpersonateVariables>(gqlUser.Impersonate, {
+        update: (cache, {data}) => {
+            cache.writeQuery({query: gqlUser.CurrentUser, data: {user: data && data.impersonate && data.impersonate.user}});
+        },
+    });
     if (loading || !data || !data.currentUser || !data.users) {
         return <CenteredSpinner />;
     }
@@ -72,6 +80,16 @@ export const UsersPage = () => {
                     pass: editPass || undefined,
                 },
             }).then(() => enqueueSnackbar('user edited', {variant: 'success'}));
+        };
+        const impersonateClickHandler = (username: string) => {
+            impersonate({
+                variables: {
+                    name: username,
+                    deviceType: DeviceType.ShortExpiry,
+                }
+            })
+            .then(() => enqueueSnackbar('Impersonation successful', {variant: 'success'}))
+            .catch(() => enqueueSnackbar('Impersonation failed'));
         };
         const isCurrent = user.id === data.currentUser!.id;
         const isEdited = editId === user.id;
@@ -127,6 +145,9 @@ export const UsersPage = () => {
                         </>
                     ) : (
                         <>
+                            <IconButton onClick={() => impersonateClickHandler(user.name)} title="Impersonate">
+                                <CameraFrontIcon />
+                            </IconButton>
                             <IconButton onClick={() => setEditing([user.id, user.name, '', user.admin])} title="Edit">
                                 <EditIcon />
                             </IconButton>
@@ -159,7 +180,7 @@ export const UsersPage = () => {
                         <TableCell>Name</TableCell>
                         <TableCell>Password</TableCell>
                         <TableCell>Admin</TableCell>
-                        <TableCell style={{width: 150}} />
+                        <TableCell style={{width: 200}} />
                     </TableRow>
                 </TableHead>
                 <TableBody>{users}</TableBody>

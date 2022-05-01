@@ -29,6 +29,18 @@ export const Logout = gql`
     }
 `;
 
+export const Impersonate = gql`
+    mutation Impersonate($name: String!, $deviceType: DeviceType!) {
+        impersonate(username: $name, deviceName: "web ui (impersonation)", type: $deviceType, cookie: true) {
+            user {
+                id
+                name
+                admin
+            }
+        }
+    }
+`;
+
 export const Users = gql`
     query Users {
         users {
