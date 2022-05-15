@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -194,6 +195,129 @@ func TestMiddleware_destroySession_destroysCookie(t *testing.T) {
 
 	cookieHeader := recorder.Header().Get("Set-Cookie")
 	assert.Equal(t, "traggo=; Max-Age=0", cookieHeader)
+}
+
+func TestMiddleware_impersonate_no_admin(t *testing.T) {
+	now := test.Time("2018-06-30T18:30:00Z")
+	timeDispose := fakeTime(now)
+	defer timeDispose()
+
+	db := test.InMemoryDB(t)
+	defer db.Close()
+	builder := db.User(1)
+	builder.NewDevice(2, "abc", "test")
+	spy := &requestSpy{}
+	recorder := httptest.NewRecorder()
+
+	request := httptest.NewRequest("GET", "/test?token=abc", nil)
+	request.Header.Set("X-Traggo-Impersonate", "empty")
+	Middleware(db.DB)(spy).ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+	assert.Equal(t, 403, response.StatusCode)
+
+	bodyBytes, _ := io.ReadAll(response.Body)
+	bodyString := string(bodyBytes)
+	assert.Equal(t, "Trying to impersonate without being admin\n", bodyString)
+
+	ctx := spy.req.Context()
+	assert.Nil(t, GetUser(ctx))
+	assert.Nil(t, GetDevice(ctx))
+}
+
+func TestMiddleware_impersonate_invalid_personate_header(t *testing.T) {
+	now := test.Time("2018-06-30T18:30:00Z")
+	timeDispose := fakeTime(now)
+	defer timeDispose()
+
+	db := test.InMemoryDB(t)
+	defer db.Close()
+	builder := db.User(1)
+	user := builder.User
+	user.Admin = true
+	db.Save(user)
+	builder.NewDevice(2, "abc", "test")
+	spy := &requestSpy{}
+	recorder := httptest.NewRecorder()
+
+	request := httptest.NewRequest("GET", "/test?token=abc", nil)
+	request.Header.Set("X-Traggo-Impersonate", "invalid")
+	Middleware(db.DB)(spy).ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+	assert.Equal(t, 400, response.StatusCode)
+
+	bodyBytes, _ := io.ReadAll(response.Body)
+	bodyString := string(bodyBytes)
+	assert.Equal(t, "Unable to parse impersonation header\n", bodyString)
+
+	ctx := spy.req.Context()
+	assert.Nil(t, GetUser(ctx))
+	assert.Nil(t, GetDevice(ctx))
+}
+
+func TestMiddleware_impersonate_non_existing_user(t *testing.T) {
+	now := test.Time("2018-06-30T18:30:00Z")
+	timeDispose := fakeTime(now)
+	defer timeDispose()
+
+	db := test.InMemoryDB(t)
+	defer db.Close()
+	builder := db.User(1)
+	user := builder.User
+	user.Admin = true
+	db.Save(user)
+	builder.NewDevice(2, "abc", "test")
+	spy := &requestSpy{}
+	recorder := httptest.NewRecorder()
+
+	request := httptest.NewRequest("GET", "/test?token=abc", nil)
+	request.Header.Set("X-Traggo-Impersonate", "42")
+	Middleware(db.DB)(spy).ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+	assert.Equal(t, 400, response.StatusCode)
+
+	bodyBytes, _ := io.ReadAll(response.Body)
+	bodyString := string(bodyBytes)
+	assert.Equal(t, "Impersonation user not found\n", bodyString)
+
+	ctx := spy.req.Context()
+	assert.Nil(t, GetUser(ctx))
+	assert.Nil(t, GetDevice(ctx))
+}
+
+func TestMiddleware_impersonate_happy(t *testing.T) {
+	now := test.Time("2018-06-30T18:30:00Z")
+	timeDispose := fakeTime(now)
+	defer timeDispose()
+
+	db := test.InMemoryDB(t)
+	defer db.Close()
+	admin_builder := db.User(1)
+	admin_user := admin_builder.User
+	admin_user.Admin = true
+	db.Save(admin_user)
+	admin_device := admin_builder.NewDevice(2, "abc", "test")
+
+	builder := db.User(2)
+	user := builder.User
+
+	spy := &requestSpy{}
+	recorder := httptest.NewRecorder()
+
+	request := httptest.NewRequest("GET", "/test?token=abc", nil)
+	request.Header.Set("X-Traggo-Impersonate", "2")
+	Middleware(db.DB)(spy).ServeHTTP(recorder, request)
+
+	response := recorder.Result()
+	assert.Equal(t, 200, response.StatusCode)
+
+	ctx := spy.req.Context()
+	assert.Equal(t, &user, GetUser(ctx))
+
+	admin_device.ActiveAt = now
+	assert.Equal(t, &admin_device, GetDevice(ctx))
 }
 
 func TestGetCreateSession_panicsWhenMiddlewareWasNotExecuted(t *testing.T) {
