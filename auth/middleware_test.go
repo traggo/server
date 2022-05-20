@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -214,11 +213,7 @@ func TestMiddleware_impersonate_no_admin(t *testing.T) {
 	Middleware(db.DB)(spy).ServeHTTP(recorder, request)
 
 	response := recorder.Result()
-	assert.Equal(t, 403, response.StatusCode)
-
-	bodyBytes, _ := io.ReadAll(response.Body)
-	bodyString := string(bodyBytes)
-	assert.Equal(t, "Trying to impersonate without being admin\n", bodyString)
+	assert.Equal(t, 200, response.StatusCode)
 
 	ctx := spy.req.Context()
 	assert.Nil(t, GetUser(ctx))
@@ -245,11 +240,7 @@ func TestMiddleware_impersonate_invalid_personate_header(t *testing.T) {
 	Middleware(db.DB)(spy).ServeHTTP(recorder, request)
 
 	response := recorder.Result()
-	assert.Equal(t, 400, response.StatusCode)
-
-	bodyBytes, _ := io.ReadAll(response.Body)
-	bodyString := string(bodyBytes)
-	assert.Equal(t, "Unable to parse impersonation header\n", bodyString)
+	assert.Equal(t, 200, response.StatusCode)
 
 	ctx := spy.req.Context()
 	assert.Nil(t, GetUser(ctx))
@@ -276,11 +267,7 @@ func TestMiddleware_impersonate_non_existing_user(t *testing.T) {
 	Middleware(db.DB)(spy).ServeHTTP(recorder, request)
 
 	response := recorder.Result()
-	assert.Equal(t, 400, response.StatusCode)
-
-	bodyBytes, _ := io.ReadAll(response.Body)
-	bodyString := string(bodyBytes)
-	assert.Equal(t, "Impersonation user not found\n", bodyString)
+	assert.Equal(t, 200, response.StatusCode)
 
 	ctx := spy.req.Context()
 	assert.Nil(t, GetUser(ctx))

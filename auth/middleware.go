@@ -54,17 +54,12 @@ func sessionCallbacks(request *http.Request, writer http.ResponseWriter) *http.R
 func reqisterUser(request *http.Request, writer http.ResponseWriter, db *gorm.DB) *http.Request {
 	token, err := getToken(request)
 	if err != nil {
-		msg := "Issue fetching token"
-		log.Info().Msg(msg)
-		http.Error(writer, msg, 400)
 		return request
 	}
 
 	device := &model.Device{}
 	if db.Where("token = ?", token).Find(device).RecordNotFound() {
-		msg := "No device with token found"
-		log.Info().Str("token", token).Msg(msg)
-		http.Error(writer, msg, 400)
+		log.Info().Str("token", token).Msg("No device with token found")
 		return request
 	}
 
@@ -77,23 +72,17 @@ func reqisterUser(request *http.Request, writer http.ResponseWriter, db *gorm.DB
 	impersonate := request.Header.Get("X-Traggo-Impersonate")
 	if impersonate != "" {
 		if !user.Admin {
-			msg := "Trying to impersonate without being admin"
-			log.Info().Str("impersonate", impersonate).Msg(msg)
-			http.Error(writer, msg, 403)
+			log.Info().Str("impersonate", impersonate).Msg("Trying to impersonate without being admin")
 			return request
 		}
 		userID, err := strconv.Atoi(impersonate)
 		if err != nil {
-			msg := "Unable to parse impersonation header"
-			log.Info().Str("impersonate", impersonate).Msg(msg)
-			http.Error(writer, msg, 400)
+			log.Info().Str("impersonate", impersonate).Msg("Unable to parse impersonation header")
 			return request
 		}
 		impersonateUser := &model.User{}
 		if db.Find(impersonateUser, userID).RecordNotFound() {
-			msg := "Impersonation user not found"
-			log.Info().Int("userid", userID).Msg(msg)
-			http.Error(writer, msg, 400)
+			log.Info().Int("userid", userID).Msg("Impersonation user not found")
 			return request
 		}
 		user = impersonateUser
