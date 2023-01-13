@@ -1,7 +1,7 @@
 import {gql} from 'apollo-boost';
 import {useQuery} from '@apollo/react-hooks';
 import {Settings as SettingsQueryResponse} from './__generated__/Settings';
-import {DateLocale, Theme, WeekDay} from './__generated__/globalTypes';
+import {DateFormat, DateLocale, Theme, WeekDay} from './__generated__/globalTypes';
 import {stripTypename} from '../utils/strip';
 
 export const Settings = gql`
@@ -9,6 +9,7 @@ export const Settings = gql`
         userSettings {
             theme
             dateLocale
+            dateFormat
             firstDayOfTheWeek
         }
     }
@@ -25,6 +26,7 @@ export const SetSettings = gql`
 const defaultSettings = {
     theme: Theme.GruvboxDark,
     dateLocale: DateLocale.English,
+    dateFormat: DateFormat.MMDDYYYY,
     firstDayOfTheWeek: WeekDay.Monday,
 } as const;
 

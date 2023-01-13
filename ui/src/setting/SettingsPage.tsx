@@ -7,7 +7,7 @@ import {SetSettings, SetSettingsVariables} from '../gql/__generated__/SetSetting
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/NativeSelect/NativeSelect';
-import {DateLocale, Theme, WeekDay} from '../gql/__generated__/globalTypes';
+import {DateLocale, Theme, WeekDay, DateFormat} from '../gql/__generated__/globalTypes';
 import {useSnackbar} from 'notistack';
 import {handleError} from '../utils/errors';
 
@@ -64,6 +64,45 @@ export const SettingsPage: React.FC = () => {
                     ))}
                 </Select>
             </FormControl>
+            {(settings.dateLocale === DateLocale.English || settings.dateLocale === DateLocale.English24h) && (
+                <FormControl margin={'normal'} fullWidth>
+                    <InputLabel>Date Format</InputLabel>
+                    <Select
+                        fullWidth
+                        value={settings.dateFormat}
+                        onChange={(e) => {
+                            setSettings({
+                                variables: {
+                                    settings: {
+                                        ...settings,
+                                        dateFormat: e.target.value as DateFormat,
+                                    },
+                                },
+                            })
+                                // tslint:disable-next-line:no-identical-functions
+                                .then(() => {
+                                    enqueueSnackbar('date format changed', {
+                                        variant: 'success',
+                                    });
+                                    enqueueSnackbar(
+                                        'a reload of the page is required for the new date format to fully function',
+                                        {
+                                            variant: 'info',
+                                            preventDuplicate: true,
+                                            persist: true,
+                                        }
+                                    );
+                                })
+                                .catch(handleError('set date format', enqueueSnackbar));
+                        }}>
+                        {Object.values(DateFormat).map((type) => (
+                            <option key={type} value={type}>
+                                {type}
+                            </option>
+                        ))}
+                    </Select>
+                </FormControl>
+            )}
             <FormControl margin={'normal'} fullWidth>
                 <InputLabel>Theme</InputLabel>
                 <Select

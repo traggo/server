@@ -67,12 +67,14 @@ type RootQuery {
 input InputUserSettings {
     theme: Theme!
     dateLocale: DateLocale!
+    dateFormat: DateFormat!
     firstDayOfTheWeek: WeekDay!
 }
 
 type UserSettings {
     theme: Theme!
     dateLocale: DateLocale!
+    dateFormat: DateFormat!
     firstDayOfTheWeek: WeekDay!
 }
 
@@ -86,6 +88,10 @@ enum Theme {
 
 enum DateLocale {
     English, English24h, German
+}
+
+enum DateFormat {
+    DDMMYYYY, MMDDYYYY
 }
 
 input InputReplaceOptions {

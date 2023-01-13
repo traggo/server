@@ -2,26 +2,40 @@ import * as React from 'react';
 import {useSettings} from '../gql/settings';
 import {CenteredSpinner} from '../common/CenteredSpinner';
 import moment, {LocaleSpecification} from 'moment';
-import {DateLocale, WeekDay} from '../gql/__generated__/globalTypes';
+import 'moment/locale/en-gb'; // DD/MM/YYYY but 24hr
+import 'moment/locale/en-au'; // DD/MM/YYYY but am/pm
+import {DateFormat, DateLocale, WeekDay} from '../gql/__generated__/globalTypes';
 import {expectNever} from '../utils/never';
 
-const setLocale = (locale: DateLocale, spec: LocaleSpecification) => {
+const setLocale = (locale: DateLocale, dateFormat: DateFormat, spec: LocaleSpecification) => {
     switch (locale) {
         case DateLocale.English:
-            moment.locale('en', spec);
+            if (dateFormat === DateFormat.MMDDYYYY) {
+                moment.locale('en', spec);
+            } else if (dateFormat === DateFormat.DDMMYYYY) {
+                moment.locale('en-au', spec);
+            } else {
+                throw new Error('Unexpected date format');
+            }
             return;
         case DateLocale.English24h:
-            moment.locale('en', {
-                ...spec,
-                longDateFormat: {
-                    LTS: 'HH:mm:ss',
-                    LT: 'HH:mm',
-                    L: 'MM/DD/YYYY',
-                    LL: 'MMMM D, YYYY',
-                    LLL: 'MMMM D, YYYY HH:mm',
-                    LLLL: 'dddd, MMMM D, YYYY HH:mm',
-                },
-            });
+            if (dateFormat === DateFormat.MMDDYYYY) {
+                moment.locale('en', {
+                    ...spec,
+                    longDateFormat: {
+                        LTS: 'HH:mm:ss',
+                        LT: 'HH:mm',
+                        L: 'MM/DD/YYYY',
+                        LL: 'MMMM D, YYYY',
+                        LLL: 'MMMM D, YYYY HH:mm',
+                        LLLL: 'dddd, MMMM D, YYYY HH:mm',
+                    },
+                });
+            } else if (dateFormat === DateFormat.DDMMYYYY) {
+                moment.locale('en-gb', spec);
+            } else {
+                throw new Error('Unexpected date format');
+            }
             return;
         case DateLocale.German:
             moment.locale('de', spec);
@@ -54,19 +68,19 @@ const weekDayToMoment = (s: WeekDay): number => {
 };
 
 export const BootUserSettings: React.FC = ({children}): React.ReactElement => {
-    const {done, firstDayOfTheWeek, dateLocale} = useSettings();
+    const {done, firstDayOfTheWeek, dateLocale, dateFormat} = useSettings();
 
     React.useEffect(() => {
         if (!done) {
             return;
         }
-        setLocale(dateLocale, {
+        setLocale(dateLocale, dateFormat, {
             week: {
                 dow: weekDayToMoment(firstDayOfTheWeek),
                 doy: moment.localeData(moment.locale()).firstDayOfYear(),
             },
         });
-    }, [dateLocale, firstDayOfTheWeek, done]);
+    }, [dateLocale, firstDayOfTheWeek, done, dateFormat]);
 
     if (!done) {
         return <CenteredSpinner />;
