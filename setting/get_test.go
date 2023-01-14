@@ -38,7 +38,6 @@ func TestGet_user(t *testing.T) {
 		UserID:            1,
 		Theme:             model.ThemeGruvboxLight,
 		DateLocale:        model.DateLocaleGerman,
-		DateFormat:        model.DateFormatDDMMYYYY,
 		FirstDayOfTheWeek: time.Sunday.String(),
 	})
 

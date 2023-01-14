@@ -30,7 +30,6 @@ func TestSettingsResolver(t *testing.T) {
 	_, err = resolver.SetUserSettings(fake.User(1), gqlmodel.InputUserSettings{
 		Theme:             gqlmodel.ThemeGruvboxLight,
 		DateLocale:        gqlmodel.DateLocaleGerman,
-		DateFormat:        gqlmodel.DateFormatDdmmyyyy,
 		FirstDayOfTheWeek: gqlmodel.WeekDayWednesday,
 	})
 	require.NoError(t, err)
@@ -40,7 +39,6 @@ func TestSettingsResolver(t *testing.T) {
 	require.Equal(t, &gqlmodel.UserSettings{
 		Theme:             gqlmodel.ThemeGruvboxLight,
 		DateLocale:        gqlmodel.DateLocaleGerman,
-		DateFormat:        gqlmodel.DateFormatDdmmyyyy,
 		FirstDayOfTheWeek: gqlmodel.WeekDayWednesday,
 	}, settings)
 }
@@ -62,6 +60,5 @@ func TestShouldHandleInvalidInputs(t *testing.T) {
 	toInternalTheme("aoeuaoeu")
 	toExternalDateLocale("aeu")
 	toInternalDateLocale("aoeu")
-	toExternalDateFormat("aoeu")
-	toInternalDateFormat("aoeu")
+
 }

@@ -7,7 +7,6 @@ type UserSetting struct {
 	UserID            int `gorm:"primary_key;unique_index"`
 	Theme             string
 	DateLocale        string
-	DateFormat        string
 	FirstDayOfTheWeek string
 }
 
@@ -21,9 +20,6 @@ const (
 	DateLocaleGerman     = "German"
 	DateLocaleEnglish    = "English"
 	DateLocaleEnglish24h = "English24h"
-
-	DateFormatMMDDYYYY = "MMDDYYYY"
-	DateFormatDDMMYYYY = "DDMMYYYY"
 )
 
 var daysOfWeek = map[string]time.Weekday{

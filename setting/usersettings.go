@@ -16,7 +16,6 @@ func (r *ResolverForSettings) SetUserSettings(ctx context.Context, settings gqlm
 		FirstDayOfTheWeek: toInternalWeekday(settings.FirstDayOfTheWeek).String(),
 		UserID:            auth.GetUser(ctx).ID,
 		DateLocale:        toInternalDateLocale(settings.DateLocale),
-		DateFormat:        toInternalDateFormat(settings.DateFormat),
 	}
 
 	save := r.DB.Save(internal)
@@ -34,7 +33,6 @@ func toExternal(internal model.UserSetting) *gqlmodel.UserSettings {
 	return &gqlmodel.UserSettings{
 		Theme:             toExternalTheme(internal.Theme),
 		DateLocale:        toExternalDateLocale(internal.DateLocale),
-		DateFormat:        toExternalDateFormat(internal.DateFormat),
 		FirstDayOfTheWeek: toExternalWeekday(internal.FirstDayOfTheWeekTimeWeekday()),
 	}
 }
@@ -53,22 +51,6 @@ func toExternalDateLocale(dateLocale string) gqlmodel.DateLocale {
 		return gqlmodel.DateLocale(dateLocale)
 	}
 	return gqlmodel.DateLocaleEnglish
-}
-
-func toInternalDateFormat(dateFormat gqlmodel.DateFormat) string {
-	switch dateFormat.String() {
-	case model.DateFormatDDMMYYYY, model.DateFormatMMDDYYYY:
-		return dateFormat.String()
-	default:
-		return model.DateFormatMMDDYYYY
-	}
-}
-
-func toExternalDateFormat(dateFormat string) gqlmodel.DateFormat {
-	if gqlmodel.DateFormat(dateFormat).IsValid() {
-		return gqlmodel.DateFormat(dateFormat)
-	}
-	return gqlmodel.DateFormatMmddyyyy
 }
 
 func toInternalTheme(theme gqlmodel.Theme) string {
