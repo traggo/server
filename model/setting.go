@@ -20,6 +20,8 @@ const (
 	DateLocaleGerman     = "German"
 	DateLocaleEnglish    = "English"
 	DateLocaleEnglish24h = "English24h"
+	DateLocaleBritish    = "British"
+	DateLocaleAustralian = "Australian"
 )
 
 var daysOfWeek = map[string]time.Weekday{
