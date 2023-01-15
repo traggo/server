@@ -50,6 +50,9 @@ func toExternalDateLocale(dateLocale string) gqlmodel.DateLocale {
 	if gqlmodel.DateLocale(dateLocale).IsValid() {
 		return gqlmodel.DateLocale(dateLocale)
 	}
+	if dateLocale == "English24h" {
+		return gqlmodel.DateLocaleAmerican24h
+	}
 	return gqlmodel.DateLocaleAmerican
 }
 
