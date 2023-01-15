@@ -17,9 +17,11 @@ const (
 	ThemeMaterialDark  = "MaterialDark"
 	ThemeMaterialLight = "MaterialLight"
 
-	DateLocaleGerman     = "German"
-	DateLocaleEnglish    = "English"
-	DateLocaleEnglish24h = "English24h"
+	DateLocaleGerman      = "German"
+	DateLocaleAmerican    = "American"
+	DateLocaleAmerican24h = "American24h"
+	DateLocaleBritish     = "British"
+	DateLocaleAustralian  = "Australian"
 )
 
 var daysOfWeek = map[string]time.Weekday{

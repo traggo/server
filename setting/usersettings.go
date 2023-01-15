@@ -39,10 +39,10 @@ func toExternal(internal model.UserSetting) *gqlmodel.UserSettings {
 
 func toInternalDateLocale(locale gqlmodel.DateLocale) string {
 	switch locale.String() {
-	case model.DateLocaleEnglish, model.DateLocaleGerman, model.DateLocaleEnglish24h:
+	case model.DateLocaleAmerican, model.DateLocaleGerman, model.DateLocaleAmerican24h, model.DateLocaleAustralian, model.DateLocaleBritish:
 		return locale.String()
 	default:
-		return model.DateLocaleEnglish
+		return model.DateLocaleAmerican
 	}
 }
 
@@ -50,7 +50,10 @@ func toExternalDateLocale(dateLocale string) gqlmodel.DateLocale {
 	if gqlmodel.DateLocale(dateLocale).IsValid() {
 		return gqlmodel.DateLocale(dateLocale)
 	}
-	return gqlmodel.DateLocaleEnglish
+	if dateLocale == "English24h" {
+		return gqlmodel.DateLocaleAmerican24h
+	}
+	return gqlmodel.DateLocaleAmerican
 }
 
 func toInternalTheme(theme gqlmodel.Theme) string {
