@@ -2,8 +2,6 @@ import * as React from 'react';
 import {useSettings} from '../gql/settings';
 import {CenteredSpinner} from '../common/CenteredSpinner';
 import moment, {LocaleSpecification} from 'moment';
-import 'moment/locale/en-au';
-import 'moment/locale/en-gb';
 import {DateLocale, WeekDay} from '../gql/__generated__/globalTypes';
 import {expectNever} from '../utils/never';
 
