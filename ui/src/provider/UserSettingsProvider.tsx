@@ -7,10 +7,10 @@ import {expectNever} from '../utils/never';
 
 const setLocale = (locale: DateLocale, spec: LocaleSpecification) => {
     switch (locale) {
-        case DateLocale.English:
+        case DateLocale.American:
             moment.locale('en', spec);
             return;
-        case DateLocale.English24h:
+        case DateLocale.American24h:
             moment.locale('en', {
                 ...spec,
                 longDateFormat: {
@@ -22,6 +22,12 @@ const setLocale = (locale: DateLocale, spec: LocaleSpecification) => {
                     LLLL: 'dddd, MMMM D, YYYY HH:mm',
                 },
             });
+            return;
+        case DateLocale.Australian:
+            moment.locale('en-au', spec);
+            return;
+        case DateLocale.British:
+            moment.locale('en-gb', spec);
             return;
         case DateLocale.German:
             moment.locale('de', spec);

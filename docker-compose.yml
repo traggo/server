@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  traggo:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    environment:
+      TRAGGO_DEFAULT_USER_NAME: "admin"
+      TRAGGO_DEFAULT_USER_PASS: "admin"
+
+      TRAGGO_LOG_LEVEL: debug
+    ports:
+      - 3030:3030
+    volumes:
+      - .traggodata:/opt/traggo/data

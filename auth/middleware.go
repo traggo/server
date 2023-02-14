@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -51,33 +52,55 @@ func sessionCallbacks(request *http.Request, writer http.ResponseWriter) *http.R
 }
 
 func reqisterUser(request *http.Request, writer http.ResponseWriter, db *gorm.DB) *http.Request {
-	if token, err := getToken(request); err == nil {
-		device := &model.Device{}
-		if db.Where("token = ?", token).Find(device).RecordNotFound() {
-			log.Info().Str("token", token).Msg("no device with token found")
-			return request
-		}
-
-		user := &model.User{}
-		if db.Find(user, device.UserID).RecordNotFound() {
-			log.Panic().Int("userID", device.UserID).Int("deviceID", device.ID).Msg("User not found")
-		}
-
-		if device.ActiveAt.Before(time.Now().Add(5 * -time.Minute)) {
-			log.Debug().Int("deviceId", device.ID).Str("deviceName", device.Name).Msg("update device activeAt")
-			device.ActiveAt = timeNow()
-			db.Save(device)
-
-			if cookie, err := request.Cookie(traggoSession); err == nil && cookie != nil {
-				cookie.MaxAge = device.Type.Seconds()
-				http.SetCookie(writer, cookie)
-			}
-		}
-
-		return request.WithContext(WithUser(WithDevice(request.Context(), device), user))
+	token, err := getToken(request)
+	if err != nil {
+		return request
 	}
 
-	return request
+	device := &model.Device{}
+	if db.Where("token = ?", token).Find(device).RecordNotFound() {
+		log.Info().Str("token", token).Msg("No device with token found")
+		return request
+	}
+
+	user := &model.User{}
+	if db.Find(user, device.UserID).RecordNotFound() {
+		log.Panic().Int("userID", device.UserID).Int("deviceID", device.ID).Msg("User not found")
+	}
+	log.Info().Int("userid", device.UserID).Str("username", user.Name).Msg("User found")
+
+	impersonate := request.Header.Get("X-Traggo-Impersonate")
+	if impersonate != "" {
+		if !user.Admin {
+			log.Info().Str("impersonate", impersonate).Msg("Trying to impersonate without being admin")
+			return request
+		}
+		userID, err := strconv.Atoi(impersonate)
+		if err != nil {
+			log.Info().Str("impersonate", impersonate).Msg("Unable to parse impersonation header")
+			return request
+		}
+		impersonateUser := &model.User{}
+		if db.Find(impersonateUser, userID).RecordNotFound() {
+			log.Info().Int("userid", userID).Msg("Impersonation user not found")
+			return request
+		}
+		user = impersonateUser
+		log.Info().Str("username", user.Name).Msg("Impersonation user")
+	}
+
+	if device.ActiveAt.Before(time.Now().Add(5 * -time.Minute)) {
+		log.Debug().Int("deviceId", device.ID).Str("deviceName", device.Name).Msg("update device activeAt")
+		device.ActiveAt = timeNow()
+		db.Save(device)
+
+		if cookie, err := request.Cookie(traggoSession); err == nil && cookie != nil {
+			cookie.MaxAge = device.Type.Seconds()
+			http.SetCookie(writer, cookie)
+		}
+	}
+
+	return request.WithContext(WithUser(WithDevice(request.Context(), device), user))
 }
 
 func getToken(request *http.Request) (string, error) {

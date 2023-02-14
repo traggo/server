@@ -24,7 +24,7 @@ export const SetSettings = gql`
 
 const defaultSettings = {
     theme: Theme.GruvboxDark,
-    dateLocale: DateLocale.English,
+    dateLocale: DateLocale.American,
     firstDayOfTheWeek: WeekDay.Monday,
 } as const;
 
