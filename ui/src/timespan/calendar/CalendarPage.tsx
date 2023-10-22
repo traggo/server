@@ -102,7 +102,7 @@ export const CalendarPage: React.FC = () => {
     });
 
     const fullCalendarRef = React.useRef<FullCalendar | null>(null);
-    const unselect = () => {
+    const unselectCalenderItem = () => {
         const instance = fullCalendarRef.current;
         if (instance) {
             const calendar = instance.getApi();
@@ -127,7 +127,7 @@ export const CalendarPage: React.FC = () => {
             }
             addTimeSpanInRangeToCache(cache, data.createTimeSpan, timeSpansResult.variables);
             addTimeSpanToCache(cache, data.createTimeSpan);
-            unselect();
+            unselectCalenderItem();
         },
     });
 
@@ -209,10 +209,8 @@ export const CalendarPage: React.FC = () => {
             },
         });
 
-        if (result.data) {
-            if (result.data.createTimeSpan) {
-                setLastCreatedTimeSpanId(result.data.createTimeSpan.id);
-            }
+        if (result.data && result.data.createTimeSpan) {
+            setLastCreatedTimeSpanId(result.data.createTimeSpan.id);
         }
     };
     const onClick: OptionsInput['eventClick'] = (data) => {
@@ -242,48 +240,37 @@ export const CalendarPage: React.FC = () => {
     }
 
     useEffect(() => {
-        if (selected.selected) {
-            console.log(selected);
-        }
-
         let deletingSelected = false;
 
         const onKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
                 e.preventDefault();
                 setSelected({selected: null, data: null});
-                unselect();
+                unselectCalenderItem();
             }
 
-            if (lastCreatedTimeSpanId) {
-                if (e.key === 'Delete' || e.key === 'Backspace' || e.key === 'Escape') {
-                    e.preventDefault();
-                    removeFromTimeSpanInRangeCache(apollo.cache, lastCreatedTimeSpanId, timeSpansResult.variables);
-                    removeTimeSpan({variables: {id: lastCreatedTimeSpanId}}).finally(() => {
-                        deletingSelected = false;
-                    });
-                    setSelected({selected: null, data: null});
-                    setLastCreatedTimeSpanId(null);
-                    unselect();
-                    return;
-                }
+            if (!deletingSelected && lastCreatedTimeSpanId && (e.key === 'Delete' || e.key === 'Backspace' || e.key === 'Escape')) {
+                e.preventDefault();
+                removeFromTimeSpanInRangeCache(apollo.cache, lastCreatedTimeSpanId, timeSpansResult.variables);
+                removeTimeSpan({variables: {id: lastCreatedTimeSpanId}}).finally(() => {
+                    deletingSelected = false;
+                });
+                setSelected({selected: null, data: null});
+                setLastCreatedTimeSpanId(null);
+                unselectCalenderItem();
+                return;
             }
 
-            if (selected.data) {
-                if (e.key === 'Delete' || (e.key === 'Backspace' && !deletingSelected)) {
-                    e.preventDefault();
-                    setSelected({selected: null, data: selected.data});
-                    removeFromTimeSpanInRangeCache(apollo.cache, selected.data.id, timeSpansResult.variables);
-                    removeTimeSpan({variables: {id: selected.data.id}}).finally(() => {
-                        deletingSelected = false;
-                    });
-                    setSelected({selected: null, data: null});
-                    unselect();
-
-                    // FullCalendar.
-                    // setTimeSpanSelectable(false)
-                    return;
-                }
+            if (selected.data && (e.key === 'Delete' || (e.key === 'Backspace') && !deletingSelected)) {
+                e.preventDefault();
+                setSelected({selected: null, data: selected.data});
+                removeFromTimeSpanInRangeCache(apollo.cache, selected.data.id, timeSpansResult.variables);
+                removeTimeSpan({variables: {id: selected.data.id}}).finally(() => {
+                    deletingSelected = false;
+                });
+                setSelected({selected: null, data: null});
+                unselectCalenderItem();
+                return;
             }
         };
 
@@ -292,7 +279,7 @@ export const CalendarPage: React.FC = () => {
         return () => {
             document.removeEventListener('keydown', onKeyDown);
         };
-    }, [selected, lastCreatedTimeSpanId]);
+    }, [selected, lastCreatedTimeSpanId, apollo.cache, removeTimeSpan, timeSpansResult.variables]);
 
     return (
         <Paper style={{padding: 10, bottom: 10, top: 80, position: 'absolute'}} color="red">
