@@ -223,6 +223,7 @@ export const CalendarPage: React.FC = () => {
 
         // tslint:disable-next-line:no-any
         setSelected({data: data.event.extendedProps.ts, selected: data.jsEvent.target as any});
+        setLastCreatedTimeSpanId(null)
     };
     if (trackersResult.data && !(trackersResult.data.timers || []).length) {
         const startTimerEvent: ExtendedEventSourceInput = {
@@ -250,11 +251,10 @@ export const CalendarPage: React.FC = () => {
                 e.preventDefault()
                 setSelected({selected: null, data: null});
                 unselect()
-                return
             }
 
             if (lastCreatedTimeSpanId) {
-                if (e.key === 'Delete' || e.key === 'Backspace') {
+                if (e.key === 'Delete' || e.key === 'Backspace' || e.key === 'Escape') {
                     e.preventDefault()
                     removeFromTimeSpanInRangeCache(apollo.cache, lastCreatedTimeSpanId, timeSpansResult.variables);
                     removeTimeSpan({variables: {id: lastCreatedTimeSpanId}}).finally(() => {
@@ -263,7 +263,6 @@ export const CalendarPage: React.FC = () => {
                     setSelected({selected: null, data: null})
                     setLastCreatedTimeSpanId(null)
                     unselect()
-
                     return
                 }
             }
