@@ -22,7 +22,7 @@ import {StartTimer, StartTimerVariables} from '../gql/__generated__/StartTimer';
 import {RelativeTime, RelativeToNow} from '../common/RelativeTime';
 import ShowNotesIcon from '@material-ui/icons/KeyboardArrowDown';
 import HideNotesIcon from '@material-ui/icons/KeyboardArrowUp';
-import {removeTimeSpanOptions} from "./mutations";
+import {removeTimeSpanOptions} from './mutations';
 
 interface Range {
     from: moment.Moment;
@@ -81,7 +81,10 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
             clearTimeout(note.current.handle);
             return updateTimeSpan({variables: {...variables, note: note.current.value}});
         };
-        const [removeTimeSpan] = useMutation<RemoveTimeSpan, RemoveTimeSpanVariables>(gqlTimeSpan.RemoveTimeSpan, removeTimeSpanOptions);
+        const [removeTimeSpan] = useMutation<RemoveTimeSpan, RemoveTimeSpanVariables>(
+            gqlTimeSpan.RemoveTimeSpan,
+            removeTimeSpanOptions
+        );
 
         const updateNote = (newValue: string) => {
             window.clearTimeout(note.current.handle);

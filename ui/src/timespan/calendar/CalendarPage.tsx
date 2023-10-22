@@ -39,8 +39,8 @@ import {timeRunningCalendar} from '../timeutils';
 import {stripTypename} from '../../utils/strip';
 import {TimeSpansInRange, TimeSpansInRangeVariables} from '../../gql/__generated__/TimeSpansInRange';
 import {ExtendedEventSourceInput} from '@fullcalendar/core/structs/event-source';
-import {RemoveTimeSpan, RemoveTimeSpanVariables} from "../../gql/__generated__/RemoveTimeSpan";
-import {removeTimeSpanOptions} from "../mutations";
+import {RemoveTimeSpan, RemoveTimeSpanVariables} from '../../gql/__generated__/RemoveTimeSpan';
+import {removeTimeSpanOptions} from '../mutations';
 
 const toMoment = (date: Date): moment.Moment => {
     return moment(date).tz('utc');
@@ -75,7 +75,10 @@ export const CalendarPage: React.FC = () => {
         refetchQueries: [{query: gqlTimeSpan.Trackers}],
     });
     const [updateTimeSpanMutation] = useMutation<UpdateTimeSpan, UpdateTimeSpanVariables>(gqlTimeSpan.UpdateTimeSpan);
-    const [removeTimeSpan] = useMutation<RemoveTimeSpan, RemoveTimeSpanVariables>(gqlTimeSpan.RemoveTimeSpan, removeTimeSpanOptions);
+    const [removeTimeSpan] = useMutation<RemoveTimeSpan, RemoveTimeSpanVariables>(
+        gqlTimeSpan.RemoveTimeSpan,
+        removeTimeSpanOptions
+    );
     const [currentDate, setCurrentDate] = React.useState(moment());
     const [stopTimer] = useMutation<StopTimer, StopTimerVariables>(gqlTimeSpan.StopTimer, {
         update: (cache, {data}) => {
@@ -98,16 +101,16 @@ export const CalendarPage: React.FC = () => {
         return () => (window.__TRAGGO_CALENDAR = undefined);
     });
 
-    const fullCalendarRef = React.useRef<FullCalendar | null>(null)
+    const fullCalendarRef = React.useRef<FullCalendar | null>(null);
     const unselect = () => {
-        const instance = fullCalendarRef.current
+        const instance = fullCalendarRef.current;
         if (instance) {
-            const calendar = instance.getApi()
+            const calendar = instance.getApi();
             if (calendar) {
-                calendar.unselect()
+                calendar.unselect();
             }
         }
-    }
+    };
 
     const [ignore, setIgnore] = React.useState<boolean>(false);
     const [selected, setSelected] = React.useState<{selected: HTMLElement | null; data: TimeSpans_timeSpans_timeSpans | null}>({
@@ -115,7 +118,7 @@ export const CalendarPage: React.FC = () => {
         data: null,
     });
 
-    const [lastCreatedTimeSpanId, setLastCreatedTimeSpanId] = React.useState<number | null>(null)
+    const [lastCreatedTimeSpanId, setLastCreatedTimeSpanId] = React.useState<number | null>(null);
 
     const [addTimeSpan] = useMutation<AddTimeSpan, AddTimeSpanVariables>(gqlTimeSpan.AddTimeSpan, {
         update: (cache, {data}) => {
@@ -124,7 +127,7 @@ export const CalendarPage: React.FC = () => {
             }
             addTimeSpanInRangeToCache(cache, data.createTimeSpan, timeSpansResult.variables);
             addTimeSpanToCache(cache, data.createTimeSpan);
-            unselect()
+            unselect();
         },
     });
 
@@ -208,7 +211,7 @@ export const CalendarPage: React.FC = () => {
 
         if (result.data) {
             if (result.data.createTimeSpan) {
-                setLastCreatedTimeSpanId(result.data.createTimeSpan.id)
+                setLastCreatedTimeSpanId(result.data.createTimeSpan.id);
             }
         }
     };
@@ -223,7 +226,7 @@ export const CalendarPage: React.FC = () => {
 
         // tslint:disable-next-line:no-any
         setSelected({data: data.event.extendedProps.ts, selected: data.jsEvent.target as any});
-        setLastCreatedTimeSpanId(null)
+        setLastCreatedTimeSpanId(null);
     };
     if (trackersResult.data && !(trackersResult.data.timers || []).length) {
         const startTimerEvent: ExtendedEventSourceInput = {
@@ -239,58 +242,57 @@ export const CalendarPage: React.FC = () => {
     }
 
     useEffect(() => {
-
         if (selected.selected) {
-            console.log(selected)
+            console.log(selected);
         }
 
-        let deletingSelected = false
+        let deletingSelected = false;
 
         const onKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
-                e.preventDefault()
+                e.preventDefault();
                 setSelected({selected: null, data: null});
-                unselect()
+                unselect();
             }
 
             if (lastCreatedTimeSpanId) {
                 if (e.key === 'Delete' || e.key === 'Backspace' || e.key === 'Escape') {
-                    e.preventDefault()
+                    e.preventDefault();
                     removeFromTimeSpanInRangeCache(apollo.cache, lastCreatedTimeSpanId, timeSpansResult.variables);
                     removeTimeSpan({variables: {id: lastCreatedTimeSpanId}}).finally(() => {
-                        deletingSelected = false
+                        deletingSelected = false;
                     });
-                    setSelected({selected: null, data: null})
-                    setLastCreatedTimeSpanId(null)
-                    unselect()
-                    return
+                    setSelected({selected: null, data: null});
+                    setLastCreatedTimeSpanId(null);
+                    unselect();
+                    return;
                 }
             }
 
             if (selected.data) {
-                if (e.key === 'Delete' || e.key === "Backspace" && !deletingSelected) {
-                    e.preventDefault()
+                if (e.key === 'Delete' || (e.key === 'Backspace' && !deletingSelected)) {
+                    e.preventDefault();
                     setSelected({selected: null, data: selected.data});
                     removeFromTimeSpanInRangeCache(apollo.cache, selected.data.id, timeSpansResult.variables);
                     removeTimeSpan({variables: {id: selected.data.id}}).finally(() => {
-                        deletingSelected = false
+                        deletingSelected = false;
                     });
                     setSelected({selected: null, data: null});
-                    unselect()
+                    unselect();
 
                     // FullCalendar.
                     // setTimeSpanSelectable(false)
-                    return
+                    return;
                 }
             }
-        }
+        };
 
-        document.addEventListener('keydown', onKeyDown)
+        document.addEventListener('keydown', onKeyDown);
 
         return () => {
-            document.removeEventListener('keydown', onKeyDown)
-        }
-    }, [selected, lastCreatedTimeSpanId])
+            document.removeEventListener('keydown', onKeyDown);
+        };
+    }, [selected, lastCreatedTimeSpanId]);
 
     return (
         <Paper style={{padding: 10, bottom: 10, top: 80, position: 'absolute'}} color="red">

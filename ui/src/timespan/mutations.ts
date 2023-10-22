@@ -1,8 +1,8 @@
-import {RemoveTimeSpan, RemoveTimeSpanVariables} from "../gql/__generated__/RemoveTimeSpan";
-import * as gqlTimeSpan from "../gql/timeSpan";
-import {TimeSpans} from "../gql/__generated__/TimeSpans";
-import {Trackers} from "../gql/__generated__/Trackers";
-import {MutationHookOptions} from "@apollo/react-hooks/lib/types";
+import {RemoveTimeSpan, RemoveTimeSpanVariables} from '../gql/__generated__/RemoveTimeSpan';
+import * as gqlTimeSpan from '../gql/timeSpan';
+import {TimeSpans} from '../gql/__generated__/TimeSpans';
+import {Trackers} from '../gql/__generated__/Trackers';
+import {MutationHookOptions} from '@apollo/react-hooks/lib/types';
 
 export const removeTimeSpanOptions: MutationHookOptions<RemoveTimeSpan, RemoveTimeSpanVariables> = {
     update: (cache, {data}) => {
@@ -37,4 +37,4 @@ export const removeTimeSpanOptions: MutationHookOptions<RemoveTimeSpan, RemoveTi
             });
         }
     },
-}
+};
