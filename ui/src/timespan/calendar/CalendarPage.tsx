@@ -1,5 +1,4 @@
 import * as React from 'react';
-import {useEffect} from 'react';
 import {Paper, useTheme} from '@material-ui/core';
 import moment from 'moment';
 import {useApolloClient, useMutation, useQuery} from '@apollo/react-hooks';
@@ -239,7 +238,7 @@ export const CalendarPage: React.FC = () => {
         values.push(startTimerEvent);
     }
 
-    useEffect(() => {
+    React.useEffect(() => {
         let deletingSelected = false;
 
         const onKeyDown = (e: KeyboardEvent) => {
@@ -249,7 +248,11 @@ export const CalendarPage: React.FC = () => {
                 unselectCalenderItem();
             }
 
-            if (!deletingSelected && lastCreatedTimeSpanId && (e.key === 'Delete' || e.key === 'Backspace' || e.key === 'Escape')) {
+            if (
+                !deletingSelected &&
+                lastCreatedTimeSpanId &&
+                (e.key === 'Delete' || e.key === 'Backspace' || e.key === 'Escape')
+            ) {
                 e.preventDefault();
                 removeFromTimeSpanInRangeCache(apollo.cache, lastCreatedTimeSpanId, timeSpansResult.variables);
                 removeTimeSpan({variables: {id: lastCreatedTimeSpanId}}).finally(() => {
@@ -261,7 +264,7 @@ export const CalendarPage: React.FC = () => {
                 return;
             }
 
-            if (selected.data && (e.key === 'Delete' || (e.key === 'Backspace') && !deletingSelected)) {
+            if (!deletingSelected && selected.data && (e.key === 'Delete' || e.key === 'Backspace')) {
                 e.preventDefault();
                 setSelected({selected: null, data: selected.data});
                 removeFromTimeSpanInRangeCache(apollo.cache, selected.data.id, timeSpansResult.variables);
