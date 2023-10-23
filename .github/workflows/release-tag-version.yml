@@ -51,7 +51,6 @@ jobs:
 
       - uses: docker/login-action@v3
         with:
-          registry: gitea.bassham.xyz
           username: ${{ secrets.CONTAINER_REGISTRY_USER }}
           password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
 
