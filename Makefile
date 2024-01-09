@@ -24,10 +24,10 @@ license-dir:
 download-tools:
 	go install golang.org/x/tools/cmd/goimports@v0.1.10
 	go install github.com/gobuffalo/packr/v2/packr2@v2.7.1
-
+	go install github.com/99designs/gqlgen@v0.17.42
 
 generate-go:
-	go run hack/gqlgen/gqlgen.go
+	gqlgen
 
 generate-js:
 	(cd ui && yarn generate)
