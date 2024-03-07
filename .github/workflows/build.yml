@@ -22,7 +22,7 @@ jobs:
           NODE_OPTIONS: --openssl-legacy-provider
       - run: make packr
       - if: startsWith(github.ref, 'refs/tags/v')
-        run: echo "$DOCKER_PASS" | docker login --username "scregoci" --password-stdin
+        run: echo "$DOCKER_PASS" | docker login --username "traggoci" --password-stdin
         env:
           DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
       - if: startsWith(github.ref, 'refs/tags/v')
