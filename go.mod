@@ -6,7 +6,6 @@ require (
 	github.com/denisenkom/go-mssqldb v0.0.0-20181014144952-4e0d7dc8888f // indirect
 	github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5 // indirect
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
-	github.com/gobuffalo/packr/v2 v2.2.0
 	github.com/gofrs/uuid v3.1.0+incompatible // indirect
 	github.com/google/uuid v1.5.0 // indirect
 	github.com/gorilla/mux v1.7.2
@@ -26,8 +25,7 @@ require (
 	github.com/stretchr/testify v1.8.2
 	github.com/vektah/gqlparser/v2 v2.5.10
 	golang.org/x/crypto v0.16.0
-	golang.org/x/sys v0.16.0 // indirect
-	golang.org/x/tools v0.16.1 // indirect
+	golang.org/x/net v0.19.0 // indirect
 	google.golang.org/appengine v1.3.0 // indirect
 )
 

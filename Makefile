@@ -12,7 +12,6 @@ license-dir:
 
 download-tools:
 	go install golang.org/x/tools/cmd/goimports@v0.1.10
-	go install github.com/gobuffalo/packr/v2/packr2@v2.7.1
 	go install github.com/99designs/gqlgen@v0.17.44
 
 generate-go:
@@ -58,13 +57,7 @@ install-js:
 build-js:
 	(cd ui && yarn build)
 
-packr:
-	packr2
-
-packr-clean:
-	packr2 clean
-
-pre-build: build-js packr
+pre-build: build-js
 
 build-bin-local: pre-build
 	CGO_ENABLED=1 go build -a -ldflags '${LD_FLAGS}' -tags '${TAGS}' -o ${BUILD_DIR}/traggo-server
@@ -82,6 +75,20 @@ release:
 		-w /work \
 		traggo:build \
 		release --skip-validate --clean
+
+.PHONY: release-snapshot
+release-snapshot:
+	docker build -t traggo:build -f docker/Dockerfile.build docker
+	docker run \
+		--rm \
+		-v "$$HOME/.docker/config.json:/root/.docker/config.json" \
+		-e CGO_ENABLED=1 \
+		-e GITHUB_TOKEN="$$GITHUB_TOKEN" \
+		-v /var/run/docker.sock:/var/run/docker.sock \
+		-v $$PWD:/work \
+		-w /work \
+		traggo:build \
+		release --clean --snapshot
 
 install: install-go install-js
 
