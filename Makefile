@@ -75,12 +75,12 @@ release:
 	docker run \
 		--rm \
 		-e CGO_ENABLED=1 \
+		-e GITHUB_TOKEN="$$GITHUB_TOKEN" \
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		-v $$PWD:/work \
 		-w /work \
 		traggo:build \
 		release --skip-validate
-
 
 install: install-go install-js
 
