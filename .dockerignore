@@ -1,5 +1,4 @@
 /docker/Dockerfile.dev
-/docker/Dockerfile
 /ui/node_modules/
 .idea/
 build/

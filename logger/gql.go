@@ -16,22 +16,23 @@ var (
 )
 
 // GQLLog logs graphql queries, mutations and errors.
-func GQLLog() graphql.RequestMiddleware {
-	return func(ctx context.Context, next func(ctx context.Context) []byte) []byte {
+func GQLLog() graphql.ResponseMiddleware {
+	return func(ctx context.Context, next graphql.ResponseHandler) *graphql.Response {
 		start := time.Now()
 		result := next(ctx)
 		elapsed := time.Now().Sub(start)
-		reqCtx := graphql.GetRequestContext(ctx)
+		errs := graphql.GetErrors(ctx)
+		rawQuery := graphql.GetRequestContext(ctx).RawQuery
 
-		if len(reqCtx.Errors) > 0 {
+		if len(errs) > 0 {
 			var errs []string
-			for _, err := range reqCtx.Errors {
-				errs = append(errs, err.Message)
+			for _, err := range errs {
+				errs = append(errs, err)
 			}
 
-			log.Error().Strs("error", errs).Str("took", elapsed.String()).Msg("GQL: " + toOneLine(hidePassword(reqCtx.RawQuery)))
+			log.Error().Strs("error", errs).Str("took", elapsed.String()).Msg("GQL: " + toOneLine(hidePassword(rawQuery)))
 		} else if log.Debug().Enabled() {
-			log.Debug().Str("took", elapsed.String()).Msg("GQL: " + toOneLine(hidePassword(reqCtx.RawQuery)))
+			log.Debug().Str("took", elapsed.String()).Msg("GQL: " + toOneLine(hidePassword(rawQuery)))
 		}
 
 		return result

@@ -1,4 +1,5 @@
 .idea
+dist/
 build
 vendor
 coverage.txt
