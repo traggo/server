@@ -104,13 +104,13 @@ dockers:
 docker_manifests:
   - name_template: "traggo/server:latest"
     image_templates:
-      - "screego/server:amd64-latest"
-      - "screego/server:386-latest"
-      - "screego/server:arm64-latest"
-      - "screego/server:armv7-latest"
+      - "traggo/server:amd64-latest"
+      - "traggo/server:386-latest"
+      - "traggo/server:arm64-latest"
+      - "traggo/server:armv7-latest"
   - name_template: "traggo/server:{{ .RawVersion }}"
     image_templates:
-      - "screego/server:amd64-{{ .RawVersion }}"
-      - "screego/server:386-{{ .RawVersion }}"
-      - "screego/server:arm64-{{ .RawVersion }}"
-      - "screego/server:armv7-{{ .RawVersion }}"
+      - "traggo/server:amd64-{{ .RawVersion }}"
+      - "traggo/server:386-{{ .RawVersion }}"
+      - "traggo/server:arm64-{{ .RawVersion }}"
+      - "traggo/server:armv7-{{ .RawVersion }}"

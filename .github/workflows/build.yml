@@ -15,12 +15,11 @@ jobs:
       - run: make download-tools
       - run: make install
       - run: make generate
-      - run: make lint
-      - run: make test
       - run: make build-js
         env:
           NODE_OPTIONS: --openssl-legacy-provider
-      - run: make packr
+      - run: make lint
+      - run: make test
       - if: startsWith(github.ref, 'refs/tags/v')
         run: echo "$DOCKER_PASS" | docker login --username "traggoci" --password-stdin
         env:

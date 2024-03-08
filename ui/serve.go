@@ -1,36 +1,49 @@
 package ui
 
 import (
+	"embed"
 	"fmt"
+	"io"
+	"io/fs"
 	"net/http"
 
-	"github.com/gobuffalo/packr/v2"
 	"github.com/gorilla/mux"
+	"github.com/rs/zerolog/log"
 )
 
-// Register registers the ui on the root path.
-func Register(r *mux.Router, box *packr.Box) {
-	r.Handle("/", serveFile("index.html", "text/html", box))
-	r.Handle("/index.html", serveFile("index.html", "text/html", box))
-	r.Handle("/manifest.json", serveFile("manifest.json", "application/json", box))
-	r.Handle("/service-worker.js", serveFile("service-worker.js", "text/javascript", box))
-	r.Handle("/assets-manifest.json", serveFile("asserts-manifest.json", "application/json", box))
-	r.Handle("/static/{type}/{resource}", http.FileServer(box))
+//go:embed build
+var uiDir embed.FS
+var buildDir, _ = fs.Sub(uiDir, "build")
 
-	r.Handle("/favicon.ico", serveFile("favicon.ico", "image/x-icon", box))
+// Register registers the ui on the root path.
+func Register(r *mux.Router) {
+	r.Handle("/", serveFile("index.html", "text/html"))
+	r.Handle("/index.html", serveFile("index.html", "text/html"))
+	r.Handle("/manifest.json", serveFile("manifest.json", "application/json"))
+	r.Handle("/service-worker.js", serveFile("service-worker.js", "text/javascript"))
+	r.Handle("/asset-manifest.json", serveFile("asset-manifest.json", "application/json"))
+	r.Handle("/static/{type}/{resource}", http.FileServerFS(buildDir))
+
+	r.Handle("/favicon.ico", serveFile("favicon.ico", "image/x-icon"))
 	for _, size := range []string{"16x16", "32x32", "192x192", "256x256"} {
-		fileName := fmt.Sprintf("/favicon-%s.png", size)
-		r.Handle(fileName, serveFile(fileName, "image/png", box))
+		fileName := fmt.Sprintf("favicon-%s.png", size)
+		r.Handle(fileName, serveFile(fileName, "image/png"))
 	}
 }
 
-func serveFile(name, contentType string, box *packr.Box) http.HandlerFunc {
+func serveFile(name, contentType string) http.HandlerFunc {
+	file, err := buildDir.Open(name)
+	if err != nil {
+		log.Panic().Err(err).Msgf("could not find %s", file)
+	}
+	defer file.Close()
+	content, err := io.ReadAll(file)
+	if err != nil {
+		log.Panic().Err(err).Msgf("could not read %s", file)
+	}
+
 	return func(writer http.ResponseWriter, reg *http.Request) {
 		writer.Header().Set("Content-Type", contentType)
-		content, err := box.Find(name)
-		if err != nil {
-			panic(err)
-		}
-		writer.Write(content)
+		_, _ = writer.Write(content)
 	}
 }
