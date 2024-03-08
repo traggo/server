@@ -22,7 +22,7 @@ func Register(r *mux.Router) {
 	r.Handle("/manifest.json", serveFile("manifest.json", "application/json"))
 	r.Handle("/service-worker.js", serveFile("service-worker.js", "text/javascript"))
 	r.Handle("/asset-manifest.json", serveFile("asset-manifest.json", "application/json"))
-	r.Handle("/static/{type}/{resource}", http.FileServerFS(buildDir))
+	r.Handle("/static/{type}/{resource}", http.FileServer(http.FS(buildDir)))
 
 	r.Handle("/favicon.ico", serveFile("favicon.ico", "image/x-icon"))
 	for _, size := range []string{"16x16", "32x32", "192x192", "256x256"} {
