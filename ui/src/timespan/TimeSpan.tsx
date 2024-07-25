@@ -125,8 +125,8 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                         variables: {
                             oldStart: oldFrom,
                             id,
-                            start: inUserTz(from).format(),
-                            end: to && inUserTz(to).format(),
+                            start: inUserTz(from).set({seconds: 0}).format(),
+                            end: to && inUserTz(to).set({seconds: 0}).format(),
                             tags: toInputTags(selectedEntries),
                             note: newValue,
                         },
@@ -168,8 +168,8 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                                     variables: {
                                         oldStart: oldFrom,
                                         id,
-                                        start: inUserTz(from).format(),
-                                        end: to && inUserTz(to).format(),
+                                        start: inUserTz(from.set({seconds: 0})).format(),
+                                        end: to && inUserTz(to.set({seconds: 0})).format(),
                                         tags: toInputTags(entries),
                                     },
                                 });
@@ -183,14 +183,15 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                             if (!newFrom.isValid()) {
                                 return;
                             }
-                            if (to && moment(newFrom).isAfter(to)) {
-                                const newTo = moment(newFrom).add(15, 'minute');
+                            newFrom = newFrom.set({seconds: 0})
+                            if (to && moment(newFrom).set({seconds: 0}).isAfter(to)) {
+                                var newTo = moment(newFrom).add(15, 'minute');
                                 noteAwareUpdateTimeSpan({
                                     variables: {
                                         oldStart: oldFrom,
                                         id,
                                         start: inUserTz(newFrom).format(),
-                                        end: inUserTz(newTo).format(),
+                                        end: inUserTz(newTo.set({seconds: 0})).format(),
                                         tags: toInputTags(selectedEntries),
                                     },
                                 }).then(() => rangeChange({from: newFrom, to: newTo}));
@@ -199,8 +200,8 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                                     variables: {
                                         id,
                                         oldStart: oldFrom,
-                                        start: inUserTz(newFrom).format(),
-                                        end: to && inUserTz(to).format(),
+                                        start: inUserTz(from.set({seconds: 0})).format(),
+                                        end: to && inUserTz(to.set({seconds: 0})).format(),
                                         tags: toInputTags(selectedEntries),
                                     },
                                 }).then(() => rangeChange({from: newFrom, to}));
@@ -217,6 +218,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                                 if (!newTo.isValid()) {
                                     return;
                                 }
+                                newTo = newTo.set({seconds: 0})
                                 if (moment(newTo).isBefore(from)) {
                                     const newFrom = moment(newTo).subtract(15, 'minute');
                                     noteAwareUpdateTimeSpan({
@@ -233,7 +235,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                                         variables: {
                                             id,
                                             oldStart: oldFrom,
-                                            start: inUserTz(from).format(),
+                                            start: inUserTz(from.set({seconds: 0})).format(),
                                             end: inUserTz(newTo).format(),
                                             tags: toInputTags(selectedEntries),
                                         },

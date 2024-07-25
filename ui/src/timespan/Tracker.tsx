@@ -95,7 +95,7 @@ export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntr
                                 if (!newFrom.isValid()) {
                                     return;
                                 }
-                                setFrom(newFrom);
+                                setFrom(newFrom.set({"seconds":0}));
                                 if (moment(newFrom).isAfter(to)) {
                                     const newTo = moment(newFrom).add(15, 'minute');
                                     setTo(newTo);
@@ -113,7 +113,7 @@ export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntr
                                 if (!newTo.isValid()) {
                                     return;
                                 }
-                                setTo(newTo);
+                                setTo(newTo.set({"seconds": 0}));
                                 if (moment(newTo).isBefore(from)) {
                                     const newFrom = moment(newTo).subtract(15, 'minute');
                                     setFrom(newFrom);

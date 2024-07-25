@@ -156,8 +156,8 @@ export const CalendarPage: React.FC = () => {
         updateTimeSpanMutation({
             variables: {
                 oldStart: moment(data.oldEvent.start!).format(),
-                start: moment(data.event.start!).format(),
-                end: moment(data.event.end!).format(),
+                start: moment(data.event.start!).set({seconds: 0}).format(),
+                end: moment(data.event.end!).set({seconds: 0}).format(),
                 id: parseInt(data.event.id, 10),
                 tags: stripTypename(data.event.extendedProps.ts.tags),
                 note: data.event.extendedProps.ts.note,
