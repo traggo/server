@@ -183,6 +183,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                             if (!newFrom.isValid()) {
                                 return;
                             }
+                            newFrom.set({second: 0});
                             if (to && moment(newFrom).isAfter(to)) {
                                 const newTo = moment(newFrom).add(15, 'minute');
                                 noteAwareUpdateTimeSpan({
@@ -217,6 +218,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                                 if (!newTo.isValid()) {
                                     return;
                                 }
+                                newTo.set({second: 0});
                                 if (moment(newTo).isBefore(from)) {
                                     const newFrom = moment(newTo).subtract(15, 'minute');
                                     noteAwareUpdateTimeSpan({
