@@ -257,7 +257,7 @@ export const CalendarPage: React.FC = () => {
                     eventClick={onClick}
                     eventDrop={onDrop}
                     slotLabelFormat={(s) => toMoment(s.start.marker).format('LT')}
-                    columnHeaderFormat={(s) => toMoment(s.start.marker).format('D ddd')}
+                    columnHeaderFormat={(s) => toMoment(s.start.marker).format('DD ddd')}
                     nowIndicator={true}
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, momentPlugin]}
                     header={{
