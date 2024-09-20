@@ -42,6 +42,6 @@ func TestGQL_SuggestTag_noMatchingTags(t *testing.T) {
 	tags, err := resolver.SuggestTag(fake.User(1), "fire")
 
 	require.Nil(t, err)
-	var expected []*gqlmodel.TagDefinition
+    expected := []*gqlmodel.TagDefinition{}
 	require.Equal(t, expected, tags)
 }
