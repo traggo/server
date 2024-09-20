@@ -139,7 +139,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
 
     return (
         <ClickAwayListener onClickAway={() => setOpen(false)}>
-            <div>
+            <div style={{width: '100%'}}>
                 <Tooltip
                     disableFocusListener
                     disableHoverListener
@@ -153,7 +153,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
                     }>
                     <div
                         ref={(ref) => (container.current = ref)}
-                        style={{display: 'flex', flexWrap: 'wrap', cursor: 'text'}}
+                        style={{display: 'flex', flexWrap: 'wrap', cursor: 'text', width: '100%'}}
                         onClick={focusInput}>
                         {toChips(selectedEntries)}
                         <Input

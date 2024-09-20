@@ -3,3 +3,8 @@ body,
 html {
     height: 100%;
 }
+
+/* Allows the tag Chips to wrap lines */
+.MuiChip-label {
+    white-space: normal !important;
+}
