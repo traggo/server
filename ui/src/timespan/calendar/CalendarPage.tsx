@@ -229,8 +229,9 @@ export const CalendarPage: React.FC = () => {
                     views = {{
                         timeGrid5Day: {
                             type: 'timeGrid',
-                            duration: { days: 5 },
-                            buttonText: '5 day'
+                            duration: { days: 7 },
+                            buttonText: '5 day',
+                            hiddenDays: [0, 6]
                         }
                     }}
                     editable={true}
