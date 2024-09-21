@@ -226,13 +226,13 @@ export const CalendarPage: React.FC = () => {
                             timeSpansResult.refetch(range);
                         }
                     }}
-                    views = {{
+                    views={{
                         timeGrid5Day: {
                             type: 'timeGrid',
-                            duration: { days: 7 },
+                            duration: {days: 7},
                             buttonText: '5 day',
-                            hiddenDays: [0, 6]
-                        }
+                            hiddenDays: [0, 6],
+                        },
                     }}
                     editable={true}
                     events={values}
