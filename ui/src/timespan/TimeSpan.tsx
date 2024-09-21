@@ -50,7 +50,7 @@ const useStyles = makeStyles(() => ({
         display: 'flex',
         alignItems: 'center',
         textAlign: 'center',
-        '@media (max-width: 560px)': {
+        '@media (max-width: 750px)': {
             flexDirection: 'column',
         },
     },
@@ -58,21 +58,22 @@ const useStyles = makeStyles(() => ({
         width: '100%',
         flex: '1',
         marginRight: 10,
-        '@media (max-width: 560px)': {
+        '@media (max-width: 750px)': {
             display: 'flex',
         },
     },
     timeSelection: {
         display: 'inline-flex',
-        '@media (max-width: 560px)': {
+        '@media (max-width: 750px)': {
             justifyContent: 'space-evenly',
             width: '100%',
+            flexWrap: 'wrap',
         },
     },
     buttons: {
         display: 'flex',
         alignItems: 'center',
-        '@media (max-width: 560px)': {
+        '@media (max-width: 750px)': {
             width: '100%',
             justifyContent: 'end',
         },
@@ -204,56 +205,24 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                             }}
                         />
                     </div>
+
                     <div className={styles.timeSelection}>
-                        <DateTimeSelector
-                            popoverOpen={dateSelectorOpen}
-                            selectedDate={from}
-                            onSelectDate={(newFrom) => {
-                                if (!newFrom.isValid()) {
-                                    return;
-                                }
-                                newFrom.set({second: 0});
-                                if (to && moment(newFrom).isAfter(to)) {
-                                    const newTo = moment(newFrom).add(15, 'minute');
-                                    noteAwareUpdateTimeSpan({
-                                        variables: {
-                                            oldStart: oldFrom,
-                                            id,
-                                            start: inUserTz(newFrom).format(),
-                                            end: inUserTz(newTo).format(),
-                                            tags: toInputTags(selectedEntries),
-                                        },
-                                    }).then(() => rangeChange({from: newFrom, to: newTo}));
-                                } else {
-                                    noteAwareUpdateTimeSpan({
-                                        variables: {
-                                            id,
-                                            oldStart: oldFrom,
-                                            start: inUserTz(newFrom).format(),
-                                            end: to && inUserTz(to).format(),
-                                            tags: toInputTags(selectedEntries),
-                                        },
-                                    }).then(() => rangeChange({from: newFrom, to}));
-                                }
-                            }}
-                            showDate={showDate}
-                            label="start"
-                        />
-                        {to !== undefined ? (
+                        <div style={{alignItems: 'center', display: 'flex', justifyContent: 'space-evenly', flexWrap: 'wrap'}}>
                             <DateTimeSelector
+                                style={{margin: '0 8px'}}
                                 popoverOpen={dateSelectorOpen}
-                                selectedDate={to}
-                                onSelectDate={(newTo) => {
-                                    if (!newTo.isValid()) {
+                                selectedDate={from}
+                                onSelectDate={(newFrom) => {
+                                    if (!newFrom.isValid()) {
                                         return;
                                     }
-                                    newTo.set({second: 0});
-                                    if (moment(newTo).isBefore(from)) {
-                                        const newFrom = moment(newTo).subtract(15, 'minute');
+                                    newFrom.set({second: 0});
+                                    if (to && moment(newFrom).isAfter(to)) {
+                                        const newTo = moment(newFrom).add(15, 'minute');
                                         noteAwareUpdateTimeSpan({
                                             variables: {
-                                                id,
                                                 oldStart: oldFrom,
+                                                id,
                                                 start: inUserTz(newFrom).format(),
                                                 end: inUserTz(newTo).format(),
                                                 tags: toInputTags(selectedEntries),
@@ -264,75 +233,115 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                                             variables: {
                                                 id,
                                                 oldStart: oldFrom,
-                                                start: inUserTz(from).format(),
-                                                end: inUserTz(newTo).format(),
+                                                start: inUserTz(newFrom).format(),
+                                                end: to && inUserTz(to).format(),
                                                 tags: toInputTags(selectedEntries),
                                             },
-                                        }).then(() => rangeChange({from, to: newTo}));
+                                        }).then(() => rangeChange({from: newFrom, to}));
                                     }
                                 }}
                                 showDate={showDate}
-                                label="end"
+                                label="start"
                             />
-                        ) : (
-                            <Button
-                                onClick={() => {
-                                    stopTimer({variables: {id, end: inUserTz(moment()).format()}}).then(stopped);
-                                }}>
-                                Stop
-                            </Button>
-                        )}
-                    </div>
-                    <>
-                        {
-                            <Typography variant="subtitle1" style={{width: 70}} title="The amount of time between from and to">
+                            {to !== undefined ? (
+                                <DateTimeSelector
+                                    style={{margin: '0 8px'}}
+                                    popoverOpen={dateSelectorOpen}
+                                    selectedDate={to}
+                                    onSelectDate={(newTo) => {
+                                        if (!newTo.isValid()) {
+                                            return;
+                                        }
+                                        newTo.set({second: 0});
+                                        if (moment(newTo).isBefore(from)) {
+                                            const newFrom = moment(newTo).subtract(15, 'minute');
+                                            noteAwareUpdateTimeSpan({
+                                                variables: {
+                                                    id,
+                                                    oldStart: oldFrom,
+                                                    start: inUserTz(newFrom).format(),
+                                                    end: inUserTz(newTo).format(),
+                                                    tags: toInputTags(selectedEntries),
+                                                },
+                                            }).then(() => rangeChange({from: newFrom, to: newTo}));
+                                        } else {
+                                            noteAwareUpdateTimeSpan({
+                                                variables: {
+                                                    id,
+                                                    oldStart: oldFrom,
+                                                    start: inUserTz(from).format(),
+                                                    end: inUserTz(newTo).format(),
+                                                    tags: toInputTags(selectedEntries),
+                                                },
+                                            }).then(() => rangeChange({from, to: newTo}));
+                                        }
+                                    }}
+                                    showDate={showDate}
+                                    label="end"
+                                />
+                            ) : (
+                                <Button
+                                    onClick={() => {
+                                        stopTimer({variables: {id, end: inUserTz(moment()).format()}}).then(stopped);
+                                    }}>
+                                    Stop
+                                </Button>
+                            )}
+                        </div>
+
+                        <div style={{alignItems: 'center', display: 'flex'}}>
+                            <Typography
+                                variant="subtitle1"
+                                style={{minWidth: '70px'}}
+                                title="The amount of time between from and to">
                                 {to ? <RelativeTime from={from} to={to} /> : <RelativeToNow from={from} />}
                             </Typography>
-                        }
-                        <div className={styles.buttons}>
-                            <IconButton onClick={(e: React.MouseEvent<HTMLElement>) => setOpenMenu(e.currentTarget)}>
-                                <MoreVert />
-                            </IconButton>
-                            <Tooltip title="Toggle notes">
-                                <IconButton onClick={() => toggleShowingNotes(!showNotes)}>
-                                    {showNotes ? <HideNotesIcon /> : <ShowNotesIcon />}
-                                </IconButton>
-                            </Tooltip>
                         </div>
-                        <Menu aria-haspopup="true" anchorEl={openMenu} open={openMenu !== null} onClose={() => setOpenMenu(null)}>
-                            {to ? (
-                                <MenuItem
-                                    onClick={() => {
-                                        setOpenMenu(null);
-                                        startTimer({
-                                            variables: {
-                                                start: inUserTz(moment()).format(),
-                                                tags: toInputTags(selectedEntries),
-                                                note: note.current.value,
-                                            },
-                                        }).then(() => continued());
-                                    }}>
-                                    Continue
-                                </MenuItem>
-                            ) : null}
-                            {addTagsToTracker ? (
-                                <MenuItem
-                                    onClick={() => {
-                                        setOpenMenu(null);
-                                        addTagsToTracker(selectedEntries);
-                                    }}>
-                                    Copy tags
-                                </MenuItem>
-                            ) : null}
+                    </div>
+
+                    <div className={styles.buttons}>
+                        <IconButton onClick={(e: React.MouseEvent<HTMLElement>) => setOpenMenu(e.currentTarget)}>
+                            <MoreVert />
+                        </IconButton>
+                        <Tooltip title="Toggle notes">
+                            <IconButton onClick={() => toggleShowingNotes(!showNotes)}>
+                                {showNotes ? <HideNotesIcon /> : <ShowNotesIcon />}
+                            </IconButton>
+                        </Tooltip>
+                    </div>
+                    <Menu aria-haspopup="true" anchorEl={openMenu} open={openMenu !== null} onClose={() => setOpenMenu(null)}>
+                        {to ? (
                             <MenuItem
                                 onClick={() => {
                                     setOpenMenu(null);
-                                    removeTimeSpan({variables: {id}}).then(() => deleted());
+                                    startTimer({
+                                        variables: {
+                                            start: inUserTz(moment()).format(),
+                                            tags: toInputTags(selectedEntries),
+                                            note: note.current.value,
+                                        },
+                                    }).then(() => continued());
                                 }}>
-                                Delete
+                                Continue
                             </MenuItem>
-                        </Menu>
-                    </>
+                        ) : null}
+                        {addTagsToTracker ? (
+                            <MenuItem
+                                onClick={() => {
+                                    setOpenMenu(null);
+                                    addTagsToTracker(selectedEntries);
+                                }}>
+                                Copy tags
+                            </MenuItem>
+                        ) : null}
+                        <MenuItem
+                            onClick={() => {
+                                setOpenMenu(null);
+                                removeTimeSpan({variables: {id}}).then(() => deleted());
+                            }}>
+                            Delete
+                        </MenuItem>
+                    </Menu>
                 </div>
                 {showNotes ? (
                     <div>

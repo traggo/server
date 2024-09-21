@@ -9,10 +9,11 @@ interface DateTimeSelectorProps {
     showDate: boolean;
     label: string;
     popoverOpen?: (open: boolean) => void;
+    style?: object;
 }
 
 export const DateTimeSelector: React.FC<DateTimeSelectorProps> = React.memo(
-    ({selectedDate, onSelectDate, showDate, label, popoverOpen = () => {}}) => {
+    ({selectedDate, onSelectDate, showDate, label, popoverOpen = () => {}, style = null}) => {
         const [open, setOpen] = React.useState(false);
         const localeData = moment.localeData();
         const time = localeData.longDateFormat('LT').replace('A', 'a');
@@ -25,7 +26,7 @@ export const DateTimeSelector: React.FC<DateTimeSelectorProps> = React.memo(
                 variant="inline"
                 InputProps={{disableUnderline: true}}
                 title={selectedDate.format()}
-                style={{minWidth: width, maxWidth: width}}
+                style={{minWidth: width, maxWidth: width, ...style}}
                 PopoverProps={{
                     onEntered: () => {
                         popoverOpen(true);
