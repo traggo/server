@@ -4,7 +4,7 @@ import {TagSelector} from '../tag/TagSelector';
 import moment from 'moment';
 import Paper from '@material-ui/core/Paper';
 import {DateTimeSelector} from '../common/DateTimeSelector';
-import {Button, TextField, Tooltip, Typography, makeStyles} from '@material-ui/core';
+import {Button, TextField, Typography, makeStyles} from '@material-ui/core';
 import {inUserTz} from './timeutils';
 import {useMutation} from '@apollo/react-hooks';
 import {StopTimer, StopTimerVariables} from '../gql/__generated__/StopTimer';
@@ -22,8 +22,6 @@ import {Trackers} from '../gql/__generated__/Trackers';
 import {addTimeSpanToCache, removeFromTrackersCache} from '../gql/utils';
 import {StartTimer, StartTimerVariables} from '../gql/__generated__/StartTimer';
 import {RelativeTime, RelativeToNow} from '../common/RelativeTime';
-import ShowNotesIcon from '@material-ui/icons/KeyboardArrowDown';
-import HideNotesIcon from '@material-ui/icons/KeyboardArrowUp';
 
 interface Range {
     from: moment.Moment;
@@ -46,6 +44,7 @@ export interface TimeSpanProps {
 
 const useStyles = makeStyles(() => ({
     innerTimespan: {
+        position: 'relative',
         width: '100%',
         display: 'flex',
         alignItems: 'center',
@@ -60,6 +59,8 @@ const useStyles = makeStyles(() => ({
         marginRight: 10,
         '@media (max-width: 750px)': {
             display: 'flex',
+            width: 'calc(100% - 48px)',
+            marginRight: '48px',
         },
     },
     timeSelection: {
@@ -70,12 +71,13 @@ const useStyles = makeStyles(() => ({
             flexWrap: 'wrap',
         },
     },
-    buttons: {
+    showMoreButton: {
         display: 'flex',
         alignItems: 'center',
         '@media (max-width: 750px)': {
-            width: '100%',
-            justifyContent: 'end',
+            position: 'absolute',
+            top: '0',
+            right: '0',
         },
     },
 }));
@@ -209,7 +211,6 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                     <div className={styles.timeSelection}>
                         <div style={{alignItems: 'center', display: 'flex', justifyContent: 'space-evenly', flexWrap: 'wrap'}}>
                             <DateTimeSelector
-                                style={{margin: '0 8px'}}
                                 popoverOpen={dateSelectorOpen}
                                 selectedDate={from}
                                 onSelectDate={(newFrom) => {
@@ -245,7 +246,6 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                             />
                             {to !== undefined ? (
                                 <DateTimeSelector
-                                    style={{margin: '0 8px'}}
                                     popoverOpen={dateSelectorOpen}
                                     selectedDate={to}
                                     onSelectDate={(newTo) => {
@@ -299,16 +299,12 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                         </div>
                     </div>
 
-                    <div className={styles.buttons}>
-                        <IconButton onClick={(e: React.MouseEvent<HTMLElement>) => setOpenMenu(e.currentTarget)}>
-                            <MoreVert />
-                        </IconButton>
-                        <Tooltip title="Toggle notes">
-                            <IconButton onClick={() => toggleShowingNotes(!showNotes)}>
-                                {showNotes ? <HideNotesIcon /> : <ShowNotesIcon />}
-                            </IconButton>
-                        </Tooltip>
-                    </div>
+                    <IconButton
+                        className={styles.showMoreButton}
+                        onClick={(e: React.MouseEvent<HTMLElement>) => setOpenMenu(e.currentTarget)}>
+                        <MoreVert />
+                    </IconButton>
+
                     <Menu aria-haspopup="true" anchorEl={openMenu} open={openMenu !== null} onClose={() => setOpenMenu(null)}>
                         {to ? (
                             <MenuItem
@@ -334,6 +330,13 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                                 Copy tags
                             </MenuItem>
                         ) : null}
+                        <MenuItem
+                            onClick={() => {
+                                setOpenMenu(null);
+                                toggleShowingNotes(!showNotes);
+                            }}>
+                            Show Notes
+                        </MenuItem>
                         <MenuItem
                             onClick={() => {
                                 setOpenMenu(null);
