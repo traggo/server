@@ -132,7 +132,6 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
         }
         if (event.key === 'Escape' && input.current) {
             event.preventDefault();
-            input.current.blur();
             setOpen(false);
         }
     };

@@ -226,6 +226,14 @@ export const CalendarPage: React.FC = () => {
                             timeSpansResult.refetch(range);
                         }
                     }}
+                    views={{
+                        timeGrid5Day: {
+                            type: 'timeGrid',
+                            duration: {days: 7},
+                            buttonText: '5 day',
+                            hiddenDays: [0, 6],
+                        },
+                    }}
                     editable={true}
                     events={values}
                     allDaySlot={false}
@@ -263,7 +271,7 @@ export const CalendarPage: React.FC = () => {
                     header={{
                         center: 'title',
                         left: 'prev,next today',
-                        right: 'timeGridWeek,timeGridDay',
+                        right: 'timeGridWeek,timeGrid5Day,timeGridDay',
                     }}
                 />
             </FullCalendarStyling>
