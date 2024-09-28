@@ -18,7 +18,6 @@ export const DateTimeSelector: React.FC<DateTimeSelectorProps> = React.memo(
         const time = localeData.longDateFormat('LT').replace('A', 'a');
         const ampm = time.indexOf('a') !== -1;
         const format = showDate ? localeData.longDateFormat('L') + ' ' + time : time;
-        const width = (showDate ? 185 : 105) + (ampm ? 20 : 0);
 
         return (
             <KeyboardDateTimePicker
@@ -26,7 +25,7 @@ export const DateTimeSelector: React.FC<DateTimeSelectorProps> = React.memo(
                 variant="dialog"
                 InputProps={{disableUnderline: true}}
                 title={selectedDate.format()}
-                style={{width: width}}
+                style={{width: (showDate ? 185 : 105) + (ampm ? 20 : 0)}}
                 PopoverProps={{
                     onEntered: () => {
                         popoverOpen(true);
