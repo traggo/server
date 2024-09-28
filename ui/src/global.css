@@ -10,12 +10,13 @@ html {
 }
 
 /* The wrapping box around the input and icon for the datetime picker */
-.MuiInputBase-root.MuiInput-root.MuiInputBase-formControl.MuiInput-formControl.MuiInputBase-adornedEnd {
+.time-picker .MuiInputBase-root.MuiInput-root.MuiInputBase-formControl.MuiInput-formControl.MuiInputBase-adornedEnd {
     margin-top: 0;
 }
 
 /* The calendar icon for the datetime picker */
-.MuiInputBase-root.MuiInputBase-formControl.MuiInputBase-adornedEnd
+.time-picker
+    .MuiInputBase-root.MuiInputBase-formControl.MuiInputBase-adornedEnd
     .MuiInputAdornment-root.MuiInputAdornment-positionEnd
     .MuiButtonBase-root.MuiIconButton-root {
     position: absolute;
@@ -23,12 +24,12 @@ html {
 }
 
 /* The label for the datetime picker */
-.MuiFormControl-root.MuiTextField-root .MuiFormLabel-root.MuiInputLabel-root.MuiInputLabel-formControl {
+.time-picker.MuiFormControl-root.MuiTextField-root .MuiFormLabel-root.MuiInputLabel-root.MuiInputLabel-formControl {
     margin-left: 48px;
 }
 
 /* The input box for the datetime picker */
-.MuiFormControl-root.MuiTextField-root .MuiInputBase-input.MuiInput-input.MuiInputBase-inputAdornedEnd {
+.time-picker.MuiFormControl-root.MuiTextField-root .MuiInputBase-input.MuiInput-input.MuiInputBase-inputAdornedEnd {
     margin-left: 48px;
     /* margin-top: 8px; */
     margin-top: 12px;
