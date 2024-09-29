@@ -21,10 +21,11 @@ export const DateTimeSelector: React.FC<DateTimeSelectorProps> = React.memo(
 
         return (
             <KeyboardDateTimePicker
-                variant="inline"
+                className="time-picker"
+                variant="dialog"
                 InputProps={{disableUnderline: true}}
                 title={selectedDate.format()}
-                style={{width: (showDate ? 185 : 95) + (ampm ? 20 : 0)}}
+                style={{width: (showDate ? 185 : 105) + (ampm ? 20 : 0)}}
                 PopoverProps={{
                     onEntered: () => {
                         popoverOpen(true);
