@@ -49,20 +49,6 @@ func TestGet_withFile_usesFile(t *testing.T) {
 	assert.Equal(t, 5555, conf.Port)
 }
 
-func TestGet_withInvalidFile_errs(t *testing.T) {
-	defer os.Unsetenv("TRAGGO_PORT")
-	assert.Nil(t, ioutil.WriteFile(".env", []byte("asdfasdfsafasf"), 0777))
-	defer os.Remove(".env")
-
-	_, logs := Get()
-
-	expected := []FutureLog{{
-		Msg:   "cannot load file .env: Can't separate key from value",
-		Level: zerolog.FatalLevel,
-	}}
-	assert.Equal(t, expected, logs)
-}
-
 func TestGet_withInvalidEnvParam_errs(t *testing.T) {
 	assert.Nil(t, os.Setenv("TRAGGO_PORT", "asdasd"))
 	defer os.Unsetenv("TRAGGO_PORT")

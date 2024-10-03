@@ -9,7 +9,15 @@ export const TagChip = ({color, label}: {label: string; color: string}) => {
         <Chip
             tabIndex={-1}
             variant="outlined"
-            style={{background: color, margin: '5px', color: textColor, cursor: 'text'}}
+            style={{
+                background: color,
+                margin: '5px',
+                color: textColor,
+                cursor: 'text',
+                minHeight: '32px',
+                whiteSpace: 'normal',
+                wordBreak: 'break-word',
+            }}
             label={label}
         />
     );

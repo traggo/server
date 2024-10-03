@@ -4,7 +4,7 @@ import {TagSelector} from '../tag/TagSelector';
 import moment from 'moment';
 import Paper from '@material-ui/core/Paper';
 import {DateTimeSelector} from '../common/DateTimeSelector';
-import {Button, TextField, Tooltip, Typography} from '@material-ui/core';
+import {Button, TextField, Typography, makeStyles} from '@material-ui/core';
 import {inUserTz} from './timeutils';
 import {useMutation} from '@apollo/react-hooks';
 import {StopTimer, StopTimerVariables} from '../gql/__generated__/StopTimer';
@@ -22,8 +22,6 @@ import {Trackers} from '../gql/__generated__/Trackers';
 import {addTimeSpanToCache, removeFromTrackersCache} from '../gql/utils';
 import {StartTimer, StartTimerVariables} from '../gql/__generated__/StartTimer';
 import {RelativeTime, RelativeToNow} from '../common/RelativeTime';
-import ShowNotesIcon from '@material-ui/icons/KeyboardArrowDown';
-import HideNotesIcon from '@material-ui/icons/KeyboardArrowUp';
 
 interface Range {
     from: moment.Moment;
@@ -44,6 +42,46 @@ export interface TimeSpanProps {
     elevation?: number;
 }
 
+const useStyles = makeStyles(() => ({
+    innerTimespan: {
+        position: 'relative',
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        textAlign: 'center',
+        '@media (max-width: 750px)': {
+            flexDirection: 'column',
+        },
+    },
+    tagInput: {
+        width: '100%',
+        flex: '1',
+        marginRight: 10,
+        '@media (max-width: 750px)': {
+            display: 'flex',
+            width: 'calc(100% - 48px)',
+            marginRight: '48px',
+        },
+    },
+    timeSelection: {
+        display: 'inline-flex',
+        '@media (max-width: 750px)': {
+            justifyContent: 'space-evenly',
+            width: '100%',
+            flexWrap: 'wrap',
+        },
+    },
+    showMoreButton: {
+        display: 'flex',
+        alignItems: 'center',
+        '@media (max-width: 750px)': {
+            position: 'absolute',
+            top: '0',
+            right: '0',
+        },
+    },
+}));
+
 export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
     ({
         range: {from, to, oldFrom},
@@ -58,6 +96,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
         elevation = 1,
         addTagsToTracker,
     }) => {
+        const styles = useStyles();
         const [showNotes, toggleShowingNotes] = React.useState(initialNote !== '');
         const note = React.useRef<{value: string; handle?: number}>({value: initialNote});
 
@@ -147,18 +186,10 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                     padding: '10px',
                     margin: '10px 0',
                     opacity: wasMoved ? 0.5 : 1,
+                    width: '100%',
                 }}>
-                <div
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                    }}>
-                    <Tooltip title="Toggle notes">
-                        <IconButton onClick={() => toggleShowingNotes(!showNotes)}>
-                            {showNotes ? <HideNotesIcon /> : <ShowNotesIcon />}
-                        </IconButton>
-                    </Tooltip>
-                    <div style={{flex: '1', marginRight: 10}}>
+                <div className={styles.innerTimespan}>
+                    <div className={styles.tagInput}>
                         <TagSelector
                             dialogOpen={dateSelectorOpen}
                             selectedEntries={selectedEntries}
@@ -176,129 +207,144 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                             }}
                         />
                     </div>
-                    <DateTimeSelector
-                        popoverOpen={dateSelectorOpen}
-                        selectedDate={from}
-                        onSelectDate={(newFrom) => {
-                            if (!newFrom.isValid()) {
-                                return;
-                            }
-                            newFrom.set({second: 0});
-                            if (to && moment(newFrom).isAfter(to)) {
-                                const newTo = moment(newFrom).add(15, 'minute');
-                                noteAwareUpdateTimeSpan({
-                                    variables: {
-                                        oldStart: oldFrom,
-                                        id,
-                                        start: inUserTz(newFrom).format(),
-                                        end: inUserTz(newTo).format(),
-                                        tags: toInputTags(selectedEntries),
-                                    },
-                                }).then(() => rangeChange({from: newFrom, to: newTo}));
-                            } else {
-                                noteAwareUpdateTimeSpan({
-                                    variables: {
-                                        id,
-                                        oldStart: oldFrom,
-                                        start: inUserTz(newFrom).format(),
-                                        end: to && inUserTz(to).format(),
-                                        tags: toInputTags(selectedEntries),
-                                    },
-                                }).then(() => rangeChange({from: newFrom, to}));
-                            }
-                        }}
-                        showDate={showDate}
-                        label="start"
-                    />
-                    {to !== undefined ? (
-                        <DateTimeSelector
-                            popoverOpen={dateSelectorOpen}
-                            selectedDate={to}
-                            onSelectDate={(newTo) => {
-                                if (!newTo.isValid()) {
-                                    return;
-                                }
-                                newTo.set({second: 0});
-                                if (moment(newTo).isBefore(from)) {
-                                    const newFrom = moment(newTo).subtract(15, 'minute');
-                                    noteAwareUpdateTimeSpan({
-                                        variables: {
-                                            id,
-                                            oldStart: oldFrom,
-                                            start: inUserTz(newFrom).format(),
-                                            end: inUserTz(newTo).format(),
-                                            tags: toInputTags(selectedEntries),
-                                        },
-                                    }).then(() => rangeChange({from: newFrom, to: newTo}));
-                                } else {
-                                    noteAwareUpdateTimeSpan({
-                                        variables: {
-                                            id,
-                                            oldStart: oldFrom,
-                                            start: inUserTz(from).format(),
-                                            end: inUserTz(newTo).format(),
-                                            tags: toInputTags(selectedEntries),
-                                        },
-                                    }).then(() => rangeChange({from, to: newTo}));
-                                }
-                            }}
-                            showDate={showDate}
-                            label="end"
-                        />
-                    ) : (
-                        <Button
-                            onClick={() => {
-                                stopTimer({variables: {id, end: inUserTz(moment()).format()}}).then(stopped);
-                            }}>
-                            Stop
-                        </Button>
-                    )}
-                    <>
-                        {
+
+                    <div className={styles.timeSelection}>
+                        <div style={{alignItems: 'center', display: 'flex', justifyContent: 'space-evenly', flexWrap: 'wrap'}}>
+                            <DateTimeSelector
+                                popoverOpen={dateSelectorOpen}
+                                selectedDate={from}
+                                onSelectDate={(newFrom) => {
+                                    if (!newFrom.isValid()) {
+                                        return;
+                                    }
+                                    newFrom.set({second: 0});
+                                    if (to && moment(newFrom).isAfter(to)) {
+                                        const newTo = moment(newFrom).add(15, 'minute');
+                                        noteAwareUpdateTimeSpan({
+                                            variables: {
+                                                oldStart: oldFrom,
+                                                id,
+                                                start: inUserTz(newFrom).format(),
+                                                end: inUserTz(newTo).format(),
+                                                tags: toInputTags(selectedEntries),
+                                            },
+                                        }).then(() => rangeChange({from: newFrom, to: newTo}));
+                                    } else {
+                                        noteAwareUpdateTimeSpan({
+                                            variables: {
+                                                id,
+                                                oldStart: oldFrom,
+                                                start: inUserTz(newFrom).format(),
+                                                end: to && inUserTz(to).format(),
+                                                tags: toInputTags(selectedEntries),
+                                            },
+                                        }).then(() => rangeChange({from: newFrom, to}));
+                                    }
+                                }}
+                                showDate={showDate}
+                                label="start"
+                            />
+                            {to !== undefined ? (
+                                <DateTimeSelector
+                                    popoverOpen={dateSelectorOpen}
+                                    selectedDate={to}
+                                    onSelectDate={(newTo) => {
+                                        if (!newTo.isValid()) {
+                                            return;
+                                        }
+                                        newTo.set({second: 0});
+                                        if (moment(newTo).isBefore(from)) {
+                                            const newFrom = moment(newTo).subtract(15, 'minute');
+                                            noteAwareUpdateTimeSpan({
+                                                variables: {
+                                                    id,
+                                                    oldStart: oldFrom,
+                                                    start: inUserTz(newFrom).format(),
+                                                    end: inUserTz(newTo).format(),
+                                                    tags: toInputTags(selectedEntries),
+                                                },
+                                            }).then(() => rangeChange({from: newFrom, to: newTo}));
+                                        } else {
+                                            noteAwareUpdateTimeSpan({
+                                                variables: {
+                                                    id,
+                                                    oldStart: oldFrom,
+                                                    start: inUserTz(from).format(),
+                                                    end: inUserTz(newTo).format(),
+                                                    tags: toInputTags(selectedEntries),
+                                                },
+                                            }).then(() => rangeChange({from, to: newTo}));
+                                        }
+                                    }}
+                                    showDate={showDate}
+                                    label="end"
+                                />
+                            ) : (
+                                <Button
+                                    onClick={() => {
+                                        stopTimer({variables: {id, end: inUserTz(moment()).format()}}).then(stopped);
+                                    }}>
+                                    Stop
+                                </Button>
+                            )}
+                        </div>
+
+                        <div style={{alignItems: 'center', display: 'flex'}}>
                             <Typography
                                 variant="subtitle1"
-                                style={{width: 70, textAlign: 'right'}}
+                                style={{minWidth: '70px'}}
                                 title="The amount of time between from and to">
                                 {to ? <RelativeTime from={from} to={to} /> : <RelativeToNow from={from} />}
                             </Typography>
-                        }
-                        <IconButton onClick={(e: React.MouseEvent<HTMLElement>) => setOpenMenu(e.currentTarget)}>
-                            <MoreVert />
-                        </IconButton>
-                        <Menu aria-haspopup="true" anchorEl={openMenu} open={openMenu !== null} onClose={() => setOpenMenu(null)}>
-                            {to ? (
-                                <MenuItem
-                                    onClick={() => {
-                                        setOpenMenu(null);
-                                        startTimer({
-                                            variables: {
-                                                start: inUserTz(moment()).format(),
-                                                tags: toInputTags(selectedEntries),
-                                                note: note.current.value,
-                                            },
-                                        }).then(() => continued());
-                                    }}>
-                                    Continue
-                                </MenuItem>
-                            ) : null}
-                            {addTagsToTracker ? (
-                                <MenuItem
-                                    onClick={() => {
-                                        setOpenMenu(null);
-                                        addTagsToTracker(selectedEntries);
-                                    }}>
-                                    Copy tags
-                                </MenuItem>
-                            ) : null}
+                        </div>
+                    </div>
+
+                    <IconButton
+                        className={styles.showMoreButton}
+                        onClick={(e: React.MouseEvent<HTMLElement>) => setOpenMenu(e.currentTarget)}>
+                        <MoreVert />
+                    </IconButton>
+
+                    <Menu aria-haspopup="true" anchorEl={openMenu} open={openMenu !== null} onClose={() => setOpenMenu(null)}>
+                        {to ? (
                             <MenuItem
                                 onClick={() => {
                                     setOpenMenu(null);
-                                    removeTimeSpan({variables: {id}}).then(() => deleted());
+                                    startTimer({
+                                        variables: {
+                                            start: inUserTz(moment()).format(),
+                                            tags: toInputTags(selectedEntries),
+                                            note: note.current.value,
+                                        },
+                                    }).then(() => continued());
                                 }}>
-                                Delete
+                                Continue
                             </MenuItem>
-                        </Menu>
-                    </>
+                        ) : null}
+                        {addTagsToTracker ? (
+                            <MenuItem
+                                onClick={() => {
+                                    setOpenMenu(null);
+                                    addTagsToTracker(selectedEntries);
+                                }}>
+                                Copy tags
+                            </MenuItem>
+                        ) : null}
+                        <MenuItem
+                            onClick={() => {
+                                setOpenMenu(null);
+                                toggleShowingNotes(!showNotes);
+                            }}>
+                            Show Notes
+                        </MenuItem>
+                        <MenuItem
+                            onClick={() => {
+                                setOpenMenu(null);
+                                removeTimeSpan({variables: {id}}).then(() => deleted());
+                            }}>
+                            Delete
+                        </MenuItem>
+                    </Menu>
                 </div>
                 {showNotes ? (
                     <div>

@@ -226,6 +226,14 @@ export const CalendarPage: React.FC = () => {
                             timeSpansResult.refetch(range);
                         }
                     }}
+                    views={{
+                        timeGrid5Day: {
+                            type: 'timeGrid',
+                            duration: {days: 7},
+                            buttonText: '5 day',
+                            hiddenDays: [0, 6],
+                        },
+                    }}
                     editable={true}
                     events={values}
                     allDaySlot={false}
@@ -257,13 +265,13 @@ export const CalendarPage: React.FC = () => {
                     eventClick={onClick}
                     eventDrop={onDrop}
                     slotLabelFormat={(s) => toMoment(s.start.marker).format('LT')}
-                    columnHeaderFormat={(s) => toMoment(s.start.marker).format('D, dddd')}
+                    columnHeaderFormat={(s) => toMoment(s.start.marker).format('DD ddd')}
                     nowIndicator={true}
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, momentPlugin]}
                     header={{
                         center: 'title',
                         left: 'prev,next today',
-                        right: 'timeGridWeek,timeGridDay',
+                        right: 'timeGridWeek,timeGrid5Day,timeGridDay',
                     }}
                 />
             </FullCalendarStyling>

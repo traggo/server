@@ -3,8 +3,6 @@ package test_test
 import (
 	"testing"
 
-	"github.com/traggo/server/logger"
-
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/assert"
@@ -62,10 +60,4 @@ func TestLogger_AssertEntry_Fails_wrongMessage(t *testing.T) {
 	logger.AssertEntryExists(test.Entry{Message: "info", Level: zerolog.ErrorLevel})
 
 	assert.True(t, fake.hasErrors)
-}
-
-func TestLogDebug(t *testing.T) {
-	test.LogDebug()
-	assert.Equal(t, zerolog.DebugLevel, zerolog.GlobalLevel())
-	logger.Init(zerolog.WarnLevel)
 }

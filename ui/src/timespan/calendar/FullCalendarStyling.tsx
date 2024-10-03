@@ -10,6 +10,40 @@ const useStyle = makeStyles((theme) => {
             //     opacity: 0,
             //     border: 'none',
             // },
+            '& .fc-head': {
+                fontFamily: 'monospace',
+            },
+            '& .fc-toolbar': {
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+            },
+            '& .fc-left, .fc-center, .fc-right': {
+                display: 'inline-block',
+                verticalAlign: 'middle',
+                textAlign: 'center',
+                // width: '33.33%',
+                boxSizing: 'border-box',
+                // padding: '0 10px',
+            },
+            '& .fc-center h2': {
+                margin: 0,
+                fontSize: '1.5rem',
+            },
+            '@media (max-width: 600px)': {
+                '& .fc-toolbar': {
+                    display: 'inherit',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                },
+                '& .fc-left, .fc-center, .fc-right': {
+                    display: 'block',
+                    width: '100%',
+                },
+                '& .fc-left, .fc-right': {
+                    textAlign: 'center',
+                },
+            },
             '& .fc-time-grid-event.fc-v-event.fc-event': {
                 borderRadius: 1,
                 border: 'none',

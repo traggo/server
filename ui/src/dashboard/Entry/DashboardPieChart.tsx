@@ -11,6 +11,7 @@ interface DashboardPieChartProps {
 }
 
 export const DashboardPieChart: React.FC<DashboardPieChartProps> = ({entries}) => {
+    const total = entries.map((e) => e.timeSpendInSeconds).reduce((x, y) => x + y, 0);
     return (
         <ResponsiveContainer>
             <PieChart>
@@ -29,20 +30,25 @@ export const DashboardPieChart: React.FC<DashboardPieChartProps> = ({entries}) =
                         <Cell key={index} fill={Colors[index % Colors.length]} />
                     ))}
                 </Pie>
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<CustomTooltip total={total} />} />
                 <Legend />
             </PieChart>
         </ResponsiveContainer>
     );
 };
 
-const CustomTooltip = ({active, payload}: TooltipProps) => {
+interface CustomTooltipProps extends TooltipProps {
+    total: number;
+}
+
+const CustomTooltip = ({active, payload, total}: CustomTooltipProps) => {
     if (active && payload) {
         const first = payload[0];
         return (
             <Paper style={{padding: 10}} elevation={4}>
                 <Typography>
-                    {first.payload.key}:{first.payload.value}: {prettyMs(first.payload.timeSpendInSeconds * 1000)}
+                    {first.payload.key}:{first.payload.value}: {prettyMs(first.payload.timeSpendInSeconds * 1000)} (
+                    {((first.payload.timeSpendInSeconds / total) * 100).toFixed(2)}%)
                 </Typography>
             </Paper>
         );

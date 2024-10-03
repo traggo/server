@@ -114,6 +114,7 @@ export const DoneTrackers: React.FC<DoneTrackersProps> = ({addTagsToTracker}) =>
                             timeSpans={timeSpans}
                             addTagsToTracker={addTagsToTracker}
                             setHeight={setHeights}
+                            height={heights[key] || 500}
                         />
                     );
                 })}
@@ -125,14 +126,16 @@ export const DoneTrackers: React.FC<DoneTrackersProps> = ({addTagsToTracker}) =>
 const DatedTimeSpans: React.FC<{
     name: string;
     setHeight: (cb: (height: Record<string, number>) => Record<string, number>) => void;
+    height: number;
     timeSpans: TimeSpanProps[];
-} & DoneTrackersProps> = ({name, timeSpans, addTagsToTracker, setHeight}) => {
+} & DoneTrackersProps> = ({name, timeSpans, addTagsToTracker, setHeight, height}) => {
     const ref = React.useRef<HTMLDivElement | null>();
     React.useEffect(() => {
-        if (ref.current) {
-            setHeight((old) => ({...old, [name]: ref.current!.getBoundingClientRect().height}));
+        const currentHeight = ref.current && ref.current.getBoundingClientRect().height;
+        if (currentHeight != null && currentHeight !== height) {
+            setHeight((old) => ({...old, [name]: currentHeight}));
         }
-    }, [ref, name, setHeight]);
+    }, [ref, name, setHeight, height]);
     return (
         <div key={name} ref={(r) => (ref.current = r)}>
             <Typography key={name} align="center" variant={'h5'}>
