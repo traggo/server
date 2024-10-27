@@ -22,7 +22,7 @@ export const DateTimeSelector: React.FC<DateTimeSelectorProps> = React.memo(
         return (
             <KeyboardDateTimePicker
                 className="time-picker"
-                variant="dialog"
+                variant="inline"
                 InputProps={{disableUnderline: true}}
                 title={selectedDate.format()}
                 style={{width: (showDate ? 185 : 105) + (ampm ? 20 : 0)}}
