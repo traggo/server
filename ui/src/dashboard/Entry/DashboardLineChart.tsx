@@ -11,6 +11,7 @@ import {TagTooltip} from './TagTooltip';
 interface DashboardPieChartProps {
     entries: Stats_stats[];
     interval: StatsInterval;
+    total: boolean;
 }
 
 interface Indexed {
@@ -19,7 +20,7 @@ interface Indexed {
     data: Record<string, number>;
 }
 
-export const DashboardLineChart: React.FC<DashboardPieChartProps> = ({entries, interval}) => {
+export const DashboardLineChart: React.FC<DashboardPieChartProps> = ({entries, interval, total}) => {
     const indexedEntries: Indexed[] = entries
         .map((entry) => {
             return {
@@ -45,7 +46,7 @@ export const DashboardLineChart: React.FC<DashboardPieChartProps> = ({entries, i
             <LineChart data={indexedEntries}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <YAxis type="number" unit={unit.short} />
-                <Tooltip content={<TagTooltip dateFormat={dateFormat} />} />
+                <Tooltip content={<TagTooltip dateFormat={dateFormat} total={total} />} />
                 <Legend />
                 <XAxis dataKey={(entry) => dateFormat(moment(entry.start))} interval={'preserveStartEnd'} />
 
