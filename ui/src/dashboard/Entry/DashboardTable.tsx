@@ -11,6 +11,7 @@ interface DashboardTableProps {
     entries: Stats_stats[];
     interval: StatsInterval;
     mode: 'vertical' | 'horizontal';
+    total: boolean;
 }
 
 interface Indexed {
@@ -19,16 +20,20 @@ interface Indexed {
     data: Record<string, number>;
 }
 
-export const DashboardTable: React.FC<DashboardTableProps> = ({entries, interval, mode}) => {
+export const DashboardTable: React.FC<DashboardTableProps> = ({entries, interval, mode, total}) => {
     const indexedEntries: Indexed[] = entries
         .map((entry) => {
-            return {
+            const result = {
                 start: entry.start,
                 end: entry.end,
                 data: entry.entries!.reduce((all: Record<string, number>, current) => {
                     return {...all, [current.key + ':' + current.value]: current.timeSpendInSeconds};
                 }, {}),
             };
+            if (total) {
+                result.data['Total'] = Object.values(result.data).reduce((acc, value) => acc + value);
+            }
+            return result;
         })
         .sort((left, right) => moment(left.start).diff(right.start));
     const dateFormat = ofInterval(interval);

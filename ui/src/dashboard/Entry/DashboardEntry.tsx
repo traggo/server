@@ -88,7 +88,7 @@ const SpecificDashboardEntry: React.FC<{entry: Dashboards_dashboards_items; rang
                     </Center>
                 );
             }
-            return <DashboardBarChart entries={entries} interval={interval} type="normal" />;
+            return <DashboardBarChart entries={entries} interval={interval} type="normal" total={entry.total} />;
         case EntryType.StackedBarChart:
             if (entries.length === 0) {
                 return (
@@ -97,7 +97,7 @@ const SpecificDashboardEntry: React.FC<{entry: Dashboards_dashboards_items; rang
                     </Center>
                 );
             }
-            return <DashboardBarChart entries={entries} interval={interval} type="stacked" />;
+            return <DashboardBarChart entries={entries} interval={interval} type="stacked" total={entry.total} />;
         case EntryType.LineChart:
             if (entries.length === 0) {
                 return (
@@ -106,7 +106,7 @@ const SpecificDashboardEntry: React.FC<{entry: Dashboards_dashboards_items; rang
                     </Center>
                 );
             }
-            return <DashboardLineChart entries={entries} interval={interval} />;
+            return <DashboardLineChart entries={entries} interval={interval} total={entry.total} />;
         case EntryType.VerticalTable:
             if (entries.length === 0) {
                 return (
@@ -115,7 +115,7 @@ const SpecificDashboardEntry: React.FC<{entry: Dashboards_dashboards_items; rang
                     </Center>
                 );
             }
-            return <DashboardTable mode="vertical" entries={entries} interval={interval} />;
+            return <DashboardTable mode="vertical" entries={entries} interval={interval} total={entry.total} />;
         case EntryType.HorizontalTable:
             if (entries.length === 0) {
                 return (
@@ -124,7 +124,7 @@ const SpecificDashboardEntry: React.FC<{entry: Dashboards_dashboards_items; rang
                     </Center>
                 );
             }
-            return <DashboardTable mode="horizontal" entries={entries} interval={interval} />;
+            return <DashboardTable mode="horizontal" entries={entries} interval={interval} total={entry.total} />;
         default:
             return expectNever(entry.entryType);
     }

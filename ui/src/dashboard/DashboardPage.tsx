@@ -74,6 +74,7 @@ const newEntry = (): Dashboards_dashboards_items => {
                 __typename: 'DashboardEntryPos',
             },
         },
+        total: false,
     };
 };
 

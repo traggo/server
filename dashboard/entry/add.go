@@ -17,7 +17,7 @@ import (
 )
 
 // AddDashboardEntry adds a dashboard entry.
-func (r *ResolverForEntry) AddDashboardEntry(ctx context.Context, dashboardID int, entryType gqlmodel.EntryType, title string, stats gqlmodel.InputStatsSelection, pos *gqlmodel.InputResponsiveDashboardEntryPos) (*gqlmodel.DashboardEntry, error) {
+func (r *ResolverForEntry) AddDashboardEntry(ctx context.Context, dashboardID int, entryType gqlmodel.EntryType, title string, total bool, stats gqlmodel.InputStatsSelection, pos *gqlmodel.InputResponsiveDashboardEntryPos) (*gqlmodel.DashboardEntry, error) {
 	userID := auth.GetUser(ctx).ID
 
 	if _, err := util.FindDashboard(r.DB, userID, dashboardID); err != nil {
@@ -28,6 +28,7 @@ func (r *ResolverForEntry) AddDashboardEntry(ctx context.Context, dashboardID in
 		Keys:            strings.Join(stats.Tags, ","),
 		Type:            convert.InternalEntryType(entryType),
 		Title:           title,
+		Total:           total,
 		DashboardID:     dashboardID,
 		Interval:        convert.InternalInterval(stats.Interval),
 		MobilePosition:  convert.EmptyPos(),

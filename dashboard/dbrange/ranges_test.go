@@ -150,7 +150,7 @@ func TestRanges(t *testing.T) {
 	})
 	require.EqualError(t, err, "dashboard range does not exist")
 
-	entry, err := resolver.AddDashboardEntry(user1, 1, gqlmodel.EntryTypeBarChart, "other", gqlmodel.InputStatsSelection{
+	entry, err := resolver.AddDashboardEntry(user1, 1, gqlmodel.EntryTypeBarChart, "other", true, gqlmodel.InputStatsSelection{
 		Interval: gqlmodel.StatsIntervalDaily,
 		Tags:     []string{"abc"},
 		RangeID:  &xrange.ID,
