@@ -67,63 +67,29 @@ const SpecificDashboardEntry: React.FC<{entry: Dashboards_dashboards_items; rang
             </Center>
         );
     }
+    const firstEntries: Stats_stats_entries[] =
+        (stats.data && stats.data.stats && stats.data.stats[0] && stats.data.stats[0].entries) || [];
+    if (firstEntries.length === 0) {
+        return (
+            <Center>
+                <Typography>no data</Typography>
+            </Center>
+        );
+    }
 
     const entries = (stats.data && stats.data.stats) || [];
     switch (entry.entryType) {
         case EntryType.PieChart:
-            const data: Stats_stats_entries[] = (stats.data && stats.data.stats && stats.data.stats[0].entries) || [];
-            if (data.length === 0) {
-                return (
-                    <Center>
-                        <Typography>no data</Typography>
-                    </Center>
-                );
-            }
-            return <DashboardPieChart entries={data} />;
+            return <DashboardPieChart entries={firstEntries} />;
         case EntryType.BarChart:
-            if (entries.length === 0) {
-                return (
-                    <Center>
-                        <Typography>no data</Typography>
-                    </Center>
-                );
-            }
             return <DashboardBarChart entries={entries} interval={interval} type="normal" total={entry.total} />;
         case EntryType.StackedBarChart:
-            if (entries.length === 0) {
-                return (
-                    <Center>
-                        <Typography>no data</Typography>
-                    </Center>
-                );
-            }
             return <DashboardBarChart entries={entries} interval={interval} type="stacked" total={entry.total} />;
         case EntryType.LineChart:
-            if (entries.length === 0) {
-                return (
-                    <Center>
-                        <Typography>no data</Typography>
-                    </Center>
-                );
-            }
             return <DashboardLineChart entries={entries} interval={interval} total={entry.total} />;
         case EntryType.VerticalTable:
-            if (entries.length === 0) {
-                return (
-                    <Center>
-                        <Typography>no data</Typography>
-                    </Center>
-                );
-            }
             return <DashboardTable mode="vertical" entries={entries} interval={interval} total={entry.total} />;
         case EntryType.HorizontalTable:
-            if (entries.length === 0) {
-                return (
-                    <Center>
-                        <Typography>no data</Typography>
-                    </Center>
-                );
-            }
             return <DashboardTable mode="horizontal" entries={entries} interval={interval} total={entry.total} />;
         default:
             return expectNever(entry.entryType);
