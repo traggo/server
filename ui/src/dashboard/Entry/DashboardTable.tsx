@@ -31,7 +31,7 @@ export const DashboardTable: React.FC<DashboardTableProps> = ({entries, interval
                 }, {}),
             };
             if (total) {
-                result.data['Total'] = Object.values(result.data).reduce((acc, value) => acc + value);
+                result.data['Total'] = Object.values(result.data).reduce((acc, value) => acc + value, 0);
             }
             return result;
         })
