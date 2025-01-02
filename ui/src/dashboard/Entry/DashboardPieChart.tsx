@@ -48,7 +48,7 @@ const CustomTooltip = ({active, payload, total}: CustomTooltipProps) => {
             <Paper style={{padding: 10}} elevation={4}>
                 <Typography>
                     {first.payload.key}:{first.payload.value}: {prettyMs(first.payload.timeSpendInSeconds * 1000)} (
-                    {((first.payload.timeSpendInSeconds / total) * 100).toFixed(2)}%)
+                    {total > 0 ? ((first.payload.timeSpendInSeconds / total) * 100).toFixed(2) : '0.00'}%)
                 </Typography>
             </Paper>
         );
