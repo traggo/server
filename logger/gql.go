@@ -25,12 +25,12 @@ func GQLLog() graphql.ResponseMiddleware {
 		rawQuery := graphql.GetRequestContext(ctx).RawQuery
 
 		if len(errs) > 0 {
-			var errs []string
+			var errorStrings []string
 			for _, err := range errs {
-				errs = append(errs, err)
+				errorStrings = append(errorStrings, err.Error())
 			}
 
-			log.Error().Strs("error", errs).Str("took", elapsed.String()).Msg("GQL: " + toOneLine(hidePassword(rawQuery)))
+			log.Error().Strs("error", errorStrings).Str("took", elapsed.String()).Msg("GQL: " + toOneLine(hidePassword(rawQuery)))
 		} else if log.Debug().Enabled() {
 			log.Debug().Str("took", elapsed.String()).Msg("GQL: " + toOneLine(hidePassword(rawQuery)))
 		}
