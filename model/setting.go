@@ -4,10 +4,11 @@ import "time"
 
 // UserSetting a setting for a user.
 type UserSetting struct {
-	UserID            int `gorm:"primary_key;unique_index"`
-	Theme             string
-	DateLocale        string
-	FirstDayOfTheWeek string
+	UserID             int `gorm:"primary_key;unique_index"`
+	Theme              string
+	DateLocale         string
+	FirstDayOfTheWeek  string
+	DatetimeInputStyle string
 }
 
 // Settings constants
@@ -22,6 +23,9 @@ const (
 	DateLocaleAmerican24h = "American24h"
 	DateLocaleBritish     = "British"
 	DateLocaleAustralian  = "Australian"
+
+	DatetimeInputFancy    = "Fancy"
+	DatetimeInputStandard = "Standard"
 )
 
 var daysOfWeek = map[string]time.Weekday{

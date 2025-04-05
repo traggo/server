@@ -12,10 +12,11 @@ import (
 // SetUserSettings sets the user settings.
 func (r *ResolverForSettings) SetUserSettings(ctx context.Context, settings gqlmodel.InputUserSettings) (*gqlmodel.UserSettings, error) {
 	internal := model.UserSetting{
-		Theme:             toInternalTheme(settings.Theme),
-		FirstDayOfTheWeek: toInternalWeekday(settings.FirstDayOfTheWeek).String(),
-		UserID:            auth.GetUser(ctx).ID,
-		DateLocale:        toInternalDateLocale(settings.DateLocale),
+		Theme:              toInternalTheme(settings.Theme),
+		FirstDayOfTheWeek:  toInternalWeekday(settings.FirstDayOfTheWeek).String(),
+		UserID:             auth.GetUser(ctx).ID,
+		DateLocale:         toInternalDateLocale(settings.DateLocale),
+		DatetimeInputStyle: toInternalDatetimeInputStyle(settings.DatetimeInputStyle),
 	}
 
 	save := r.DB.Save(internal)
@@ -31,9 +32,10 @@ func (r *ResolverForSettings) UserSettings(ctx context.Context) (*gqlmodel.UserS
 
 func toExternal(internal model.UserSetting) *gqlmodel.UserSettings {
 	return &gqlmodel.UserSettings{
-		Theme:             toExternalTheme(internal.Theme),
-		DateLocale:        toExternalDateLocale(internal.DateLocale),
-		FirstDayOfTheWeek: toExternalWeekday(internal.FirstDayOfTheWeekTimeWeekday()),
+		Theme:              toExternalTheme(internal.Theme),
+		DateLocale:         toExternalDateLocale(internal.DateLocale),
+		FirstDayOfTheWeek:  toExternalWeekday(internal.FirstDayOfTheWeekTimeWeekday()),
+		DatetimeInputStyle: toExternalDatetimeInputStyle(internal.DatetimeInputStyle),
 	}
 }
 
@@ -111,5 +113,27 @@ func toInternalWeekday(weekday gqlmodel.WeekDay) time.Weekday {
 		return time.Sunday
 	default:
 		panic("unknown weekday")
+	}
+}
+
+func toExternalDatetimeInputStyle(style string) gqlmodel.DatetimeInputStyle {
+	switch style {
+	case model.DatetimeInputFancy:
+		return model.DatetimeInputFancy
+	case model.DatetimeInputStandard:
+		return model.DatetimeInputStandard
+	default:
+		panic("unknown datetime input style")
+	}
+}
+
+func toInternalDatetimeInputStyle(style gqlmodel.DatetimeInputStyle) string {
+	switch style {
+	case gqlmodel.DatetimeInputStyleFancy:
+		return model.DatetimeInputFancy
+	case gqlmodel.DatetimeInputStyleStandard:
+		return model.DatetimeInputStandard
+	default:
+		panic("unknown datetime input style")
 	}
 }
