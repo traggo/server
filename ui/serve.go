@@ -27,7 +27,7 @@ func Register(r *mux.Router) {
 	r.Handle("/favicon.ico", serveFile("favicon.ico", "image/x-icon"))
 	for _, size := range []string{"16x16", "32x32", "192x192", "256x256"} {
 		fileName := fmt.Sprintf("favicon-%s.png", size)
-		r.Handle("/" + fileName, serveFile(fileName, "image/png"))
+		r.Handle("/"+fileName, serveFile(fileName, "image/png"))
 	}
 }
 
