@@ -2,6 +2,8 @@ import * as React from 'react';
 import {KeyboardDateTimePicker} from '@material-ui/pickers';
 import * as moment from 'moment';
 import {uglyConvertToLocalTime} from '../timespan/timeutils';
+import {useSettings} from '../gql/settings';
+import {DatetimeInputStyle} from '../gql/__generated__/globalTypes';
 
 interface DateTimeSelectorProps {
     selectedDate: moment.Moment;
@@ -13,6 +15,29 @@ interface DateTimeSelectorProps {
 
 export const DateTimeSelector: React.FC<DateTimeSelectorProps> = React.memo(
     ({selectedDate, onSelectDate, showDate, label, popoverOpen = () => {}}) => {
+        const {done, datetimeInputStyle} = useSettings();
+
+        if (!done) {
+            return <span>...</span>;
+        }
+
+        if (datetimeInputStyle === DatetimeInputStyle.Standard) {
+            const formatDate = (d: Date): string => {
+                return [d.getFullYear(), '-', d.getMonth(), '-', d.getDay(), 'T', d.getHours(), ':', d.getMinutes()]
+                    .map((i) => (typeof i === 'number' ? i.toString().padStart(2, '0') : i))
+                    .join('');
+            };
+            return (
+                <input
+                    type="datetime-local"
+                    value={formatDate(selectedDate.toDate())}
+                    onChange={(e) => {
+                        onSelectDate(moment.default(e.target.value));
+                    }}
+                />
+            );
+        }
+
         const [open, setOpen] = React.useState(false);
         const localeData = moment.localeData();
         const time = localeData.longDateFormat('LT').replace('A', 'a');
