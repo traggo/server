@@ -82,16 +82,20 @@ export const TagPage = () => {
                                 }
                             }}
                             onSubmit={onClickSubmit}
+                            style={{ minWidth: 128 }}
                         />
                     ) : (
                         tag.key
                     )}
                 </TableCell>
-                <TableCell>
+                <TableCell style={{minWidth: 128}}>
                     {isEdited ? (
-                        <SliderPicker onChange={(c) => setEditing([editKey, editKeyNew, c.hex])} color={editColor} />
+                        <SliderPicker 
+                        onChange={(c) => setEditing([editKey, editKeyNew, c.hex])} 
+                        color={editColor} 
+                        />
                     ) : (
-                        <TagChip label={tag.color} color={tag.color} />
+                        <TagChip label={tag.color} color={tag.color} style={{wordBreak: "normal"}}/>
                     )}
                 </TableCell>
                 <TableCell align="right">{tag.usages}</TableCell>

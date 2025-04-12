@@ -3,7 +3,7 @@ import * as React from 'react';
 // @ts-ignore
 import bestContrast from 'get-best-contrast-color';
 
-export const TagChip = ({color, label}: {label: string; color: string}) => {
+export const TagChip = ({color, label, style={}}: {label: string; color: string, style?:React.CSSProperties}) => {
     const textColor = bestContrast(color, ['#fff', '#000']);
     return (
         <Chip
@@ -15,8 +15,10 @@ export const TagChip = ({color, label}: {label: string; color: string}) => {
                 color: textColor,
                 cursor: 'text',
                 minHeight: '32px',
+                height: 'fit-content',
                 whiteSpace: 'normal',
                 wordBreak: 'break-word',
+                ... style
             }}
             label={label}
         />
