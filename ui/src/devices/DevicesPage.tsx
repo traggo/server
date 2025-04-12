@@ -84,13 +84,14 @@ export const DevicesPage = () => {
                                 }
                             }}
                             onSubmit={onClickSubmit}
+                            style={{minWidth: 128}}
                         />
                     ) : (
                         device.name + (isCurrent ? ' (current)' : '')
                     )}
                 </TableCell>
                 <TableCell title={device.createdAt}>{moment(device.createdAt).fromNow()}</TableCell>
-                <TableCell title={device.type}>
+                <TableCell title={device.type} style={{minWidth: 128}}>
                     {isEdited ? (
                         <Select
                             value={editDeviceType}
