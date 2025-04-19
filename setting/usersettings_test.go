@@ -31,7 +31,7 @@ func TestSettingsResolver(t *testing.T) {
 		Theme:              gqlmodel.ThemeGruvboxLight,
 		DateLocale:         gqlmodel.DateLocaleGerman,
 		FirstDayOfTheWeek:  gqlmodel.WeekDayWednesday,
-		DatetimeInputStyle: gqlmodel.DatetimeInputStyleFancy,
+		DateTimeInputStyle: gqlmodel.DateTimeInputStyleFancy,
 	})
 	require.NoError(t, err)
 
@@ -41,7 +41,7 @@ func TestSettingsResolver(t *testing.T) {
 		Theme:              gqlmodel.ThemeGruvboxLight,
 		DateLocale:         gqlmodel.DateLocaleGerman,
 		FirstDayOfTheWeek:  gqlmodel.WeekDayWednesday,
-		DatetimeInputStyle: gqlmodel.DatetimeInputStyleFancy,
+		DateTimeInputStyle: gqlmodel.DateTimeInputStyleFancy,
 	}, settings)
 }
 

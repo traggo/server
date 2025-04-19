@@ -16,7 +16,7 @@ func (r *ResolverForSettings) SetUserSettings(ctx context.Context, settings gqlm
 		FirstDayOfTheWeek:  toInternalWeekday(settings.FirstDayOfTheWeek).String(),
 		UserID:             auth.GetUser(ctx).ID,
 		DateLocale:         toInternalDateLocale(settings.DateLocale),
-		DatetimeInputStyle: toInternalDatetimeInputStyle(settings.DatetimeInputStyle),
+		DateTimeInputStyle: toInternalDateTimeInputStyle(settings.DateTimeInputStyle),
 	}
 
 	save := r.DB.Save(internal)
@@ -35,7 +35,7 @@ func toExternal(internal model.UserSetting) *gqlmodel.UserSettings {
 		Theme:              toExternalTheme(internal.Theme),
 		DateLocale:         toExternalDateLocale(internal.DateLocale),
 		FirstDayOfTheWeek:  toExternalWeekday(internal.FirstDayOfTheWeekTimeWeekday()),
-		DatetimeInputStyle: toExternalDatetimeInputStyle(internal.DatetimeInputStyle),
+		DateTimeInputStyle: toExternalDateTimeInputStyle(internal.DateTimeInputStyle),
 	}
 }
 
@@ -116,23 +116,23 @@ func toInternalWeekday(weekday gqlmodel.WeekDay) time.Weekday {
 	}
 }
 
-func toExternalDatetimeInputStyle(style string) gqlmodel.DatetimeInputStyle {
+func toExternalDateTimeInputStyle(style string) gqlmodel.DateTimeInputStyle {
 	switch style {
-	case model.DatetimeInputFancy:
-		return model.DatetimeInputFancy
-	case model.DatetimeInputNative:
-		return model.DatetimeInputNative
+	case model.DateTimeInputFancy:
+		return model.DateTimeInputFancy
+	case model.DateTimeInputNative:
+		return model.DateTimeInputNative
 	default:
 		panic("unknown datetime input style")
 	}
 }
 
-func toInternalDatetimeInputStyle(style gqlmodel.DatetimeInputStyle) string {
+func toInternalDateTimeInputStyle(style gqlmodel.DateTimeInputStyle) string {
 	switch style {
-	case gqlmodel.DatetimeInputStyleFancy:
-		return model.DatetimeInputFancy
-	case gqlmodel.DatetimeInputStyleNative:
-		return model.DatetimeInputNative
+	case gqlmodel.DateTimeInputStyleFancy:
+		return model.DateTimeInputFancy
+	case gqlmodel.DateTimeInputStyleNative:
+		return model.DateTimeInputNative
 	default:
 		panic("unknown datetime input style")
 	}

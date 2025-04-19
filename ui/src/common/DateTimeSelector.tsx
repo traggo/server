@@ -3,7 +3,7 @@ import {KeyboardDateTimePicker} from '@material-ui/pickers';
 import * as moment from 'moment';
 import {uglyConvertToLocalTime} from '../timespan/timeutils';
 import {useSettings} from '../gql/settings';
-import {DatetimeInputStyle} from '../gql/__generated__/globalTypes';
+import {DateTimeInputStyle} from '../gql/__generated__/globalTypes';
 
 interface DateTimeSelectorProps {
     selectedDate: moment.Moment;
@@ -15,13 +15,13 @@ interface DateTimeSelectorProps {
 
 export const DateTimeSelector: React.FC<DateTimeSelectorProps> = React.memo(
     ({selectedDate, onSelectDate, showDate, label, popoverOpen = () => {}}) => {
-        const {done, datetimeInputStyle} = useSettings();
+        const {done, dateTimeInputStyle} = useSettings();
 
         if (!done) {
             return <span>...</span>;
         }
 
-        if (datetimeInputStyle === DatetimeInputStyle.Native) {
+        if (dateTimeInputStyle === DateTimeInputStyle.Native) {
             return (
                 <input
                     type="datetime-local"

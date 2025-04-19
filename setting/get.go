@@ -17,7 +17,7 @@ func Get(ctx context.Context, db *gorm.DB) (model.UserSetting, error) {
 		Theme:              model.ThemeGruvboxDark,
 		DateLocale:         model.DateLocaleAmerican,
 		FirstDayOfTheWeek:  time.Monday.String(),
-		DatetimeInputStyle: model.DatetimeInputFancy,
+		DateTimeInputStyle: model.DateTimeInputFancy,
 	}
 
 	if user == nil {

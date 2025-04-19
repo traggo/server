@@ -7,7 +7,7 @@ import {SetSettings, SetSettingsVariables} from '../gql/__generated__/SetSetting
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/NativeSelect/NativeSelect';
-import {DateLocale, Theme, WeekDay, DatetimeInputStyle} from '../gql/__generated__/globalTypes';
+import {DateLocale, Theme, WeekDay, DateTimeInputStyle} from '../gql/__generated__/globalTypes';
 import {useSnackbar} from 'notistack';
 import {handleError} from '../utils/errors';
 
@@ -124,13 +124,13 @@ export const SettingsPage: React.FC = () => {
                 <InputLabel>Datetime input style</InputLabel>
                 <Select
                     fullWidth
-                    value={settings.datetimeInputStyle}
+                    value={settings.dateTimeInputStyle}
                     onChange={(e) => {
                         setSettings({
                             variables: {
                                 settings: {
                                     ...settings,
-                                    datetimeInputStyle: e.target.value as DatetimeInputStyle,
+                                    dateTimeInputStyle: e.target.value as DateTimeInputStyle,
                                 },
                             },
                         })
@@ -141,7 +141,7 @@ export const SettingsPage: React.FC = () => {
                             )
                             .catch(handleError('set datetime input style', enqueueSnackbar));
                     }}>
-                    {[DatetimeInputStyle.Fancy, DatetimeInputStyle.Native].map((type) => (
+                    {[DateTimeInputStyle.Fancy, DateTimeInputStyle.Native].map((type) => (
                         <option key={type} value={type}>
                             {type}
                         </option>

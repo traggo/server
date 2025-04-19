@@ -8,7 +8,7 @@ type UserSetting struct {
 	Theme              string
 	DateLocale         string
 	FirstDayOfTheWeek  string
-	DatetimeInputStyle string
+	DateTimeInputStyle string
 }
 
 // Settings constants
