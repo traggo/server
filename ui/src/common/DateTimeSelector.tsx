@@ -22,15 +22,10 @@ export const DateTimeSelector: React.FC<DateTimeSelectorProps> = React.memo(
         }
 
         if (datetimeInputStyle === DatetimeInputStyle.Standard) {
-            const formatDate = (d: Date): string => {
-                return [d.getFullYear(), '-', d.getMonth(), '-', d.getDay(), 'T', d.getHours(), ':', d.getMinutes()]
-                    .map((i) => (typeof i === 'number' ? i.toString().padStart(2, '0') : i))
-                    .join('');
-            };
             return (
                 <input
                     type="datetime-local"
-                    value={formatDate(selectedDate.toDate())}
+                    value={selectedDate.format(selectedDate.format('YYYY-MM-DDTHH:mm'))}
                     onChange={(e) => {
                         onSelectDate(moment.default(e.target.value));
                     }}
