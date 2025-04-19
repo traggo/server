@@ -141,7 +141,7 @@ export const SettingsPage: React.FC = () => {
                             )
                             .catch(handleError('set preferred datetime input style', enqueueSnackbar));
                     }}>
-                    {[DatetimeInputStyle.Fancy, DatetimeInputStyle.Standard].map((type) => (
+                    {[DatetimeInputStyle.Fancy, DatetimeInputStyle.Native].map((type) => (
                         <option key={type} value={type}>
                             {type}
                         </option>

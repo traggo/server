@@ -21,7 +21,7 @@ export const DateTimeSelector: React.FC<DateTimeSelectorProps> = React.memo(
             return <span>...</span>;
         }
 
-        if (datetimeInputStyle === DatetimeInputStyle.Standard) {
+        if (datetimeInputStyle === DatetimeInputStyle.Native) {
             return (
                 <input
                     type="datetime-local"

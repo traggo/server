@@ -24,8 +24,8 @@ const (
 	DateLocaleBritish     = "British"
 	DateLocaleAustralian  = "Australian"
 
-	DatetimeInputFancy    = "Fancy"
-	DatetimeInputStandard = "Standard"
+	DateTimeInputFancy  = "Fancy"
+	DateTimeInputNative = "Native"
 )
 
 var daysOfWeek = map[string]time.Weekday{
