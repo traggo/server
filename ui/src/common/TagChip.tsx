@@ -15,6 +15,7 @@ export const TagChip = ({color, label}: {label: string; color: string}) => {
                 color: textColor,
                 cursor: 'text',
                 minHeight: '32px',
+                height: 'fit-content',
                 whiteSpace: 'normal',
                 wordBreak: 'break-word',
             }}
