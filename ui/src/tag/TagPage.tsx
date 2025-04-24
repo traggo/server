@@ -92,7 +92,7 @@ export const TagPage = () => {
                     {isEdited ? (
                         <SliderPicker onChange={(c) => setEditing([editKey, editKeyNew, c.hex])} color={editColor} />
                     ) : (
-                        <TagChip label={tag.color} color={tag.color} style={{wordBreak: 'normal'}} />
+                        <TagChip label={tag.color} color={tag.color} />
                     )}
                 </TableCell>
                 <TableCell align="right">{tag.usages}</TableCell>
