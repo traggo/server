@@ -7,7 +7,7 @@ import {SetSettings, SetSettingsVariables} from '../gql/__generated__/SetSetting
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/NativeSelect/NativeSelect';
-import {DateLocale, Theme, WeekDay} from '../gql/__generated__/globalTypes';
+import {DateLocale, Theme, WeekDay, DateTimeInputStyle} from '../gql/__generated__/globalTypes';
 import {useSnackbar} from 'notistack';
 import {handleError} from '../utils/errors';
 
@@ -114,6 +114,34 @@ export const SettingsPage: React.FC = () => {
                         WeekDay.Friday,
                         WeekDay.Saturday,
                     ].map((type) => (
+                        <option key={type} value={type}>
+                            {type}
+                        </option>
+                    ))}
+                </Select>
+            </FormControl>
+            <FormControl margin={'normal'} fullWidth>
+                <InputLabel>Datetime input style</InputLabel>
+                <Select
+                    fullWidth
+                    value={settings.dateTimeInputStyle}
+                    onChange={(e) => {
+                        setSettings({
+                            variables: {
+                                settings: {
+                                    ...settings,
+                                    dateTimeInputStyle: e.target.value as DateTimeInputStyle,
+                                },
+                            },
+                        })
+                            .then(() =>
+                                enqueueSnackbar('datetime input style changed', {
+                                    variant: 'success',
+                                })
+                            )
+                            .catch(handleError('set datetime input style', enqueueSnackbar));
+                    }}>
+                    {[DateTimeInputStyle.Fancy, DateTimeInputStyle.Native].map((type) => (
                         <option key={type} value={type}>
                             {type}
                         </option>

@@ -68,12 +68,14 @@ input InputUserSettings {
     theme: Theme!
     dateLocale: DateLocale!
     firstDayOfTheWeek: WeekDay!
+    dateTimeInputStyle: DateTimeInputStyle!
 }
 
 type UserSettings {
     theme: Theme!
     dateLocale: DateLocale!
     firstDayOfTheWeek: WeekDay!
+    dateTimeInputStyle: DateTimeInputStyle!
 }
 
 enum WeekDay {
@@ -86,6 +88,10 @@ enum Theme {
 
 enum DateLocale {
     American, American24h, German, Australian, British
+}
+
+enum DateTimeInputStyle {
+    Fancy, Native
 }
 
 input InputReplaceOptions {
