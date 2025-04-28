@@ -62,5 +62,7 @@ func TestShouldHandleInvalidInputs(t *testing.T) {
 	toInternalTheme("aoeuaoeu")
 	toExternalDateLocale("aeu")
 	toInternalDateLocale("aoeu")
+	toExternalDateTimeInputStyle("aoeu")
+	toInternalDateTimeInputStyle("aoeu")
 
 }
