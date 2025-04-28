@@ -119,11 +119,11 @@ func toInternalWeekday(weekday gqlmodel.WeekDay) time.Weekday {
 func toExternalDateTimeInputStyle(style string) gqlmodel.DateTimeInputStyle {
 	switch style {
 	case model.DateTimeInputFancy:
-		return model.DateTimeInputFancy
+		return gqlmodel.DateTimeInputStyleFancy
 	case model.DateTimeInputNative:
-		return model.DateTimeInputNative
+		return gqlmodel.DateTimeInputStyleNative
 	default:
-		panic("unknown datetime input style")
+		return gqlmodel.DateTimeInputStyleFancy
 	}
 }
 
@@ -134,6 +134,6 @@ func toInternalDateTimeInputStyle(style gqlmodel.DateTimeInputStyle) string {
 	case gqlmodel.DateTimeInputStyleNative:
 		return model.DateTimeInputNative
 	default:
-		panic("unknown datetime input style")
+		return model.DateTimeInputFancy
 	}
 }
