@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {TextField} from '@material-ui/core';
-import {parseRelativeTime} from '../utils/time';
+import {normalizeDate, parseRelativeTime, userFriendlyDate} from '../utils/time';
 import Typography from '@material-ui/core/Typography';
 import useTimeout from '@rooks/use-timeout';
 
@@ -16,7 +16,7 @@ interface RelativeDateTimeSelectorProps {
 }
 
 export const RelativeDateTimeSelector: React.FC<RelativeDateTimeSelectorProps> = ({
-    value,
+    value: apiValue,
     onChange: setValue,
     type,
     style,
@@ -28,8 +28,9 @@ export const RelativeDateTimeSelector: React.FC<RelativeDateTimeSelectorProps> =
     const [errVisible, setErrVisible] = React.useState(false);
     const [error, setError] = React.useState('');
     const {start, stop} = useTimeout(() => setErrVisible(true), 200);
+    const parsed = parseRelativeTime(apiValue, type);
+    const value = userFriendlyDate(apiValue);
 
-    const parsed = parseRelativeTime(value, type);
     return (
         <TextField
             fullWidth
@@ -38,7 +39,7 @@ export const RelativeDateTimeSelector: React.FC<RelativeDateTimeSelectorProps> =
             disabled={disabled}
             InputProps={{disableUnderline}}
             onChange={(e) => {
-                const newValue = e.target.value;
+                const newValue = normalizeDate(e.target.value);
                 const result = parseRelativeTime(newValue, type);
                 setErrVisible(false);
                 stop();

@@ -14,7 +14,7 @@ import {DashboardBarChart} from './DashboardBarChart';
 import {DashboardLineChart} from './DashboardLineChart';
 import {CenteredSpinner} from '../../common/CenteredSpinner';
 import {Center} from '../../common/Center';
-import {findRange, normalizeRangeDateFormat, Range} from '../../utils/range';
+import {findRange, Range} from '../../utils/range';
 import {DashboardTable} from './DashboardTable';
 
 interface DashboardEntryProps {
@@ -43,14 +43,13 @@ export const DashboardEntry: React.FC<DashboardEntryProps> = React.forwardRef<{}
 // tslint:disable-next-line:cyclomatic-complexity mccabe-complexity
 const SpecificDashboardEntry: React.FC<{entry: Dashboards_dashboards_items; range: Range}> = ({entry, range}) => {
     const interval = entry.statsSelection.interval;
-    const normalizedRange = normalizeRangeDateFormat(range);
     const stats = useQuery<Stats2, Stats2Variables>(gqlStats.Stats2, {
         variables: {
             now: moment()
                 .startOf('hour')
                 .format(),
             stats: {
-                range: normalizedRange,
+                range,
                 interval,
                 tags: entry.statsSelection.tags,
             },
