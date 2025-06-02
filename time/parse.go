@@ -44,14 +44,10 @@ func Validate(value string) error {
 
 // ParseTime parses time.
 func ParseTime(now time.Time, value string, startOf bool, weekday time.Weekday) (time.Time, error) {
-	if rfc3339, err := time.Parse(time.RFC3339, value); err == nil {
-		return rfc3339, nil
+	parse, err := time.Parse(time.RFC3339, value)
+	if err == nil {
+		return parse, nil
 	}
-	if dateTime, err := time.Parse(time.DateTime, value); err == nil {
-		return dateTime, nil
-	}
-	if dateTimeNoSeconds, err := time.Parse(time.DateTime, value+":00"); err == nil {
-		return dateTimeNoSeconds, nil
-	}
+
 	return timemath.Parse(now, value, startOf, weekday)
 }
