@@ -14,6 +14,7 @@ import {AddTag, AddTagVariables} from '../gql/__generated__/AddTag';
 import * as gqlTags from '../gql/tags';
 import {TagSelectorEntry} from './tagSelectorEntry';
 import {useMutation} from '@apollo/react-hooks';
+import Typography from '@material-ui/core/Typography';
 
 interface AddTagDialogProps {
     initialName: string;
@@ -25,16 +26,19 @@ interface AddTagDialogProps {
 export const AddTagDialog: React.FC<AddTagDialogProps> = ({close, open, initialName, onAdded = () => {}}) => {
     const [name, setName] = React.useState(initialName);
     const [color, setColor] = React.useState('#e6b3b3');
+    const [error, setError] = React.useState('');
 
     const [addTag] = useMutation<AddTag, AddTagVariables>(gqlTags.AddTag, {refetchQueries: [{query: gqlTags.Tags}]});
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        addTag({variables: {name, color}}).then((result: MutationFetchResult<AddTag> | void) => {
-            close();
-            if (result && result.data && result.data.createTag) {
-                onAdded(result.data.createTag);
-            }
-        });
+        addTag({variables: {name, color}})
+            .then((result: MutationFetchResult<AddTag> | void) => {
+                close();
+                if (result && result.data && result.data.createTag) {
+                    onAdded(result.data.createTag);
+                }
+            })
+            .catch((err) => setError(err.toString()));
     };
 
     return (
@@ -53,6 +57,11 @@ export const AddTagDialog: React.FC<AddTagDialogProps> = ({close, open, initialN
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                     />
+                    {error.length > 0 ? (
+                        <Typography color={'secondary'} variant={'caption'}>
+                            {error}
+                        </Typography>
+                    ) : null}
                     <FormControl fullWidth margin="dense">
                         <InputLabel htmlFor="color-picker" shrink={true}>
                             Color
