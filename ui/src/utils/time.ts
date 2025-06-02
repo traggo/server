@@ -153,7 +153,9 @@ export function normalizeDate(date: string): string {
 
 export function userFriendlyDate(date: string): string {
     if (isValidDate(date)) {
-        return moment(date).local().format('YYYY-MM-DD HH:mm');
+        return moment(date)
+            .local()
+            .format('YYYY-MM-DD HH:mm');
     } else {
         return date;
     }
