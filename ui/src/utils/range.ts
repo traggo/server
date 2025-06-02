@@ -20,7 +20,7 @@ export const exclusiveRange = (range: Range) => ({from: range.from, to: range.to
 export function normalizeDate(date: string): string {
     const d = moment(date);
     if (d.isValid()) {
-        return d.utc().format();
+        return d.format();
     } else {
         return date;
     }
