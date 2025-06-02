@@ -10,6 +10,7 @@ import * as gqlDashboard from '../../gql/dashboard';
 import {UpdateDashboardEntry, UpdateDashboardEntryVariables} from '../../gql/__generated__/UpdateDashboardEntry';
 import {Fade} from '../../common/Fade';
 import {DashboardEntryForm, isValidDashboardEntry} from './DashboardEntryForm';
+import {normalizeRangeDateFormat} from '../../utils/range';
 
 interface EditPopupProps {
     entry: Dashboards_dashboards_items;
@@ -69,10 +70,10 @@ export const EditPopup: React.FC<EditPopupProps> = ({entry, anchorEl, onChange: 
                                                 tags: entry.statsSelection.tags,
                                                 interval: entry.statsSelection.interval,
                                                 range: entry.statsSelection.range
-                                                    ? {
+                                                    ? normalizeRangeDateFormat({
                                                           from: entry.statsSelection.range.from,
                                                           to: entry.statsSelection.range.to,
-                                                      }
+                                                      })
                                                     : null,
                                                 rangeId: entry.statsSelection.rangeId,
                                             },
