@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 interface Success {
     success: true;
@@ -112,7 +112,7 @@ export const parseRelativeTime = (value: string, divide: 'endOf' | 'startOf', no
         return failure("'now' must be at the start");
     }
 
-    return failure("Expected valid date or 'now' at index 0");
+    return failure("Expected valid date (e.g. 2020-01-01 16:30) or 'now' at index 0");
 };
 
 export const success = (value: moment.Moment): Success => {
@@ -133,10 +133,28 @@ export const isValidDate = (value: string, format?: string) => {
     return asDate(value, format).isValid();
 };
 
-export const asDate = (value: string, format = 'YYYY-MM-DD HH:mm') => {
+export const asDate = (value: string, format = 'YYYY-MM-DD[T]HH:mm:ssZ') => {
     return moment(value, format, true);
 };
 export const isSameDate = (from: moment.Moment, to?: moment.Moment): boolean => {
     const fromString = from.format('YYYYMMDD');
     return to === undefined || fromString === to.format('YYYYMMDD');
 };
+
+export function normalizeDate(date: string): string {
+    if (isValidDate(date, 'YYYY-MM-DD HH:mm')) {
+        return moment(date)
+            .utc()
+            .format();
+    } else {
+        return date;
+    }
+}
+
+export function userFriendlyDate(date: string): string {
+    if (isValidDate(date)) {
+        return moment(date).local().format('YYYY-MM-DD HH:mm');
+    } else {
+        return date;
+    }
+}
