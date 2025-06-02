@@ -1,3 +1,5 @@
+import moment from 'moment-timezone';
+
 export interface Range {
     from: string;
     to: string;
@@ -14,3 +16,16 @@ export const findRange = (selection: {range: Range | null; rangeId: number | nul
 };
 
 export const exclusiveRange = (range: Range) => ({from: range.from, to: range.to});
+
+export function normalizeDate(date: string): string {
+    const d = moment(date);
+    if (d.isValid()) {
+        return d.utc().format();
+    } else {
+        return date;
+    }
+}
+
+export function normalizeRangeDateFormat(range: Range): Range {
+    return {from: normalizeDate(range.from), to: normalizeDate(range.to)};
+}

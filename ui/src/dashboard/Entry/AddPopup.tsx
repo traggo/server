@@ -10,6 +10,7 @@ import * as gqlDashboard from '../../gql/dashboard';
 import {Fade} from '../../common/Fade';
 import {DashboardEntryForm, isValidDashboardEntry} from './DashboardEntryForm';
 import {AddDashboardEntry, AddDashboardEntryVariables} from '../../gql/__generated__/AddDashboardEntry';
+import {normalizeRangeDateFormat} from '../../utils/range';
 
 interface EditPopupProps {
     dashboardId: number;
@@ -83,10 +84,10 @@ export const AddPopup: React.FC<EditPopupProps> = ({
                                                 tags: entry.statsSelection.tags,
                                                 interval: entry.statsSelection.interval,
                                                 range: entry.statsSelection.range
-                                                    ? {
+                                                    ? normalizeRangeDateFormat({
                                                           from: entry.statsSelection.range.from,
                                                           to: entry.statsSelection.range.to,
-                                                      }
+                                                      })
                                                     : null,
                                                 rangeId: entry.statsSelection.rangeId,
                                             },
