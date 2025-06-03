@@ -66,7 +66,8 @@ export const TagPage = () => {
                     newKey: editKeyNew,
                     color: editColor,
                 },
-            }).then(() => enqueueSnackbar('tag edited', {variant: 'success'}))
+            })
+                .then(() => enqueueSnackbar('tag edited', {variant: 'success'}))
                 .catch(handleError('Edit Tag', enqueueSnackbar));
         };
         const isEdited = editKey === tag.key;
