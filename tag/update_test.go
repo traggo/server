@@ -36,6 +36,26 @@ func TestUpdate_withKey(t *testing.T) {
 	rightTs.AssertHasTag("coolio", "mama", true).AssertHasTag("mega", "mama", false)
 }
 
+func TestUpdate_lowercases(t *testing.T) {
+	db := test.InMemoryDB(t)
+	defer db.Close()
+	user := db.User(5)
+	user.NewTagDefinition("coolio")
+	ts := user.TimeSpan("2009-06-30T18:30:00Z", "2009-06-30T18:40:00Z")
+	ts.Tag("coolio", "mama")
+
+	resolver := ResolverForTag{DB: db.DB}
+	newTagName := "Mega"
+	tag, err := resolver.UpdateTag(fake.User(user.User.ID), "coolio", &newTagName, "#abc")
+	require.NoError(t, err)
+	require.Equal(t, &gqlmodel.TagDefinition{
+		Color: "#abc",
+		Key:   "mega",
+	}, tag)
+	user.AssertHasTagDefinition("coolio", false).AssertHasTagDefinition("mega", true)
+	ts.AssertHasTag("mega", "mama", true).AssertHasTag("coolio", "mama", false)
+}
+
 func TestUpdate_withoutKey(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()
