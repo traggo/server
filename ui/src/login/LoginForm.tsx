@@ -10,6 +10,7 @@ import {Checkbox} from '@material-ui/core';
 import {DeviceType} from '../gql/__generated__/globalTypes';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import {Settings as SettingsGQL} from '../gql/settings';
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -23,6 +24,7 @@ export const LoginForm = () => {
         update: (cache, {data}) => {
             cache.writeQuery({query: gqlUser.CurrentUser, data: {user: data && data.login && data.login.user}});
         },
+        refetchQueries: [{query: SettingsGQL}],
     });
 
     const {enqueueSnackbar} = useSnackbar();
