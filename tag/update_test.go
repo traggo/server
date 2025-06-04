@@ -56,6 +56,18 @@ func TestUpdate_lowercases(t *testing.T) {
 	ts.AssertHasTag("mega", "mama", true).AssertHasTag("coolio", "mama", false)
 }
 
+func TestUpdate_disallow_space(t *testing.T) {
+	db := test.InMemoryDB(t)
+	defer db.Close()
+	user := db.User(5)
+	user.NewTagDefinition("coolio")
+
+	resolver := ResolverForTag{DB: db.DB}
+	newTagName := "the coolio"
+	_, err := resolver.UpdateTag(fake.User(user.User.ID), "coolio", &newTagName, "#abc")
+	require.EqualError(t, err, "tag must not contain spaces")
+}
+
 func TestUpdate_withoutKey(t *testing.T) {
 	db := test.InMemoryDB(t)
 	defer db.Close()

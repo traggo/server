@@ -13,6 +13,13 @@ import (
 
 // CreateTag creates a tag.
 func (r *ResolverForTag) CreateTag(ctx context.Context, key string, color string) (*gqlmodel.TagDefinition, error) {
+	if strings.TrimSpace(key) == "" {
+		return nil, fmt.Errorf("tag must not be empty")
+	}
+	if strings.Contains(key, " ") {
+		return nil, fmt.Errorf("tag must not contain spaces")
+	}
+
 	userID := auth.GetUser(ctx).ID
 	definition := &model.TagDefinition{
 		Key:    strings.ToLower(key),

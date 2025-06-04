@@ -14,6 +14,8 @@ import {AddTag, AddTagVariables} from '../gql/__generated__/AddTag';
 import * as gqlTags from '../gql/tags';
 import {TagSelectorEntry} from './tagSelectorEntry';
 import {useMutation} from '@apollo/react-hooks';
+import {useSnackbar} from 'notistack';
+import {handleError} from '../utils/errors';
 
 interface AddTagDialogProps {
     initialName: string;
@@ -25,16 +27,19 @@ interface AddTagDialogProps {
 export const AddTagDialog: React.FC<AddTagDialogProps> = ({close, open, initialName, onAdded = () => {}}) => {
     const [name, setName] = React.useState(initialName);
     const [color, setColor] = React.useState('#e6b3b3');
+    const {enqueueSnackbar} = useSnackbar();
 
     const [addTag] = useMutation<AddTag, AddTagVariables>(gqlTags.AddTag, {refetchQueries: [{query: gqlTags.Tags}]});
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        addTag({variables: {name, color}}).then((result: MutationFetchResult<AddTag> | void) => {
-            close();
-            if (result && result.data && result.data.createTag) {
-                onAdded(result.data.createTag);
-            }
-        });
+        addTag({variables: {name, color}})
+            .then((result: MutationFetchResult<AddTag> | void) => {
+                close();
+                if (result && result.data && result.data.createTag) {
+                    onAdded(result.data.createTag);
+                }
+            })
+            .catch(handleError('Add Tag', enqueueSnackbar));
     };
 
     return (
