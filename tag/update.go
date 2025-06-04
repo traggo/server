@@ -29,6 +29,7 @@ func (r *ResolverForTag) UpdateTag(ctx context.Context, key string, newKey *stri
 
 	if newKey != nil && *newKey != key {
 		if strings.Contains(*newKey, " ") {
+			tx.Rollback()
 			return nil, fmt.Errorf("tag must not contain spaces")
 		}
 		*newKey = strings.ToLower(*newKey)
