@@ -24,6 +24,18 @@ func (r *ResolverForEntry) AddDashboardEntry(ctx context.Context, dashboardID in
 		return nil, err
 	}
 
+	if tag := tagsDuplicates(stats.ExcludeTags, stats.IncludeTags); tag != nil {
+		return nil, fmt.Errorf("tag '%s' is present in both exclude tags and include tags", tag.Key+":"+tag.Value)
+	}
+
+	if err := tagsExist(r.DB, auth.GetUser(ctx).ID, stats.ExcludeTags); err != nil {
+		return nil, fmt.Errorf("exclude tags: %s", err.Error())
+	}
+
+	if err := tagsExist(r.DB, auth.GetUser(ctx).ID, stats.IncludeTags); err != nil {
+		return nil, fmt.Errorf("include tags: %s", err.Error())
+	}
+
 	entry := model.DashboardEntry{
 		Keys:            strings.Join(stats.Tags, ","),
 		Type:            convert.InternalEntryType(entryType),
@@ -34,6 +46,8 @@ func (r *ResolverForEntry) AddDashboardEntry(ctx context.Context, dashboardID in
 		MobilePosition:  convert.EmptyPos(),
 		DesktopPosition: convert.EmptyPos(),
 		RangeID:         -1,
+		ExcludedTags:    convert.ExcludedTagsToInternal(stats.ExcludeTags),
+		IncludedTags:    convert.IncludedTagsToInternal(stats.IncludeTags),
 	}
 
 	if len(stats.Tags) == 0 {
