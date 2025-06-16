@@ -53,6 +53,25 @@ func (r *ResolverForEntry) UpdateDashboardEntry(ctx context.Context, id int, ent
 			entry.RangeFrom = stats.Range.From
 			entry.RangeTo = stats.Range.To
 		}
+
+		if tag := tagsDuplicates(stats.ExcludeTags, stats.IncludeTags); tag != nil {
+			return nil, fmt.Errorf("tag '%s' is present in both exclude tags and include tags", tag.Key+":"+tag.Value)
+		}
+
+		r.DB.Where("dashboard_entry_id = ?", id).Delete(new(model.DashboardExcludedTag))
+		r.DB.Where("dashboard_entry_id = ?", id).Delete(new(model.DashboardIncludedTag))
+
+		if err := tagsExist(r.DB, auth.GetUser(ctx).ID, stats.ExcludeTags); err != nil {
+			return nil, fmt.Errorf("exclude tags: %s", err.Error())
+		}
+
+		if err := tagsExist(r.DB, auth.GetUser(ctx).ID, stats.IncludeTags); err != nil {
+			return nil, fmt.Errorf("include tags: %s", err.Error())
+		}
+
+		entry.ExcludedTags = convert.ExcludedTagsToInternal(stats.ExcludeTags)
+		entry.IncludedTags = convert.IncludedTagsToInternal(stats.IncludeTags)
+
 		entry.Keys = strings.Join(stats.Tags, ",")
 		entry.Interval = convert.InternalInterval(stats.Interval)
 	}
