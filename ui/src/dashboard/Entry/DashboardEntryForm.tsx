@@ -5,6 +5,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/NativeSelect/NativeSelect';
 import {EntryType, StatsInterval} from '../../gql/__generated__/globalTypes';
 import {TagKeySelector} from '../../tag/TagKeySelector';
+import {TagFilterSelector} from '../../tag/TagFilterSelector';
 import {Dashboards_dashboards_items, Dashboards_dashboards_items_statsSelection_range} from '../../gql/__generated__/Dashboards';
 import {RelativeDateTimeSelector} from '../../common/RelativeDateTimeSelector';
 import {parseRelativeTime} from '../../utils/time';
@@ -30,6 +31,27 @@ export const isValidDashboardEntry = (item: Dashboards_dashboards_items): boolea
 };
 export const DashboardEntryForm: React.FC<EditPopupProps> = ({entry, onChange: setEntry, disabled = false, ranges}) => {
     const [staticRange, setStaticRange] = React.useState(!entry.statsSelection.rangeId);
+
+    const [excludeTags, setExcludeTags] = React.useState(
+        (entry.statsSelection.excludeTags || []).map((tag) => ({
+            tag: {
+                key: tag.key,
+                color: '',
+                __typename: 'TagDefinition' as 'TagDefinition',
+            },
+            value: tag.value,
+        }))
+    );
+    const [includeTags, setIncludeTags] = React.useState(
+        (entry.statsSelection.includeTags || []).map((tag) => ({
+            tag: {
+                key: tag.key,
+                color: '',
+                __typename: 'TagDefinition' as 'TagDefinition',
+            },
+            value: tag.value,
+        }))
+    );
 
     const range: Dashboards_dashboards_items_statsSelection_range = entry.statsSelection.range
         ? entry.statsSelection.range
@@ -186,6 +208,32 @@ export const DashboardEntryForm: React.FC<EditPopupProps> = ({entry, onChange: s
                 disabled={disabled}
                 onChange={(tags) => {
                     entry.statsSelection.tags = tags;
+                    setEntry(entry);
+                }}
+            />
+            <TagFilterSelector
+                type="Exclude"
+                value={excludeTags}
+                onChange={(tags) => {
+                    setExcludeTags(tags);
+                    entry.statsSelection.excludeTags = tags.map((tag) => ({
+                        key: tag.tag.key,
+                        value: tag.value,
+                        __typename: 'TimeSpanTag',
+                    }));
+                    setEntry(entry);
+                }}
+            />
+            <TagFilterSelector
+                type="Include"
+                value={includeTags}
+                onChange={(tags) => {
+                    setIncludeTags(tags);
+                    entry.statsSelection.includeTags = tags.map((tag) => ({
+                        key: tag.tag.key,
+                        value: tag.value,
+                        __typename: 'TimeSpanTag',
+                    }));
                     setEntry(entry);
                 }}
             />
