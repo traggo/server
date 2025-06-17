@@ -9,7 +9,8 @@ export const useSuggest = (
     tagResult: QueryResult<Tags, {}>,
     inputValue: string,
     usedTags: string[],
-    skipValue = false
+    skipValue = false,
+    includeInputValueOnNoMatch = true
 ): TagSelectorEntry[] => {
     const [tagKeySomeCase, tagValue] = inputValue.split(':');
     const tagKey = tagKeySomeCase.toLowerCase();
@@ -22,7 +23,7 @@ export const useSuggest = (
     });
 
     if (exactMatch && tagValue !== undefined && usedTags.indexOf(exactMatch.key) === -1 && !skipValue) {
-        return suggestTagValue(exactMatch, tagValue, valueResult);
+        return suggestTagValue(exactMatch, tagValue, valueResult, includeInputValueOnNoMatch);
     } else {
         return suggestTag(exactMatch, tagResult, tagKey, usedTags);
     }
@@ -59,11 +60,12 @@ const suggestTag = (
 const suggestTagValue = (
     exactMatch: TagSelectorEntry['tag'],
     tagValue: string,
-    valueResult: QueryResult<SuggestTagValue, SuggestTagValueVariables>
+    valueResult: QueryResult<SuggestTagValue, SuggestTagValueVariables>,
+    includeInputValueOnNoMatch: boolean
 ): TagSelectorEntry[] => {
     let someValues = (valueResult.data && valueResult.data.values) || [];
 
-    if (someValues.indexOf(tagValue) === -1) {
+    if (includeInputValueOnNoMatch && someValues.indexOf(tagValue) === -1) {
         someValues = [tagValue, ...someValues];
     }
 
