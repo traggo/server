@@ -54,24 +54,18 @@ func (r *ResolverForEntry) UpdateDashboardEntry(ctx context.Context, id int, ent
 			entry.RangeTo = stats.Range.To
 		}
 
-		if tag := tagsDuplicates(stats.ExcludeTags, stats.IncludeTags); tag != nil {
-			return nil, fmt.Errorf("tag '%s' is present in both exclude tags and include tags", tag.Key+":"+tag.Value)
+		tagFilters := convert.TagFiltersToInternal(stats.ExcludeTags, false)
+		tagFilters = append(tagFilters, convert.TagFiltersToInternal(stats.IncludeTags, true)...)
+
+		if err := tagsDuplicates(tagFilters); err != nil {
+			return nil, err
 		}
 
-		r.DB.Where("dashboard_entry_id = ?", id).Delete(new(model.DashboardExcludedTag))
-		r.DB.Where("dashboard_entry_id = ?", id).Delete(new(model.DashboardIncludedTag))
-
-		if err := tagsExist(r.DB, auth.GetUser(ctx).ID, stats.ExcludeTags); err != nil {
-			return nil, fmt.Errorf("exclude tags: %s", err.Error())
+		if err := r.DB.Where("dashboard_entry_id = ?", id).Delete(new(model.DashboardTagFilter)).Error; err != nil {
+			return nil, fmt.Errorf("failed to update tag filters: %s", err)
 		}
 
-		if err := tagsExist(r.DB, auth.GetUser(ctx).ID, stats.IncludeTags); err != nil {
-			return nil, fmt.Errorf("include tags: %s", err.Error())
-		}
-
-		entry.ExcludedTags = convert.ExcludedTagsToInternal(stats.ExcludeTags)
-		entry.IncludedTags = convert.IncludedTagsToInternal(stats.IncludeTags)
-
+		entry.TagFilters = tagFilters
 		entry.Keys = strings.Join(stats.Tags, ",")
 		entry.Interval = convert.InternalInterval(stats.Interval)
 	}
