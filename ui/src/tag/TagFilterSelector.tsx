@@ -1,5 +1,5 @@
 import React from 'react';
-import Downshift from 'downshift';
+import Downshift, {ControllerStateAndHelpers} from 'downshift';
 import {makeStyles, Theme} from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
@@ -67,11 +67,17 @@ export const TagFilterSelector: React.FC<TagFilterSelectorProps> = ({value: sele
         setInputValue(event.target.value);
     }
 
-    function handleChange(item: TagSelectorEntry) {
-        if (!item.value) {
-            setInputValue(item.tag.key + ':');
+    function handleChange(item: TagSelectorEntry, state: ControllerStateAndHelpers<TagSelectorEntry>) {
+        if (!item) {
             return;
         }
+
+        if (!item.value) {
+            setInputValue(item.tag.key + ':');
+            state.setState({isOpen: true});
+            return;
+        }
+
         let newSelectedItem = [...selectedItem];
         if (newSelectedItem.indexOf(item) === -1) {
             newSelectedItem = [...newSelectedItem, item];
@@ -90,7 +96,7 @@ export const TagFilterSelector: React.FC<TagFilterSelectorProps> = ({value: sele
         <Downshift
             id="downshift-multiple"
             inputValue={inputValue}
-            onChange={handleChange}
+            onChange={handleChange(item, state)}
             itemToString={(item) => (item ? label(item) : '')}
             defaultIsOpen={false}>
             {({getInputProps, getItemProps, getLabelProps, isOpen, highlightedIndex}) => {
