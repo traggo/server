@@ -51,9 +51,7 @@ export const TagFilterSelector: React.FC<TagFilterSelectorProps> = ({value: sele
     const [inputValue, setInputValue] = React.useState('');
 
     const tagsResult = useQuery<Tags>(gqlTags.Tags);
-    const suggestions = useSuggest(tagsResult, inputValue, [])
-        .filter((t) => !t.tag.create && !t.tag.alreadyUsed)
-        .reverse();
+    const suggestions = useSuggest(tagsResult, inputValue, [], false, false).filter((t) => !t.tag.create && !t.tag.alreadyUsed);
 
     if (tagsResult.error || tagsResult.loading || !tagsResult.data || !tagsResult.data.tags) {
         return null;
@@ -104,7 +102,7 @@ export const TagFilterSelector: React.FC<TagFilterSelectorProps> = ({value: sele
                     <div className={classes.container}>
                         <TextField
                             InputLabelProps={getLabelProps()}
-                            required={true}
+                            required={false}
                             disabled={disabled}
                             InputProps={{
                                 classes: {
