@@ -18,8 +18,7 @@ func (r *ResolverForDashboard) Dashboards(ctx context.Context) ([]*gqlmodel.Dash
 
 	q := r.DB
 	q = q.Preload("Entries")
-	q = q.Preload("Entries.ExcludedTags")
-	q = q.Preload("Entries.IncludedTags")
+	q = q.Preload("Entries.TagFilters")
 	q = q.Preload("Ranges")
 
 	find := q.Where(&model.Dashboard{UserID: userID}).Find(&dashboards)
