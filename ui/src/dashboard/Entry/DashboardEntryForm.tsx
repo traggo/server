@@ -32,26 +32,23 @@ export const isValidDashboardEntry = (item: Dashboards_dashboards_items): boolea
 export const DashboardEntryForm: React.FC<EditPopupProps> = ({entry, onChange: setEntry, disabled = false, ranges}) => {
     const [staticRange, setStaticRange] = React.useState(!entry.statsSelection.rangeId);
 
-    const [excludeTags, setExcludeTags] = React.useState(
-        (entry.statsSelection.excludeTags || []).map((tag) => ({
-            tag: {
-                key: tag.key,
-                color: '',
-                __typename: 'TagDefinition' as 'TagDefinition',
-            },
-            value: tag.value,
-        }))
-    );
-    const [includeTags, setIncludeTags] = React.useState(
-        (entry.statsSelection.includeTags || []).map((tag) => ({
-            tag: {
-                key: tag.key,
-                color: '',
-                __typename: 'TagDefinition' as 'TagDefinition',
-            },
-            value: tag.value,
-        }))
-    );
+    const excludeTags = (entry.statsSelection.excludeTags || []).map((tag) => ({
+        tag: {
+            key: tag.key,
+            color: '',
+            __typename: 'TagDefinition' as 'TagDefinition',
+        },
+        value: tag.value,
+    }));
+
+    const includeTags = (entry.statsSelection.includeTags || []).map((tag) => ({
+        tag: {
+            key: tag.key,
+            color: '',
+            __typename: 'TagDefinition' as 'TagDefinition',
+        },
+        value: tag.value,
+    }));
 
     const range: Dashboards_dashboards_items_statsSelection_range = entry.statsSelection.range
         ? entry.statsSelection.range
@@ -215,7 +212,6 @@ export const DashboardEntryForm: React.FC<EditPopupProps> = ({entry, onChange: s
                 type="Exclude"
                 value={excludeTags}
                 onChange={(tags) => {
-                    setExcludeTags(tags);
                     entry.statsSelection.excludeTags = tags.map((tag) => ({
                         key: tag.tag.key,
                         value: tag.value,
@@ -228,7 +224,6 @@ export const DashboardEntryForm: React.FC<EditPopupProps> = ({entry, onChange: s
                 type="Include"
                 value={includeTags}
                 onChange={(tags) => {
-                    setIncludeTags(tags);
                     entry.statsSelection.includeTags = tags.map((tag) => ({
                         key: tag.tag.key,
                         value: tag.value,
