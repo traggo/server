@@ -96,7 +96,7 @@ export const TagFilterSelector: React.FC<TagFilterSelectorProps> = ({value: sele
         <Downshift
             id="downshift-multiple"
             inputValue={inputValue}
-            onChange={handleChange(item, state)}
+            onChange={handleChange}
             itemToString={(item) => (item ? label(item) : '')}
             defaultIsOpen={false}>
             {({getInputProps, getItemProps, getLabelProps, isOpen, highlightedIndex}) => {
