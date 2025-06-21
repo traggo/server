@@ -10,6 +10,8 @@ import * as gqlDashboard from '../../gql/dashboard';
 import {Fade} from '../../common/Fade';
 import {DashboardEntryForm, isValidDashboardEntry} from './DashboardEntryForm';
 import {AddDashboardEntry, AddDashboardEntryVariables} from '../../gql/__generated__/AddDashboardEntry';
+import {handleError} from '../../utils/errors';
+import {useSnackbar} from 'notistack';
 
 interface EditPopupProps {
     dashboardId: number;
@@ -38,6 +40,9 @@ export const AddPopup: React.FC<EditPopupProps> = ({
         refetchQueries: [{query: gqlDashboard.Dashboards}],
     });
     const valid = isValidDashboardEntry(entry);
+
+    const {enqueueSnackbar} = useSnackbar();
+
     return (
         <Popper
             key="popup"
@@ -89,6 +94,8 @@ export const AddPopup: React.FC<EditPopupProps> = ({
                                                       }
                                                     : null,
                                                 rangeId: entry.statsSelection.rangeId,
+                                                excludeTags: entry.statsSelection.excludeTags,
+                                                includeTags: entry.statsSelection.includeTags,
                                             },
                                             pos: {
                                                 desktop: {
@@ -99,7 +106,9 @@ export const AddPopup: React.FC<EditPopupProps> = ({
                                                 },
                                             },
                                         },
-                                    }).then(finish);
+                                    })
+                                        .then(finish)
+                                        .catch(handleError('Add Dashboard Entry', enqueueSnackbar));
                                 }}>
                                 Add
                             </Button>
