@@ -36,6 +36,19 @@ func (r *ResolverForEntry) UpdateDashboardEntry(ctx context.Context, id int, ent
 		entry.Total = *total
 	}
 
+	tx := r.DB.Begin()
+	if err := tx.Error; err != nil {
+		return nil, err
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			panic(r)
+		} else if tx != nil {
+			tx.Rollback()
+		}
+	}()
+
 	if stats != nil {
 		if stats.RangeID != nil {
 			if _, err := util.FindDashboardRange(r.DB, *stats.RangeID); err != nil {
@@ -61,7 +74,7 @@ func (r *ResolverForEntry) UpdateDashboardEntry(ctx context.Context, id int, ent
 			return nil, err
 		}
 
-		if err := r.DB.Where("dashboard_entry_id = ?", id).Delete(new(model.DashboardTagFilter)).Error; err != nil {
+		if err := tx.Where("dashboard_entry_id = ?", id).Delete(new(model.DashboardTagFilter)).Error; err != nil {
 			return nil, fmt.Errorf("failed to update tag filters: %s", err)
 		}
 
@@ -78,7 +91,14 @@ func (r *ResolverForEntry) UpdateDashboardEntry(ctx context.Context, id int, ent
 		return &gqlmodel.DashboardEntry{}, err
 	}
 
-	r.DB.Save(entry)
+	if err := tx.Save(entry).Error; err != nil {
+		return nil, err
+	}
 
+	if err := tx.Commit().Error; err != nil {
+		return nil, err
+	}
+
+	tx = nil
 	return convert.ToExternalEntry(entry)
 }
