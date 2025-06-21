@@ -6,6 +6,10 @@ import (
 )
 
 func tagFiltersToExternal(tags []model.DashboardTagFilter, include bool) []*gqlmodel.TimeSpanTag {
+	if len(tags) == 0 {
+		return nil
+	}
+
 	result := []*gqlmodel.TimeSpanTag{}
 	for _, tag := range tags {
 		if tag.Include == include {
