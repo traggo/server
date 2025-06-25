@@ -1,8 +1,10 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 interface Success {
     success: true;
-    value: moment.Moment;
+    preview: moment.Moment;
+    localized: string;
+    normalized: string;
 }
 
 interface Failure {
@@ -32,9 +34,35 @@ enum Unit {
     Second = 's',
 }
 
+// tslint:disable-next-line:cyclomatic-complexity mccabe-complexity
 export const parseRelativeTime = (value: string, divide: 'endOf' | 'startOf', nowDate = moment()): Success | Failure => {
-    if (isValidDate(value)) {
-        return success(asDate(value));
+    for (const format of ['YYYY-MM-DD HH:mm', 'YYYY-MM-DD', 'YYYY-MM-DD[T]HH:mm:ssZ']) {
+        if (isValidDate(value, format)) {
+            const parsed = asDate(value, format);
+            if (divide === 'endOf' && format === 'YYYY-MM-DD') {
+                parsed.endOf('day');
+            }
+
+            if (format === 'YYYY-MM-DD[T]HH:mm:ssZ') {
+                const localDate = parsed.clone().local();
+                if (
+                    (divide === 'startOf' && parsed.isSame(localDate.startOf('day'), 'second')) ||
+                    (divide === 'endOf' && parsed.isSame(localDate.endOf('day'), 'second'))
+                ) {
+                    value = asDate(value).format('YYYY-MM-DD');
+                } else {
+                    value = asDate(value).format('YYYY-MM-DD HH:mm');
+                }
+            }
+            return success(
+                parsed,
+                value,
+                parsed
+                    .clone()
+                    .utc()
+                    .format()
+            );
+        }
     }
 
     if (value.substr(0, 3) === 'now') {
@@ -105,18 +133,18 @@ export const parseRelativeTime = (value: string, divide: 'endOf' | 'startOf', no
         if (expectNext === Type.Value) {
             return failure('Expected number at the end but got nothing');
         }
-        return success(time);
+        return success(time, value, value);
     }
 
     if (value.indexOf('now') !== -1) {
         return failure("'now' must be at the start");
     }
 
-    return failure("Expected valid date or 'now' at index 0");
+    return failure("Expected valid date (e.g. 2020-01-01 16:30) or 'now' at index 0");
 };
 
-export const success = (value: moment.Moment): Success => {
-    return {success: true, value};
+export const success = (value: moment.Moment, localized: string, normalized: string): Success => {
+    return {success: true, preview: value, normalized, localized};
 };
 export const failure = (error: string): Failure => {
     return {success: false, error};
@@ -133,7 +161,7 @@ export const isValidDate = (value: string, format?: string) => {
     return asDate(value, format).isValid();
 };
 
-export const asDate = (value: string, format = 'YYYY-MM-DD HH:mm') => {
+export const asDate = (value: string, format = 'YYYY-MM-DD[T]HH:mm:ssZ') => {
     return moment(value, format, true);
 };
 export const isSameDate = (from: moment.Moment, to?: moment.Moment): boolean => {
