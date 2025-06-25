@@ -1,4 +1,4 @@
-import {isValidDate, normalizeDate, parseRelativeTime, userFriendlyDate} from './time';
+import {isValidDate, parseRelativeTime} from './time';
 import moment from 'moment';
 
 moment.updateLocale('en', {
@@ -24,43 +24,160 @@ it('should test for valid date', () => {
 // 2019-10-14 Monday
 // 2019-10-21 Monday
 
-it('should parse', () => {
-    expectSuccess(parseRelativeTime('now-1d', 'startOf', moment('2019-10-20T15:55:00'))).toEqual('2019-10-19 15:55:00');
-    expectSuccess(parseRelativeTime('now-120s', 'startOf', moment('2019-10-20T15:55:15'))).toEqual('2019-10-20 15:53:15');
-    expectSuccess(parseRelativeTime('now-1d-1h', 'startOf', moment('2019-10-20T15:55:00'))).toEqual('2019-10-19 14:55:00');
-    expectSuccess(parseRelativeTime('now/w', 'startOf', moment('2019-10-20T15:55:15'))).toEqual('2019-10-14 00:00:00');
-    expectSuccess(parseRelativeTime('now/w', 'endOf', moment('2019-10-20T15:55:15'))).toEqual('2019-10-20 23:59:59');
-    expectSuccess(parseRelativeTime('now-1w/w', 'startOf', moment('2019-10-20T15:55:15'))).toEqual('2019-10-07 00:00:00');
-    expectSuccess(parseRelativeTime('now-1y+1w/w', 'startOf', moment('2019-10-20T15:55:15'))).toEqual('2018-10-22 00:00:00');
-    expectSuccess(parseRelativeTime('now/d+5h', 'startOf', moment('2019-10-20T15:55:00'))).toEqual('2019-10-20 05:00:00');
-    expectSuccess(parseRelativeTime('now/y', 'startOf', moment('2019-10-20T15:55:15'))).toEqual('2019-01-01 00:00:00');
-});
-
-it('should convert to RFC3339 and back', () => {
-    // can't put exact dates since moment doesn't allow overriding `.local()`'s timezone for unit tests
-    const userDate = '2025-01-01 10:10';
-    const rfcDate = moment(userDate).utc().format();
-
-    expect(normalizeDate(userDate)).toBe(rfcDate);
-    expect(userFriendlyDate(rfcDate)).toBe(userDate);
-});
-
-it('should not modify relative ranges', () => {
-    expect(normalizeDate('now-1d')).toBe('now-1d');
-    expect(normalizeDate('now-120s')).toBe('now-120s');
-    expect(normalizeDate('now-1d-1h')).toBe('now-1d-1h');
-    expect(normalizeDate('now/w')).toBe('now/w');
-    expect(normalizeDate('now/w')).toBe('now/w');
-    expect(normalizeDate('now-1w/w')).toBe('now-1w/w');
-    expect(normalizeDate('now-1y+1w/w')).toBe('now-1y+1w/w');
-    expect(normalizeDate('now/d+5h')).toBe('now/d+5h');
-    expect(normalizeDate('now/y')).toBe('now/y');
-});
-
-const expectSuccess = (value: ReturnType<typeof parseRelativeTime>) => {
-    if (value.success) {
-        return expect(value.value.format('YYYY-MM-DD HH:mm:ss'));
+it.each([
+    {
+        value: 'now-1d',
+        divide: 'startOf',
+        now: moment('2019-10-20T15:55:00'),
+        expected: '2019-10-19 15:55:00',
+        localized: 'now-1d',
+        normalized: 'now-1d',
+        shouldParse: true,
+    },
+    {
+        value: 'now-120s',
+        divide: 'startOf',
+        now: moment('2019-10-20T15:55:15'),
+        expected: '2019-10-20 15:53:15',
+        localized: 'now-120s',
+        normalized: 'now-120s',
+        shouldParse: true,
+    },
+    {
+        value: 'now-1d-1h',
+        divide: 'startOf',
+        now: moment('2019-10-20T15:55:00'),
+        expected: '2019-10-19 14:55:00',
+        localized: 'now-1d-1h',
+        normalized: 'now-1d-1h',
+        shouldParse: true,
+    },
+    {
+        value: 'now/w',
+        divide: 'startOf',
+        now: moment('2019-10-20T15:55:15'),
+        expected: '2019-10-14 00:00:00',
+        localized: 'now/w',
+        normalized: 'now/w',
+        shouldParse: true,
+    },
+    {
+        value: 'now/w',
+        divide: 'endOf',
+        now: moment('2019-10-20T15:55:15'),
+        expected: '2019-10-20 23:59:59',
+        localized: 'now/w',
+        normalized: 'now/w',
+        shouldParse: true,
+    },
+    {
+        value: 'now-1w/w',
+        divide: 'startOf',
+        now: moment('2019-10-20T15:55:15'),
+        expected: '2019-10-07 00:00:00',
+        localized: 'now-1w/w',
+        normalized: 'now-1w/w',
+        shouldParse: true,
+    },
+    {
+        value: 'now-1y+1w/w',
+        divide: 'startOf',
+        now: moment('2019-10-20T15:55:15'),
+        expected: '2018-10-22 00:00:00',
+        localized: 'now-1y+1w/w',
+        normalized: 'now-1y+1w/w',
+        shouldParse: true,
+    },
+    {
+        value: 'now/d+5h',
+        divide: 'startOf',
+        now: moment('2019-10-20T15:55:00'),
+        expected: '2019-10-20 05:00:00',
+        localized: 'now/d+5h',
+        normalized: 'now/d+5h',
+        shouldParse: true,
+    },
+    {
+        value: 'now/y',
+        divide: 'startOf',
+        now: moment('2019-10-20T15:55:15'),
+        expected: '2019-01-01 00:00:00',
+        localized: 'now/y',
+        normalized: 'now/y',
+        shouldParse: true,
+    },
+    {
+        value: '2025-01-01 10:10',
+        divide: 'startOf',
+        expected: '2025-01-01 10:10:00',
+        localized: '2025-01-01 10:10',
+        normalized: moment('2025-01-01 10:10').utc().format(),
+        shouldParse: true,
+    },
+    {
+        value: '2025-01-01 10:10',
+        divide: 'endOf',
+        expected: '2025-01-01 10:10:00',
+        localized: '2025-01-01 10:10',
+        normalized: moment('2025-01-01 10:10').utc().format(),
+        shouldParse: true,
+    },
+    {
+        value: '2025-01-02',
+        divide: 'startOf',
+        expected: '2025-01-02 00:00:00',
+        localized: '2025-01-02',
+        normalized: moment('2025-01-02 00:00').utc().format(),
+        shouldParse: true,
+    },
+    {
+        value: '2025-01-02',
+        divide: 'endOf',
+        expected: '2025-01-02 23:59:59',
+        localized: '2025-01-02',
+        normalized: moment('2025-01-02 23:59:59').utc().format(),
+        shouldParse: true,
+    },
+    {
+        value: moment('2025-01-02 10:00:00').format(),
+        divide: 'startOf',
+        expected: '2025-01-02 10:00:00',
+        localized: '2025-01-02 10:00',
+        normalized: moment('2025-01-02 10:00:00').utc().format(),
+        shouldParse: true,
+    },
+    {
+        value: moment('2025-01-02 00:00:00').format(),
+        divide: 'startOf',
+        expected: '2025-01-02 00:00:00',
+        localized: '2025-01-02',
+        normalized: moment('2025-01-02 00:00:00').utc().format(),
+        shouldParse: true,
+    },
+    {
+        value: moment('2025-01-02 23:59:59').utc().format(),
+        divide: 'endOf',
+        expected: '2025-01-02 23:59:59',
+        localized: '2025-01-02',
+        normalized: moment('2025-01-02 23:59:59').utc().format(),
+        shouldParse: true,
+    },
+    {
+        value: 'invalid',
+        divide: 'endOf',
+        expected: "Expected valid date (e.g. 2020-01-01 16:30) or 'now' at index 0",
+        localized: 'invalid',
+        normalized: undefined,
+        shouldParse: false,
+    },
+])('should parse', ({value, divide, now, expected, normalized, localized, shouldParse}) => {
+    const result = parseRelativeTime(value, divide as 'startOf' | 'endOf', now);
+    expect(result.success).toBe(shouldParse);
+    if (result.success) {
+        expect(result.preview.format('YYYY-MM-DD HH:mm:ss')).toEqual(expected);
+        expect(result.normalized).toEqual(normalized);
+        expect(result.localized).toEqual(localized);
+    }else{
+        expect(result.error).toEqual(expected);
     }
-    expect(value.error).toEqual('no error');
-    return expect('');
-};
+});

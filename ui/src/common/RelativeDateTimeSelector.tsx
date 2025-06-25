@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {TextField} from '@material-ui/core';
-import {normalizeDate, parseRelativeTime, userFriendlyDate} from '../utils/time';
+import {parseRelativeTime} from '../utils/time';
 import Typography from '@material-ui/core/Typography';
 import useTimeout from '@rooks/use-timeout';
 
@@ -29,18 +29,16 @@ export const RelativeDateTimeSelector: React.FC<RelativeDateTimeSelectorProps> =
     const [error, setError] = React.useState('');
     const {start, stop} = useTimeout(() => setErrVisible(true), 200);
     const parsed = parseRelativeTime(apiValue, type);
-    const value = userFriendlyDate(apiValue);
 
     return (
         <TextField
             fullWidth
             style={style}
-            value={value}
+            value={parsed.success ? parsed.localized : apiValue}
             disabled={disabled}
             InputProps={{disableUnderline}}
             onChange={(e) => {
-                const newValue = normalizeDate(e.target.value);
-                const result = parseRelativeTime(newValue, type);
+                const result = parseRelativeTime(e.target.value, type);
                 setErrVisible(false);
                 stop();
                 if (!result.success) {
@@ -49,18 +47,16 @@ export const RelativeDateTimeSelector: React.FC<RelativeDateTimeSelectorProps> =
                 } else {
                     setError('');
                 }
-                setValue(newValue, result.success);
+                setValue(result.success ? result.normalized : e.target.value, result.success);
             }}
             error={error !== ''}
             helperText={
-                small ? (
-                    undefined
-                ) : errVisible ? (
+                small ? undefined : errVisible ? (
                     <Typography color={'secondary'} variant={'caption'}>
                         {error}
                     </Typography>
                 ) : (
-                    <Typography variant={'caption'}>{!parsed.success ? '...' : parsed.value.format('llll')}</Typography>
+                    <Typography variant={'caption'}>{!parsed.success ? '...' : parsed.preview.format('llll')}</Typography>
                 )
             }
             label={label}
