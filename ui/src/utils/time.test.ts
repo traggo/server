@@ -111,7 +111,9 @@ it.each([
         divide: 'startOf',
         expected: '2025-01-01 10:10:00',
         localized: '2025-01-01 10:10',
-        normalized: moment('2025-01-01 10:10').utc().format(),
+        normalized: moment('2025-01-01 10:10')
+            .utc()
+            .format(),
         shouldParse: true,
     },
     {
@@ -119,7 +121,9 @@ it.each([
         divide: 'endOf',
         expected: '2025-01-01 10:10:00',
         localized: '2025-01-01 10:10',
-        normalized: moment('2025-01-01 10:10').utc().format(),
+        normalized: moment('2025-01-01 10:10')
+            .utc()
+            .format(),
         shouldParse: true,
     },
     {
@@ -127,7 +131,9 @@ it.each([
         divide: 'startOf',
         expected: '2025-01-02 00:00:00',
         localized: '2025-01-02',
-        normalized: moment('2025-01-02 00:00').utc().format(),
+        normalized: moment('2025-01-02 00:00')
+            .utc()
+            .format(),
         shouldParse: true,
     },
     {
@@ -135,7 +141,9 @@ it.each([
         divide: 'endOf',
         expected: '2025-01-02 23:59:59',
         localized: '2025-01-02',
-        normalized: moment('2025-01-02 23:59:59').utc().format(),
+        normalized: moment('2025-01-02 23:59:59')
+            .utc()
+            .format(),
         shouldParse: true,
     },
     {
@@ -143,7 +151,9 @@ it.each([
         divide: 'startOf',
         expected: '2025-01-02 10:00:00',
         localized: '2025-01-02 10:00',
-        normalized: moment('2025-01-02 10:00:00').utc().format(),
+        normalized: moment('2025-01-02 10:00:00')
+            .utc()
+            .format(),
         shouldParse: true,
     },
     {
@@ -151,15 +161,21 @@ it.each([
         divide: 'startOf',
         expected: '2025-01-02 00:00:00',
         localized: '2025-01-02',
-        normalized: moment('2025-01-02 00:00:00').utc().format(),
+        normalized: moment('2025-01-02 00:00:00')
+            .utc()
+            .format(),
         shouldParse: true,
     },
     {
-        value: moment('2025-01-02 23:59:59').utc().format(),
+        value: moment('2025-01-02 23:59:59')
+            .utc()
+            .format(),
         divide: 'endOf',
         expected: '2025-01-02 23:59:59',
         localized: '2025-01-02',
-        normalized: moment('2025-01-02 23:59:59').utc().format(),
+        normalized: moment('2025-01-02 23:59:59')
+            .utc()
+            .format(),
         shouldParse: true,
     },
     {
@@ -177,7 +193,7 @@ it.each([
         expect(result.preview.format('YYYY-MM-DD HH:mm:ss')).toEqual(expected);
         expect(result.normalized).toEqual(normalized);
         expect(result.localized).toEqual(localized);
-    }else{
+    } else {
         expect(result.error).toEqual(expected);
     }
 });

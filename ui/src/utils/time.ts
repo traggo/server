@@ -54,7 +54,14 @@ export const parseRelativeTime = (value: string, divide: 'endOf' | 'startOf', no
                     value = asDate(value).format('YYYY-MM-DD HH:mm');
                 }
             }
-            return success(parsed, value, parsed.clone().utc().format());
+            return success(
+                parsed,
+                value,
+                parsed
+                    .clone()
+                    .utc()
+                    .format()
+            );
         }
     }
 
@@ -92,7 +99,7 @@ export const parseRelativeTime = (value: string, divide: 'endOf' | 'startOf', no
                 case Type.Unit:
                     if (!isUnit(currentChar)) {
                         return failure(
-                            'Expected unit (' + Object.values(Unit) + ') at index ' + currentIndex + ' but was ' + currentChar,
+                            'Expected unit (' + Object.values(Unit) + ') at index ' + currentIndex + ' but was ' + currentChar
                         );
                     }
 
@@ -130,10 +137,10 @@ export const parseRelativeTime = (value: string, divide: 'endOf' | 'startOf', no
     }
 
     if (value.indexOf('now') !== -1) {
-        return failure('\'now\' must be at the start');
+        return failure("'now' must be at the start");
     }
 
-    return failure('Expected valid date (e.g. 2020-01-01 16:30) or \'now\' at index 0');
+    return failure("Expected valid date (e.g. 2020-01-01 16:30) or 'now' at index 0");
 };
 
 export const success = (value: moment.Moment, localized: string, normalized: string): Success => {
