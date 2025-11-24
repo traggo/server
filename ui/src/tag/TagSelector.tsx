@@ -14,12 +14,31 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Input from '@material-ui/core/Input';
 import {useStateAndDelegateWithDelayOnChange} from '../utils/hooks';
 import {TagChip} from '../common/TagChip';
+import {makeStyles, Theme} from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme: Theme) => ({
+    root: {
+        width: '100%',
+    },
+    inputRoot: {display: 'flex', flexWrap: 'wrap', cursor: 'text', width: '100%'},
+    inputInput: {height: 40, minWidth: 150, flexGrow: 1},
+    paper: {
+        position: 'absolute',
+        zIndex: 1,
+        marginTop: theme.spacing(1),
+        left: 0,
+        right: 0,
+    },
+}));
 
 export interface TagSelectorProps {
     onSelectedEntriesChanged: (entries: TagSelectorEntry[]) => void;
     selectedEntries: TagSelectorEntry[];
     dialogOpen?: React.Dispatch<React.SetStateAction<boolean>>;
     onCtrlEnter?: () => void;
+    createTags?: boolean;
+    allowDuplicateTags?: boolean;
+    onlySelectKeys?: boolean;
 }
 
 export const TagSelector: React.FC<TagSelectorProps> = ({
@@ -27,7 +46,11 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
     onSelectedEntriesChanged: setSelectedEntries,
     dialogOpen = () => {},
     onCtrlEnter,
+    createTags = true,
+    allowDuplicateTags = false,
+    onlySelectKeys = false,
 }) => {
+    const classes = useStyles();
     const [tooltipErrorActive, tooltipError, showTooltipError] = useError(4000);
     const [open, setOpen] = React.useState(false);
     const [currentValue, setCurrentValueInternal] = React.useState('');
@@ -37,10 +60,14 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
     const container = React.useRef<null | HTMLDivElement>(null);
 
     const tagsResult = useQuery<Tags>(gqlTags.Tags);
-    const suggestions = useSuggest(
-        tagsResult,
-        currentValue,
-        selectedEntries.map((t) => t.tag.key)
+
+    let usedKeys: string[] = [];
+    if (!allowDuplicateTags) {
+        usedKeys = selectedEntries.map((t) => t.tag.key);
+    }
+
+    const suggestions = useSuggest(tagsResult, currentValue, usedKeys, false, createTags).filter(
+        (t) => (createTags || !t.tag.create) && (!allowDuplicateTags || !t.tag.alreadyUsed)
     );
 
     if (tagsResult.error || tagsResult.loading || !tagsResult.data || !tagsResult.data.tags) {
@@ -91,7 +118,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
 
         focusInput();
 
-        if (!entry.value) {
+        if (!onlySelectKeys && !entry.value) {
             const newValue = entry.tag.key + ':';
             if (currentValue !== newValue) {
                 setHighlightedIndex(0);
@@ -138,7 +165,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
 
     return (
         <ClickAwayListener onClickAway={() => setOpen(false)}>
-            <div style={{width: '100%'}}>
+            <div className={classes.root}>
                 <Tooltip
                     disableFocusListener
                     disableHoverListener
@@ -150,11 +177,8 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
                             {tooltipError}
                         </Typography>
                     }>
-                    <div
-                        ref={(ref) => (container.current = ref)}
-                        style={{display: 'flex', flexWrap: 'wrap', cursor: 'text', width: '100%'}}
-                        onClick={focusInput}>
-                        {toChips(selectedEntries)}
+                    <div ref={(ref) => (container.current = ref)} className={classes.inputRoot} onClick={focusInput}>
+                        {toChips(selectedEntries, onlySelectKeys)}
                         <Input
                             margin="none"
                             value={currentValue}
@@ -164,18 +188,13 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
                             disableUnderline={true}
                             onChange={(e) => setCurrentValue(e.target.value)}
                             placeholder="Enter Tags"
-                            style={{height: 40, minWidth: 150, flexGrow: 1}}
+                            className={classes.inputInput}
                         />
                     </div>
                 </Tooltip>
 
                 {open ? (
-                    <Paper
-                        style={{
-                            position: 'absolute',
-                            width: (container.current && container.current.clientWidth) || 300,
-                            zIndex: 1000,
-                        }}>
+                    <Paper className={classes.paper} square>
                         {suggestions.map((entry, index) => (
                             <Item key={label(entry)} entry={entry} onClick={trySubmit} selected={index === highlightedIndex} />
                         ))}
@@ -219,6 +238,12 @@ const Item: React.FC<ItemProps> = ({entry, selected, onClick}) => {
     );
 };
 
-const toChips = (entries: TagSelectorEntry[]) => {
-    return entries.map((entry) => <TagChip key={label(entry)} label={label(entry)} color={entry.tag.color} />);
+const toChips = (entries: TagSelectorEntry[], onlySelectKeys: boolean) => {
+    return entries.map((entry) => (
+        <TagChip
+            key={onlySelectKeys ? entry.tag.key : label(entry)}
+            label={onlySelectKeys ? entry.tag.key : label(entry)}
+            color={entry.tag.color}
+        />
+    ));
 };
