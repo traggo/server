@@ -3,8 +3,12 @@ import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/NativeSelect/NativeSelect';
+import {useQuery} from 'react-apollo';
+import {Tags} from '../../gql/__generated__/Tags';
+import * as gqlTags from '../../gql/tags';
 import {EntryType, StatsInterval} from '../../gql/__generated__/globalTypes';
-import {TagKeySelector} from '../../tag/TagKeySelector';
+import {toTagSelectorEntry} from '../../tag/tagSelectorEntry';
+import {FormTagSelector} from '../../tag/FormTagSelector';
 import {Dashboards_dashboards_items, Dashboards_dashboards_items_statsSelection_range} from '../../gql/__generated__/Dashboards';
 import {RelativeDateTimeSelector} from '../../common/RelativeDateTimeSelector';
 import {parseRelativeTime} from '../../utils/time';
@@ -30,6 +34,14 @@ export const isValidDashboardEntry = (item: Dashboards_dashboards_items): boolea
 };
 export const DashboardEntryForm: React.FC<EditPopupProps> = ({entry, onChange: setEntry, disabled = false, ranges}) => {
     const [staticRange, setStaticRange] = React.useState(!entry.statsSelection.rangeId);
+
+    const tagsResult = useQuery<Tags>(gqlTags.Tags);
+
+    let tagKeys;
+    if (!tagsResult.error && !tagsResult.loading && tagsResult.data && tagsResult.data.tags) {
+        const keyInputTags = (entry.statsSelection.tags || []).map((key) => ({key, value: ''}));
+        tagKeys = toTagSelectorEntry(tagsResult.data.tags, keyInputTags);
+    }
 
     const range: Dashboards_dashboards_items_statsSelection_range = entry.statsSelection.range
         ? entry.statsSelection.range
@@ -181,13 +193,16 @@ export const DashboardEntryForm: React.FC<EditPopupProps> = ({entry, onChange: s
             ) : (
                 undefined
             )}
-            <TagKeySelector
-                value={entry.statsSelection.tags || []}
-                disabled={disabled}
-                onChange={(tags) => {
-                    entry.statsSelection.tags = tags;
+            <FormTagSelector
+                label="Tags"
+                selectedEntries={tagKeys || []}
+                onSelectedEntriesChanged={(tags) => {
+                    entry.statsSelection.tags = tags.map((tag) => tag.tag.key);
                     setEntry(entry);
                 }}
+                createTags={false}
+                onlySelectKeys
+                removeWhenClicked
             />
         </>
     );
