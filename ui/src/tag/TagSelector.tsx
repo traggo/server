@@ -161,6 +161,9 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
             event.preventDefault();
             setOpen(false);
         }
+        if (event.key === 'Tab') {
+            setOpen(false);
+        }
     };
 
     return (
