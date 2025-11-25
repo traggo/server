@@ -9,6 +9,7 @@ import {useQuery} from '@apollo/react-hooks';
 import {Tags} from '../gql/__generated__/Tags';
 import * as gqlTags from '../gql/tags';
 import {useSuggest} from './suggest';
+import {toTagSelectorEntry} from './tagSelectorEntry';
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -49,13 +50,17 @@ export const TagKeySelector: React.FC<TagKeySelectorProps> = ({value: selectedIt
     const [inputValue, setInputValue] = React.useState('');
 
     const tagsResult = useQuery<Tags>(gqlTags.Tags);
-    const suggestions = useSuggest(tagsResult, inputValue, selectedItem, true)
-        .filter((t) => !t.tag.create && !t.tag.alreadyUsed)
-        .map((t) => t.tag.key);
-
     if (tagsResult.error || tagsResult.loading || !tagsResult.data || !tagsResult.data.tags) {
         return null;
     }
+
+    const selectedItems = toTagSelectorEntry(
+        tagsResult.data.tags,
+        selectedItem.map((i) => ({key: i, value: ''}))
+    );
+    const suggestions = useSuggest(tagsResult, inputValue, selectedItems, true)
+        .filter((t) => !t.tag.create && !t.tag.alreadyUsed)
+        .map((t) => t.tag.key);
 
     function handleKeyDown(event: React.KeyboardEvent) {
         if (selectedItem.length && !inputValue.length && event.key === 'Backspace') {

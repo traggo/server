@@ -8,8 +8,9 @@ import {QueryResult} from 'react-apollo';
 export const useSuggest = (
     tagResult: QueryResult<Tags, {}>,
     inputValue: string,
-    usedTags: string[],
+    usedTags: TagSelectorEntry[],
     skipValue = false,
+    allowDuplicateKeys = false,
     includeInputValueOnNoMatch = true
 ): TagSelectorEntry[] => {
     const [tagKeySomeCase, tagValue] = inputValue.split(':');
@@ -22,10 +23,17 @@ export const useSuggest = (
         skip: exactMatch === undefined || skipValue,
     });
 
-    if (exactMatch && tagValue !== undefined && usedTags.indexOf(exactMatch.key) === -1 && !skipValue) {
-        return suggestTagValue(exactMatch, tagValue, valueResult, includeInputValueOnNoMatch);
+    let usedKeys: string[] = [];
+    if (!allowDuplicateKeys) {
+        usedKeys = usedTags.map((t) => t.tag.key);
+    }
+
+    const usedValues = usedTags.map((t) => t.value);
+
+    if (exactMatch && tagValue !== undefined && usedKeys.indexOf(exactMatch.key) === -1 && !skipValue) {
+        return suggestTagValue(exactMatch, tagValue, valueResult, usedValues, includeInputValueOnNoMatch);
     } else {
-        return suggestTag(exactMatch, tagResult, tagKey, usedTags);
+        return suggestTag(exactMatch, tagResult, tagKey, usedKeys);
     }
 };
 
@@ -61,12 +69,18 @@ const suggestTagValue = (
     exactMatch: TagSelectorEntry['tag'],
     tagValue: string,
     valueResult: QueryResult<SuggestTagValue, SuggestTagValueVariables>,
+    usedValues: string[],
     includeInputValueOnNoMatch: boolean
 ): TagSelectorEntry[] => {
     let someValues = (valueResult.data && valueResult.data.values) || [];
 
     if (includeInputValueOnNoMatch && someValues.indexOf(tagValue) === -1) {
         someValues = [tagValue, ...someValues];
+    }
+
+    someValues = someValues.filter((val) => usedValues.indexOf(val) === -1);
+    if (someValues.length === 0 && !includeInputValueOnNoMatch) {
+        return [{tag: specialTag(exactMatch.key, 'no_values'), value: ''}];
     }
 
     return someValues.map((val) => ({tag: exactMatch, value: val}));

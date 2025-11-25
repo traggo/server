@@ -7,7 +7,7 @@ export interface TagInputError {
 }
 
 export interface TagSelectorEntry {
-    tag: Omit<Tags_tags, 'usages'> & {create?: boolean; alreadyUsed?: boolean};
+    tag: Omit<Tags_tags, 'usages'> & {create?: boolean; alreadyUsed?: boolean; noValues?: boolean};
     value: string;
 }
 
@@ -32,13 +32,14 @@ export const toTagSelectorEntry = (tags: Array<TagSelectorEntry['tag']>, entries
     );
 };
 
-export const specialTag = (name: string, state: 'used' | 'new'): TagSelectorEntry['tag'] & {usages: 0} => {
+export const specialTag = (name: string, state: 'used' | 'new' | 'no_values'): TagSelectorEntry['tag'] & {usages: 0} => {
     return {
         key: name,
         __typename: 'TagDefinition',
         color: 'gray',
         create: state === 'new',
         alreadyUsed: state === 'used',
+        noValues: state === 'no_values',
         usages: 0,
     };
 };
@@ -95,12 +96,18 @@ export const addValues = (
         .reduce(groupAndCheckExistence, {errors: [], entries: [], usedTags: selectedEntries.map((entry) => entry.tag.key)});
 };
 
-export const itemLabel = (tag: TagSelectorEntry) => {
+export const itemLabel = (tag: TagSelectorEntry, onlyShowKey: boolean = false) => {
     if (tag.tag.create) {
         return `Create tag '${tag.tag.key}'`;
     }
     if (tag.tag.alreadyUsed) {
         return `Tag '${tag.tag.key}' is already defined`;
+    }
+    if (tag.tag.noValues) {
+        return `Tag '${tag.tag.key}' already has it's all values used`;
+    }
+    if (onlyShowKey) {
+        return tag.tag.key;
     }
     return label(tag);
 };
