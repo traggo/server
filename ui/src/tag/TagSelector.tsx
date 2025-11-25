@@ -63,7 +63,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
 
     const tagsResult = useQuery<Tags>(gqlTags.Tags);
 
-    let suggestions = useSuggest(
+    const suggestions = useSuggest(
         tagsResult,
         currentValue,
         selectedEntries,

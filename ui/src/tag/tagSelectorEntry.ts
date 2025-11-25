@@ -96,7 +96,7 @@ export const addValues = (
         .reduce(groupAndCheckExistence, {errors: [], entries: [], usedTags: selectedEntries.map((entry) => entry.tag.key)});
 };
 
-export const itemLabel = (tag: TagSelectorEntry, onlyShowKey: boolean = false) => {
+export const itemLabel = (tag: TagSelectorEntry, onlyShowKey = false) => {
     if (tag.tag.create) {
         return `Create tag '${tag.tag.key}'`;
     }
