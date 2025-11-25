@@ -37,8 +37,9 @@ export interface TagSelectorProps {
     dialogOpen?: React.Dispatch<React.SetStateAction<boolean>>;
     onCtrlEnter?: () => void;
     createTags?: boolean;
-    allowDuplicateTags?: boolean;
+    allowDuplicateKeys?: boolean;
     onlySelectKeys?: boolean;
+    removeWhenClicked?: boolean;
 }
 
 export const TagSelector: React.FC<TagSelectorProps> = ({
@@ -47,8 +48,9 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
     dialogOpen = () => {},
     onCtrlEnter,
     createTags = true,
-    allowDuplicateTags = false,
+    allowDuplicateKeys = false,
     onlySelectKeys = false,
+    removeWhenClicked = false,
 }) => {
     const classes = useStyles();
     const [tooltipErrorActive, tooltipError, showTooltipError] = useError(4000);
@@ -134,6 +136,16 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
         return;
     };
 
+    const onTagClicked = (entry: TagSelectorEntry) => {
+        if (!removeWhenClicked) {
+            return;
+        }
+        const tagIndex = selectedEntries.indexOf(entry);
+        selectedEntries.splice(tagIndex, 1);
+
+        setSelectedEntries(selectedEntries);
+    };
+
     const onKeyDown = (event: React.KeyboardEvent) => {
         if (!currentValue && selectedEntries.length && event.key === 'Backspace') {
             event.preventDefault();
@@ -181,7 +193,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
                         </Typography>
                     }>
                     <div ref={(ref) => (container.current = ref)} className={classes.inputRoot} onClick={focusInput}>
-                        {toChips(selectedEntries, onlySelectKeys)}
+                        {toChips(selectedEntries, onlySelectKeys, onTagClicked)}
                         <Input
                             margin="none"
                             value={currentValue}
@@ -199,7 +211,13 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
                 {open ? (
                     <Paper className={classes.paper} square>
                         {suggestions.map((entry, index) => (
-                            <Item key={label(entry)} entry={entry} onClick={trySubmit} selected={index === highlightedIndex} />
+                            <Item
+                                key={label(entry)}
+                                entry={entry}
+                                onClick={trySubmit}
+                                selected={index === highlightedIndex}
+                                onlySelectKeys={onlySelectKeys}
+                            />
                         ))}
                     </Paper>
                 ) : null}
@@ -222,10 +240,11 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
 interface ItemProps {
     entry: TagSelectorEntry;
     selected: boolean;
+    onlySelectKeys: boolean;
     onClick: (entry: TagSelectorEntry) => void;
 }
 
-const Item: React.FC<ItemProps> = ({entry, selected, onClick}) => {
+const Item: React.FC<ItemProps> = ({entry, selected, onlySelectKeys, onClick}) => {
     return (
         <MenuItem
             key={entry.tag.key}
@@ -236,17 +255,18 @@ const Item: React.FC<ItemProps> = ({entry, selected, onClick}) => {
             style={{
                 fontWeight: selected ? 500 : 400,
             }}>
-            {itemLabel(entry)}
+            {itemLabel(entry, onlySelectKeys)}
         </MenuItem>
     );
 };
 
-const toChips = (entries: TagSelectorEntry[], onlySelectKeys: boolean) => {
+const toChips = (entries: TagSelectorEntry[], onlySelectKeys: boolean, onClick: (entry: TagSelectorEntry) => void) => {
     return entries.map((entry) => (
         <TagChip
-            key={onlySelectKeys ? entry.tag.key : label(entry)}
-            label={onlySelectKeys ? entry.tag.key : label(entry)}
+            key={itemLabel(entry, onlySelectKeys)}
+            label={itemLabel(entry, onlySelectKeys)}
             color={entry.tag.color}
+            onClick={() => onClick(entry)}
         />
     ));
 };
