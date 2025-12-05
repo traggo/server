@@ -104,7 +104,7 @@ export const itemLabel = (tag: TagSelectorEntry, onlyShowKey = false) => {
         return `Tag '${tag.tag.key}' is already defined`;
     }
     if (tag.tag.noValues) {
-        return `Tag '${tag.tag.key}' already has it's all values used`;
+        return `All values of tag '${tag.tag.key}' are used`;
     }
     if (onlyShowKey) {
         return tag.tag.key;
