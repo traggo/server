@@ -77,7 +77,6 @@ const suggestTagValue = (
     }
 
     someValues = someValues.filter((val) => usedValues.indexOf(val) === -1);
-    console.log({someValues});
     if (someValues.length === 0 && !includeInputValueOnNoMatch) {
         return [{tag: specialTag(exactMatch.key, 'no_values'), value: ''}];
     }
