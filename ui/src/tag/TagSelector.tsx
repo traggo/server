@@ -144,7 +144,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
             event.preventDefault();
             const last = selectedEntries[selectedEntries.length - 1];
             setSelectedEntries(selectedEntries.slice(0, selectedEntries.length - 1));
-            setCurrentValue(event.ctrlKey ? '' : label(last));
+            setCurrentValue(event.ctrlKey ? '' : itemLabel(last, onlySelectKeys));
         }
         if (event.key === 'ArrowUp') {
             event.preventDefault();
