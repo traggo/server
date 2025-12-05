@@ -11,7 +11,7 @@ export const useSuggest = (
     usedTags: TagSelectorEntry[],
     skipValue = false,
     allowDuplicateKeys = false,
-    includeInputValueOnNoMatch = true
+    createTags = true
 ): TagSelectorEntry[] => {
     const [tagKeySomeCase, tagValue] = inputValue.split(':');
     const tagKey = tagKeySomeCase.toLowerCase();
@@ -23,17 +23,13 @@ export const useSuggest = (
         skip: exactMatch === undefined || skipValue,
     });
 
-    let usedKeys: string[] = [];
-    if (!allowDuplicateKeys) {
-        usedKeys = usedTags.map((t) => t.tag.key);
-    }
-
+    const usedKeys = usedTags.map((t) => t.tag.key);
     const usedValues = usedTags.map((t) => t.value);
 
-    if (exactMatch && tagValue !== undefined && usedKeys.indexOf(exactMatch.key) === -1 && !skipValue) {
-        return suggestTagValue(exactMatch, tagValue, valueResult, usedValues, includeInputValueOnNoMatch);
+    if (exactMatch && tagValue !== undefined && !skipValue && (allowDuplicateKeys || usedKeys.indexOf(exactMatch.key) === -1)) {
+        return suggestTagValue(exactMatch, tagValue, valueResult, usedValues, createTags);
     } else {
-        return suggestTag(exactMatch, tagResult, tagKey, usedKeys);
+        return suggestTag(exactMatch, tagResult, tagKey, usedKeys, allowDuplicateKeys, createTags);
     }
 };
 
@@ -41,21 +37,23 @@ const suggestTag = (
     exactMatch: TagSelectorEntry['tag'] | undefined,
     tagResult: QueryResult<Tags, {}>,
     tagKey: string,
-    usedTags: string[]
+    usedTags: string[],
+    allowDuplicateKeys: boolean,
+    createTags: boolean
 ) => {
     if (!tagResult.data || tagResult.data.tags === null) {
         return [];
     }
 
     let availableTags = (tagResult.data.tags || [])
-        .filter((tag) => usedTags.indexOf(tag.key) === -1)
+        .filter((tag) => allowDuplicateKeys || usedTags.indexOf(tag.key) === -1)
         .filter((tag) => tag.key.indexOf(tagKey) === 0);
 
-    if (tagKey && !exactMatch) {
+    if (tagKey && !exactMatch && createTags) {
         availableTags = [specialTag(tagKey, 'new'), ...availableTags];
     }
 
-    if (usedTags.indexOf(tagKey) !== -1) {
+    if (usedTags.indexOf(tagKey) !== -1 && !allowDuplicateKeys) {
         availableTags = [specialTag(tagKey, 'used'), ...availableTags];
     }
 
@@ -79,6 +77,7 @@ const suggestTagValue = (
     }
 
     someValues = someValues.filter((val) => usedValues.indexOf(val) === -1);
+    console.log({someValues});
     if (someValues.length === 0 && !includeInputValueOnNoMatch) {
         return [{tag: specialTag(exactMatch.key, 'no_values'), value: ''}];
     }

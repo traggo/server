@@ -63,14 +63,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
 
     const tagsResult = useQuery<Tags>(gqlTags.Tags);
 
-    const suggestions = useSuggest(
-        tagsResult,
-        currentValue,
-        selectedEntries,
-        onlySelectKeys,
-        allowDuplicateKeys,
-        createTags
-    ).filter((t) => (createTags || !t.tag.create) && (!allowDuplicateKeys || !t.tag.alreadyUsed));
+    const suggestions = useSuggest(tagsResult, currentValue, selectedEntries, onlySelectKeys, allowDuplicateKeys, createTags);
 
     if (tagsResult.error || tagsResult.loading || !tagsResult.data || !tagsResult.data.tags) {
         return null;
