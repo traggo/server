@@ -26,8 +26,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         position: 'absolute',
         zIndex: 1,
         marginTop: theme.spacing(1),
-        left: 0,
-        right: 0,
     },
 }));
 
@@ -213,7 +211,10 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
                 </Tooltip>
 
                 {open ? (
-                    <Paper className={classes.paper} square>
+                    <Paper
+                        className={classes.paper}
+                        style={{width: (container.current && container.current.clientWidth) || 300}}
+                        square>
                         {suggestions.map((entry, index) => (
                             <Item
                                 key={label(entry)}
