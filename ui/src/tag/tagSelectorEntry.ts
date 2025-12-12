@@ -6,8 +6,16 @@ export interface TagInputError {
     value: string;
 }
 
+type SpecialTagState = 'used' | 'new' | 'no_values' | 'all_values_used';
+export interface SpecialTag {
+    create?: boolean;
+    alreadyUsed?: boolean;
+    noValues?: boolean;
+    allValuesUsed?: boolean;
+}
+
 export interface TagSelectorEntry {
-    tag: Omit<Tags_tags, 'usages'> & {create?: boolean; alreadyUsed?: boolean; noValues?: boolean};
+    tag: Omit<Tags_tags, 'usages'> & SpecialTag;
     value: string;
 }
 
@@ -32,7 +40,7 @@ export const toTagSelectorEntry = (tags: Array<TagSelectorEntry['tag']>, entries
     );
 };
 
-export const specialTag = (name: string, state: 'used' | 'new' | 'no_values'): TagSelectorEntry['tag'] & {usages: 0} => {
+export const specialTag = (name: string, state: SpecialTagState): TagSelectorEntry['tag'] & {usages: 0} => {
     return {
         key: name,
         __typename: 'TagDefinition',
@@ -40,6 +48,7 @@ export const specialTag = (name: string, state: 'used' | 'new' | 'no_values'): T
         create: state === 'new',
         alreadyUsed: state === 'used',
         noValues: state === 'no_values',
+        allValuesUsed: state == 'all_values_used',
         usages: 0,
     };
 };
@@ -104,6 +113,9 @@ export const itemLabel = (tag: TagSelectorEntry, onlyShowKey = false) => {
         return `Tag '${tag.tag.key}' is already defined`;
     }
     if (tag.tag.noValues) {
+        return `Unkown value '${tag.value}' of tag '${tag.tag.key}'`;
+    }
+    if (tag.tag.allValuesUsed) {
         return `All values of tag '${tag.tag.key}' are used`;
     }
     if (onlyShowKey) {

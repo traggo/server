@@ -76,9 +76,13 @@ const suggestTagValue = (
         someValues = [tagValue, ...someValues];
     }
 
+    if (someValues.length === 0 && !includeInputValueOnNoMatch) {
+        return [{tag: specialTag(exactMatch.key, 'no_values'), value: tagValue}];
+    }
+
     someValues = someValues.filter((val) => usedValues.indexOf(val) === -1);
     if (someValues.length === 0 && !includeInputValueOnNoMatch) {
-        return [{tag: specialTag(exactMatch.key, 'no_values'), value: ''}];
+        return [{tag: specialTag(exactMatch.key, 'all_values_used'), value: ''}];
     }
 
     return someValues.map((val) => ({tag: exactMatch, value: val}));
