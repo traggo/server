@@ -67,9 +67,15 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
         return null;
     }
 
-    const handleSpace = (newValue: string) => {
-        if (createTags) {
-            const {errors, entries} = addValues(newValue, tagsResult, selectedEntries);
+    const setCurrentValue = (newValue: string) => {
+        if (currentValue.indexOf(' ') !== -1) {
+            throw new Error('old value should never contain a space');
+        }
+        setHighlightedIndex(0);
+
+        if (newValue.indexOf(' ') !== -1) {
+            const {errors, entries} = addValues(newValue, tagsResult, selectedEntries, onlySelectKeys, allowDuplicateKeys);
+            console.log({errors, entries});
 
             setSelectedEntries([...selectedEntries, ...entries]);
 
@@ -83,22 +89,6 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
             } else {
                 setCurrentValueInternal('');
             }
-        } else {
-            const matchIndex = suggestions.findIndex((sugg) => itemLabel(sugg, onlySelectKeys) === currentValue);
-            if (matchIndex !== -1) {
-                trySubmit(suggestions[matchIndex]);
-            }
-        }
-    };
-
-    const setCurrentValue = (newValue: string) => {
-        if (currentValue.indexOf(' ') !== -1) {
-            throw new Error('old value should never contain a space');
-        }
-        setHighlightedIndex(0);
-
-        if (newValue.indexOf(' ') !== -1) {
-            handleSpace(newValue);
             return;
         }
 
