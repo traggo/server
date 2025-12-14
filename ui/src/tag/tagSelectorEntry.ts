@@ -48,7 +48,7 @@ export const specialTag = (name: string, state: SpecialTagState): TagSelectorEnt
         create: state === 'new',
         alreadyUsed: state === 'used',
         noValues: state === 'no_values',
-        allValuesUsed: state == 'all_values_used',
+        allValuesUsed: state === 'all_values_used',
         usages: 0,
     };
 };
