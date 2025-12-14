@@ -75,7 +75,6 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
 
         if (newValue.indexOf(' ') !== -1) {
             const {errors, entries} = addValues(newValue, tagsResult, selectedEntries, onlySelectKeys, allowDuplicateKeys);
-            console.log({errors, entries});
 
             setSelectedEntries([...selectedEntries, ...entries]);
 
