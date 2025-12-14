@@ -14,12 +14,30 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Input from '@material-ui/core/Input';
 import {useStateAndDelegateWithDelayOnChange} from '../utils/hooks';
 import {TagChip} from '../common/TagChip';
+import {makeStyles, Theme} from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme: Theme) => ({
+    root: {
+        width: '100%',
+    },
+    inputRoot: {display: 'flex', flexWrap: 'wrap', cursor: 'text', width: '100%'},
+    inputInput: {height: 40, minWidth: 150, flexGrow: 1},
+    paper: {
+        position: 'absolute',
+        zIndex: 1,
+        marginTop: theme.spacing(1),
+    },
+}));
 
 export interface TagSelectorProps {
     onSelectedEntriesChanged: (entries: TagSelectorEntry[]) => void;
     selectedEntries: TagSelectorEntry[];
     dialogOpen?: React.Dispatch<React.SetStateAction<boolean>>;
     onCtrlEnter?: () => void;
+    createTags?: boolean;
+    allowDuplicateKeys?: boolean;
+    onlySelectKeys?: boolean;
+    removeWhenClicked?: boolean;
 }
 
 export const TagSelector: React.FC<TagSelectorProps> = ({
@@ -27,7 +45,12 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
     onSelectedEntriesChanged: setSelectedEntries,
     dialogOpen = () => {},
     onCtrlEnter,
+    createTags = true,
+    allowDuplicateKeys = false,
+    onlySelectKeys = false,
+    removeWhenClicked = false,
 }) => {
+    const classes = useStyles();
     const [tooltipErrorActive, tooltipError, showTooltipError] = useError(4000);
     const [open, setOpen] = React.useState(false);
     const [currentValue, setCurrentValueInternal] = React.useState('');
@@ -37,11 +60,8 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
     const container = React.useRef<null | HTMLDivElement>(null);
 
     const tagsResult = useQuery<Tags>(gqlTags.Tags);
-    const suggestions = useSuggest(
-        tagsResult,
-        currentValue,
-        selectedEntries.map((t) => t.tag.key)
-    );
+
+    const suggestions = useSuggest(tagsResult, currentValue, selectedEntries, onlySelectKeys, allowDuplicateKeys, createTags);
 
     if (tagsResult.error || tagsResult.loading || !tagsResult.data || !tagsResult.data.tags) {
         return null;
@@ -54,7 +74,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
         setHighlightedIndex(0);
 
         if (newValue.indexOf(' ') !== -1) {
-            const {errors, entries} = addValues(newValue, tagsResult, selectedEntries);
+            const {errors, entries} = addValues(newValue, tagsResult, selectedEntries, onlySelectKeys, allowDuplicateKeys);
 
             setSelectedEntries([...selectedEntries, ...entries]);
 
@@ -91,7 +111,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
 
         focusInput();
 
-        if (!entry.value) {
+        if (!onlySelectKeys && !entry.value) {
             const newValue = entry.tag.key + ':';
             if (currentValue !== newValue) {
                 setHighlightedIndex(0);
@@ -107,12 +127,22 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
         return;
     };
 
+    const onTagClicked = (entry: TagSelectorEntry) => {
+        if (!removeWhenClicked) {
+            return;
+        }
+        const tagIndex = selectedEntries.indexOf(entry);
+        selectedEntries.splice(tagIndex, 1);
+
+        setSelectedEntries(selectedEntries);
+    };
+
     const onKeyDown = (event: React.KeyboardEvent) => {
         if (!currentValue && selectedEntries.length && event.key === 'Backspace') {
             event.preventDefault();
             const last = selectedEntries[selectedEntries.length - 1];
             setSelectedEntries(selectedEntries.slice(0, selectedEntries.length - 1));
-            setCurrentValue(event.ctrlKey ? '' : label(last));
+            setCurrentValue(event.ctrlKey ? '' : itemLabel(last, onlySelectKeys));
         }
         if (event.key === 'ArrowUp') {
             event.preventDefault();
@@ -134,11 +164,14 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
             event.preventDefault();
             setOpen(false);
         }
+        if (event.key === 'Tab') {
+            setOpen(false);
+        }
     };
 
     return (
         <ClickAwayListener onClickAway={() => setOpen(false)}>
-            <div style={{width: '100%'}}>
+            <div className={classes.root}>
                 <Tooltip
                     disableFocusListener
                     disableHoverListener
@@ -150,11 +183,8 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
                             {tooltipError}
                         </Typography>
                     }>
-                    <div
-                        ref={(ref) => (container.current = ref)}
-                        style={{display: 'flex', flexWrap: 'wrap', cursor: 'text', width: '100%'}}
-                        onClick={focusInput}>
-                        {toChips(selectedEntries)}
+                    <div ref={(ref) => (container.current = ref)} className={classes.inputRoot} onClick={focusInput}>
+                        {toChips(selectedEntries, onlySelectKeys, onTagClicked)}
                         <Input
                             margin="none"
                             value={currentValue}
@@ -164,20 +194,24 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
                             disableUnderline={true}
                             onChange={(e) => setCurrentValue(e.target.value)}
                             placeholder="Enter Tags"
-                            style={{height: 40, minWidth: 150, flexGrow: 1}}
+                            className={classes.inputInput}
                         />
                     </div>
                 </Tooltip>
 
                 {open ? (
                     <Paper
-                        style={{
-                            position: 'absolute',
-                            width: (container.current && container.current.clientWidth) || 300,
-                            zIndex: 1000,
-                        }}>
+                        className={classes.paper}
+                        style={{width: (container.current && container.current.clientWidth) || 300}}
+                        square>
                         {suggestions.map((entry, index) => (
-                            <Item key={label(entry)} entry={entry} onClick={trySubmit} selected={index === highlightedIndex} />
+                            <Item
+                                key={label(entry)}
+                                entry={entry}
+                                onClick={trySubmit}
+                                selected={index === highlightedIndex}
+                                onlySelectKeys={onlySelectKeys}
+                            />
                         ))}
                     </Paper>
                 ) : null}
@@ -200,10 +234,11 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
 interface ItemProps {
     entry: TagSelectorEntry;
     selected: boolean;
+    onlySelectKeys: boolean;
     onClick: (entry: TagSelectorEntry) => void;
 }
 
-const Item: React.FC<ItemProps> = ({entry, selected, onClick}) => {
+const Item: React.FC<ItemProps> = ({entry, selected, onlySelectKeys, onClick}) => {
     return (
         <MenuItem
             key={entry.tag.key}
@@ -214,11 +249,18 @@ const Item: React.FC<ItemProps> = ({entry, selected, onClick}) => {
             style={{
                 fontWeight: selected ? 500 : 400,
             }}>
-            {itemLabel(entry)}
+            {itemLabel(entry, onlySelectKeys)}
         </MenuItem>
     );
 };
 
-const toChips = (entries: TagSelectorEntry[]) => {
-    return entries.map((entry) => <TagChip key={label(entry)} label={label(entry)} color={entry.tag.color} />);
+const toChips = (entries: TagSelectorEntry[], onlySelectKeys: boolean, onClick: (entry: TagSelectorEntry) => void) => {
+    return entries.map((entry) => (
+        <TagChip
+            key={itemLabel(entry, onlySelectKeys)}
+            label={itemLabel(entry, onlySelectKeys)}
+            color={entry.tag.color}
+            onClick={() => onClick(entry)}
+        />
+    ));
 };
