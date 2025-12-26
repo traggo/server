@@ -38,9 +38,11 @@ func ToExternalEntry(entry model.DashboardEntry) (*gqlmodel.DashboardEntry, erro
 		To:   entry.RangeTo,
 	}
 	stats := &gqlmodel.StatsSelection{
-		Interval: ExternalInterval(entry.Interval),
-		Tags:     strings.Split(entry.Keys, ","),
-		Range:    dateRange,
+		Interval:    ExternalInterval(entry.Interval),
+		Tags:        strings.Split(entry.Keys, ","),
+		Range:       dateRange,
+		ExcludeTags: tagFiltersToExternal(entry.TagFilters, false),
+		IncludeTags: tagFiltersToExternal(entry.TagFilters, true),
 	}
 	if entry.RangeID != model.NoRangeIDDefined {
 		stats.RangeID = &entry.RangeID

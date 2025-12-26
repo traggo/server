@@ -38,9 +38,13 @@ export const DashboardEntryForm: React.FC<EditPopupProps> = ({entry, onChange: s
     const tagsResult = useQuery<Tags>(gqlTags.Tags);
 
     let tagKeys;
+    let excludeTags;
+    let includeTags;
     if (!tagsResult.error && !tagsResult.loading && tagsResult.data && tagsResult.data.tags) {
         const keyInputTags = (entry.statsSelection.tags || []).map((key) => ({key, value: ''}));
         tagKeys = toTagSelectorEntry(tagsResult.data.tags, keyInputTags);
+        excludeTags = toTagSelectorEntry(tagsResult.data.tags, entry.statsSelection.excludeTags || []);
+        includeTags = toTagSelectorEntry(tagsResult.data.tags, entry.statsSelection.includeTags || []);
     }
 
     const range: Dashboards_dashboards_items_statsSelection_range = entry.statsSelection.range
@@ -203,6 +207,35 @@ export const DashboardEntryForm: React.FC<EditPopupProps> = ({entry, onChange: s
                 createTags={false}
                 onlySelectKeys
                 removeWhenClicked
+            />
+
+            <FormTagSelector
+                label="Exclude"
+                selectedEntries={excludeTags || []}
+                onSelectedEntriesChanged={(tags) => {
+                    entry.statsSelection.excludeTags = tags.map((tag) => ({
+                        key: tag.tag.key,
+                        value: tag.value,
+                        __typename: 'TimeSpanTag',
+                    }));
+                    setEntry(entry);
+                }}
+                allowDuplicateKeys
+                createTags={false}
+            />
+            <FormTagSelector
+                label="Include"
+                selectedEntries={includeTags || []}
+                onSelectedEntriesChanged={(tags) => {
+                    entry.statsSelection.includeTags = tags.map((tag) => ({
+                        key: tag.tag.key,
+                        value: tag.value,
+                        __typename: 'TimeSpanTag',
+                    }));
+                    setEntry(entry);
+                }}
+                allowDuplicateKeys
+                createTags={false}
             />
         </>
     );

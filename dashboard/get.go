@@ -15,7 +15,13 @@ func (r *ResolverForDashboard) Dashboards(ctx context.Context) ([]*gqlmodel.Dash
 	userID := auth.GetUser(ctx).ID
 
 	dashboards := []model.Dashboard{}
-	find := r.DB.Preload("Entries").Preload("Ranges").Where(&model.Dashboard{UserID: userID}).Find(&dashboards)
+
+	q := r.DB
+	q = q.Preload("Entries")
+	q = q.Preload("Entries.TagFilters")
+	q = q.Preload("Ranges")
+
+	find := q.Where(&model.Dashboard{UserID: userID}).Find(&dashboards)
 
 	if find.Error != nil {
 		return nil, find.Error

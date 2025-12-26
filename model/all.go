@@ -11,6 +11,7 @@ func All() []interface{} {
 		new(UserSetting),
 		new(Dashboard),
 		new(DashboardEntry),
+		new(DashboardTagFilter),
 		new(DashboardRange),
 	}
 }

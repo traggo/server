@@ -24,6 +24,13 @@ func (r *ResolverForEntry) AddDashboardEntry(ctx context.Context, dashboardID in
 		return nil, err
 	}
 
+	tagFilters := convert.TagFiltersToInternal(stats.ExcludeTags, false)
+	tagFilters = append(tagFilters, convert.TagFiltersToInternal(stats.IncludeTags, true)...)
+
+	if err := tagsDuplicates(tagFilters); err != nil {
+		return nil, err
+	}
+
 	entry := model.DashboardEntry{
 		Keys:            strings.Join(stats.Tags, ","),
 		Type:            convert.InternalEntryType(entryType),
@@ -34,6 +41,7 @@ func (r *ResolverForEntry) AddDashboardEntry(ctx context.Context, dashboardID in
 		MobilePosition:  convert.EmptyPos(),
 		DesktopPosition: convert.EmptyPos(),
 		RangeID:         -1,
+		TagFilters:      tagFilters,
 	}
 
 	if len(stats.Tags) == 0 {
