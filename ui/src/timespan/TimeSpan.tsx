@@ -22,6 +22,7 @@ import {Trackers} from '../gql/__generated__/Trackers';
 import {addTimeSpanToCache, removeFromTrackersCache} from '../gql/utils';
 import {StartTimer, StartTimerVariables} from '../gql/__generated__/StartTimer';
 import {RelativeTime, RelativeToNow} from '../common/RelativeTime';
+import * as gqlStats from '../gql/statistics';
 
 interface Range {
     from: moment.Moment;
@@ -106,6 +107,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
             dateSelectorOpen(!!o)
         );
         const [stopTimer] = useMutation<StopTimer, StopTimerVariables>(gqlTimeSpan.StopTimer, {
+            refetchQueries: [{query: gqlStats.Stats2}],
             update: (cache, {data}) => {
                 if (!data || !data.stopTimeSpan) {
                     return;
@@ -115,14 +117,17 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
             },
         });
         const [startTimer] = useMutation<StartTimer, StartTimerVariables>(gqlTimeSpan.StartTimer, {
-            refetchQueries: [{query: gqlTimeSpan.Trackers}],
+            refetchQueries: [{query: gqlTimeSpan.Trackers}, {query: gqlStats.Stats2}],
         });
-        const [updateTimeSpan] = useMutation<UpdateTimeSpan, UpdateTimeSpanVariables>(gqlTimeSpan.UpdateTimeSpan);
+        const [updateTimeSpan] = useMutation<UpdateTimeSpan, UpdateTimeSpanVariables>(gqlTimeSpan.UpdateTimeSpan, {
+            refetchQueries: [{query: gqlStats.Stats2}],
+        });
         const noteAwareUpdateTimeSpan = ({variables}: {variables: Omit<UpdateTimeSpanVariables, 'note'>}) => {
             clearTimeout(note.current.handle);
             return updateTimeSpan({variables: {...variables, note: note.current.value}});
         };
         const [removeTimeSpan] = useMutation<RemoveTimeSpan, RemoveTimeSpanVariables>(gqlTimeSpan.RemoveTimeSpan, {
+            refetchQueries: [{query: gqlStats.Stats2}],
             update: (cache, {data}) => {
                 let oldData: TimeSpans | null = null;
                 try {

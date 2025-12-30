@@ -18,6 +18,7 @@ import {AddTimeSpan, AddTimeSpanVariables} from '../gql/__generated__/AddTimeSpa
 import {useSnackbar} from 'notistack';
 import {inUserTz} from './timeutils';
 import {addTimeSpanToCache} from '../gql/utils';
+import * as gqlStats from '../gql/statistics';
 
 enum Type {
     Tracker,
@@ -42,9 +43,10 @@ export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntr
     const [showDate, setShowDate] = React.useState(false);
     const [hasInvalidRange, setHasInvalidRange] = React.useState(false);
     const [startTimer] = useMutation<StartTimer, StartTimerVariables>(gqlTimeSpan.StartTimer, {
-        refetchQueries: [{query: gqlTimeSpan.Trackers}],
+        refetchQueries: [{query: gqlTimeSpan.Trackers}, {query: gqlStats.Stats2}],
     });
     const [addTimeSpan] = useMutation<AddTimeSpan, AddTimeSpanVariables>(gqlTimeSpan.AddTimeSpan, {
+        refetchQueries: [{query: gqlStats.Stats2}],
         update: (cache, {data}) => {
             if (!data || !data.createTimeSpan) {
                 return;

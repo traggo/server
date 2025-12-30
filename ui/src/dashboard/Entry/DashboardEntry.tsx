@@ -55,7 +55,6 @@ const SpecificDashboardEntry: React.FC<{entry: Dashboards_dashboards_items; rang
             },
         },
         fetchPolicy: 'cache-and-network',
-        pollInterval: 30000, // Poll every 30 seconds to pick up new entries
     });
 
     if (stats.loading) {
