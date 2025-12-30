@@ -43,7 +43,7 @@ SELECT query_start                       as query_start,
        query_end                         as query_end,
        key                               as key,
        string_value                      as string_value,
-       sum(round((julianday(CASE WHEN end_user_time > query_end THEN query_end ELSE end_user_time END) -
+       sum(round((julianday(CASE WHEN COALESCE(end_user_time, datetime('now')) > query_end THEN query_end ELSE COALESCE(end_user_time, datetime('now')) END) -
                   julianday(CASE WHEN start_user_time < query_start THEN query_start ELSE start_user_time END))
                      * 24 * 60 * 60, 0)) as time_spend_in_seconds
 FROM dates
@@ -62,7 +62,7 @@ FROM dates
 ) as ts on ts.id = tst.time_span_id
 WHERE (key in (?))
   AND (user_id = ?)
-  AND (start_user_time <= query_end AND end_user_time >= query_start)
+  AND (start_user_time <= query_end AND (end_user_time >= query_start OR end_user_time IS NULL))
 GROUP BY query_start,
          key,
          string_value;
