@@ -99,6 +99,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
         const styles = useStyles();
         const [showNotes, toggleShowingNotes] = React.useState(initialNote !== '');
         const note = React.useRef<{value: string; handle?: number}>({value: initialNote});
+        const [hasInvalidRange, setHasInvalidRange] = React.useState(false);
 
         const [selectedEntries, setSelectedEntries] = React.useState<TagSelectorEntry[]>(initialTags);
         const [openMenu, setOpenMenu] = useStateAndDelegateWithDelayOnChange<null | HTMLElement>(null, (o) =>
@@ -218,28 +219,22 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                                         return;
                                     }
                                     newFrom.set({second: 0});
+                                    // Check if new range would be invalid
                                     if (to && moment(newFrom).isAfter(to)) {
-                                        const newTo = moment(newFrom).add(15, 'minute');
-                                        noteAwareUpdateTimeSpan({
-                                            variables: {
-                                                oldStart: oldFrom,
-                                                id,
-                                                start: inUserTz(newFrom).format(),
-                                                end: inUserTz(newTo).format(),
-                                                tags: toInputTags(selectedEntries),
-                                            },
-                                        }).then(() => rangeChange({from: newFrom, to: newTo}));
+                                        setHasInvalidRange(true);
                                     } else {
-                                        noteAwareUpdateTimeSpan({
-                                            variables: {
-                                                id,
-                                                oldStart: oldFrom,
-                                                start: inUserTz(newFrom).format(),
-                                                end: to && inUserTz(to).format(),
-                                                tags: toInputTags(selectedEntries),
-                                            },
-                                        }).then(() => rangeChange({from: newFrom, to}));
+                                        setHasInvalidRange(false);
                                     }
+                                    // Allow invalid state - user might be editing date/time in steps
+                                    noteAwareUpdateTimeSpan({
+                                        variables: {
+                                            id,
+                                            oldStart: oldFrom,
+                                            start: inUserTz(newFrom).format(),
+                                            end: to && inUserTz(to).format(),
+                                            tags: toInputTags(selectedEntries),
+                                        },
+                                    }).then(() => rangeChange({from: newFrom, to}));
                                 }}
                                 showDate={showDate}
                                 label="start"
@@ -253,28 +248,22 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                                             return;
                                         }
                                         newTo.set({second: 0});
+                                        // Check if new range would be invalid
                                         if (moment(newTo).isBefore(from)) {
-                                            const newFrom = moment(newTo).subtract(15, 'minute');
-                                            noteAwareUpdateTimeSpan({
-                                                variables: {
-                                                    id,
-                                                    oldStart: oldFrom,
-                                                    start: inUserTz(newFrom).format(),
-                                                    end: inUserTz(newTo).format(),
-                                                    tags: toInputTags(selectedEntries),
-                                                },
-                                            }).then(() => rangeChange({from: newFrom, to: newTo}));
+                                            setHasInvalidRange(true);
                                         } else {
-                                            noteAwareUpdateTimeSpan({
-                                                variables: {
-                                                    id,
-                                                    oldStart: oldFrom,
-                                                    start: inUserTz(from).format(),
-                                                    end: inUserTz(newTo).format(),
-                                                    tags: toInputTags(selectedEntries),
-                                                },
-                                            }).then(() => rangeChange({from, to: newTo}));
+                                            setHasInvalidRange(false);
                                         }
+                                        // Allow invalid state - user might be editing date/time in steps
+                                        noteAwareUpdateTimeSpan({
+                                            variables: {
+                                                id,
+                                                oldStart: oldFrom,
+                                                start: inUserTz(from).format(),
+                                                end: inUserTz(newTo).format(),
+                                                tags: toInputTags(selectedEntries),
+                                            },
+                                        }).then(() => rangeChange({from, to: newTo}));
                                     }}
                                     showDate={showDate}
                                     label="end"
@@ -292,10 +281,25 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                         <div style={{alignItems: 'center', display: 'flex'}}>
                             <Typography
                                 variant="subtitle1"
-                                style={{minWidth: '70px'}}
-                                title="The amount of time between from and to">
+                                style={{
+                                    minWidth: '70px',
+                                    color: hasInvalidRange ? '#f44336' : 'inherit',
+                                }}
+                                title={hasInvalidRange ? 'Warning: End time is before start time' : 'The amount of time between from and to'}>
                                 {to ? <RelativeTime from={from} to={to} /> : <RelativeToNow from={from} />}
                             </Typography>
+                            {hasInvalidRange && (
+                                <Typography
+                                    variant="caption"
+                                    style={{
+                                        color: '#f44336',
+                                        marginLeft: '8px',
+                                        fontSize: '0.7rem',
+                                    }}
+                                    title="End time is before start time">
+                                    ⚠️
+                                </Typography>
+                            )}
                         </div>
                     </div>
 

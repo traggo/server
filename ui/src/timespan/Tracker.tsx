@@ -40,6 +40,7 @@ export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntr
     const [from, setFrom] = React.useState<moment.Moment>(moment().subtract(15, 'minute'));
     const [to, setTo] = React.useState<moment.Moment>(moment());
     const [showDate, setShowDate] = React.useState(false);
+    const [hasInvalidRange, setHasInvalidRange] = React.useState(false);
     const [startTimer] = useMutation<StartTimer, StartTimerVariables>(gqlTimeSpan.StartTimer, {
         refetchQueries: [{query: gqlTimeSpan.Trackers}],
     });
@@ -96,12 +97,12 @@ export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntr
                                     return;
                                 }
                                 setFrom(newFrom);
+                                setShowDate(calcShowDate(newFrom, to));
+                                // Check if new range would be invalid
                                 if (moment(newFrom).isAfter(to)) {
-                                    const newTo = moment(newFrom).add(15, 'minute');
-                                    setTo(newTo);
-                                    setShowDate(calcShowDate(newFrom, newTo));
+                                    setHasInvalidRange(true);
                                 } else {
-                                    setShowDate(calcShowDate(newFrom, to));
+                                    setHasInvalidRange(false);
                                 }
                             }}
                             showDate={showDate}
@@ -114,12 +115,12 @@ export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntr
                                     return;
                                 }
                                 setTo(newTo);
+                                setShowDate(calcShowDate(from, newTo));
+                                // Check if new range would be invalid
                                 if (moment(newTo).isBefore(from)) {
-                                    const newFrom = moment(newTo).subtract(15, 'minute');
-                                    setFrom(newFrom);
-                                    setShowDate(calcShowDate(newFrom, newTo));
+                                    setHasInvalidRange(true);
                                 } else {
-                                    setShowDate(calcShowDate(from, newTo));
+                                    setHasInvalidRange(false);
                                 }
                             }}
                             showDate={showDate}
@@ -127,7 +128,12 @@ export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntr
                         />
                     </div>
                 ) : null}
-                <Button variant="text" style={{height: 50}} onClick={submit}>
+                {hasInvalidRange && type === Type.Manual && (
+                    <div style={{color: '#f44336', fontSize: '0.9rem', marginRight: '8px', display: 'flex', alignItems: 'center'}}>
+                        <span title="Warning: End time is before start time">⚠️</span>
+                    </div>
+                )}
+                <Button variant="text" style={{height: 50}} onClick={submit} disabled={hasInvalidRange}>
                     {type === Type.Manual ? 'add' : 'start'}
                 </Button>
                 <IconButton onClick={(e: React.MouseEvent<HTMLElement>) => setOpenMenu(e.currentTarget)}>
