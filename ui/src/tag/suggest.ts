@@ -24,7 +24,8 @@ export const useSuggest = (
     });
 
     const usedKeys = usedTags.map((t) => t.tag.key);
-    const usedValues = usedTags.map((t) => t.value);
+    // Filter usedValues to only include values from the same tag key
+    const usedValues = usedTags.filter((t) => t.tag.key === tagKey).map((t) => t.value);
 
     if (exactMatch && tagValue !== undefined && !skipValue && (allowDuplicateKeys || usedKeys.indexOf(exactMatch.key) === -1)) {
         return suggestTagValue(exactMatch, tagValue, valueResult, usedValues, createTags);

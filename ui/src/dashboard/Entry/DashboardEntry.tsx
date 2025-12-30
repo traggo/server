@@ -45,9 +45,7 @@ const SpecificDashboardEntry: React.FC<{entry: Dashboards_dashboards_items; rang
     const interval = entry.statsSelection.interval;
     const stats = useQuery<Stats2, Stats2Variables>(gqlStats.Stats2, {
         variables: {
-            now: moment()
-                .startOf('hour')
-                .format(),
+            now: moment().format(),
             stats: {
                 range,
                 interval,
@@ -56,6 +54,8 @@ const SpecificDashboardEntry: React.FC<{entry: Dashboards_dashboards_items; rang
                 includeTags: entry.statsSelection.includeTags,
             },
         },
+        fetchPolicy: 'cache-and-network',
+        pollInterval: 30000, // Poll every 30 seconds to pick up new entries
     });
 
     if (stats.loading) {
