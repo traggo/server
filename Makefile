@@ -73,7 +73,7 @@ release:
 		-v $$PWD:/work \
 		-w /work \
 		traggo:build \
-		release --skip-validate --clean
+		release --skip=validate --clean
 
 .PHONY: release-snapshot
 release-snapshot:
