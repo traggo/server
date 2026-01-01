@@ -5,13 +5,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
-          go-version: 1.23.x
-      - uses: actions/setup-node@v4
+          go-version: 1.25.x
+      - uses: actions/setup-node@v6
         with:
           node-version: '20'
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - run: make download-tools
       - run: make install
       - run: make generate
