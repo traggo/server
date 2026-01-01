@@ -12,7 +12,7 @@ license-dir:
 
 download-tools:
 	go install golang.org/x/tools/cmd/goimports@v0.1.10
-	go install github.com/99designs/gqlgen@v0.17.44
+	go install github.com/99designs/gqlgen@v0.17.85
 
 generate-go:
 	gqlgen

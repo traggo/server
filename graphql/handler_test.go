@@ -20,7 +20,7 @@ func TestHandler_jsonOverHtml(t *testing.T) {
 	req.Header.Set("Accept", "text/html;application/json")
 	recorder := httptest.NewRecorder()
 	handler.ServeHTTP(recorder, req)
-	require.Equal(t, "application/json", recorder.Header().Get("Content-Type"))
+	require.Equal(t, "application/graphql-response+json", recorder.Header().Get("Content-Type"))
 	require.JSONEq(t, `
 {
    "data": { "currentUser": null }
