@@ -5,14 +5,13 @@ DATE=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 LD_FLAGS=-s -w -linkmode external -extldflags "-static" -X main.BuildDate=$(DATE) -X main.BuildMode=prod -X main.BuildCommit=$(COMMIT) -X main.BuildVersion=$(VERSION)
 BUILD_DIR=./build
 PWD=$(shell pwd)
-GOLANG_CROSS_VERSION=v1.22.0
 
 license-dir:
 	mkdir -p build/license || true
 
 download-tools:
 	go install golang.org/x/tools/cmd/goimports@v0.1.10
-	go install github.com/99designs/gqlgen@v0.17.44
+	go install github.com/99designs/gqlgen@v0.17.85
 
 generate-go:
 	gqlgen

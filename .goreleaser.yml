@@ -1,15 +1,10 @@
+version: 2
 project_name: traggo
 builds:
   - id: linux-amd64
     main: ./
     goos: [linux]
     goarch: ['amd64']
-    flags: ['-tags="netgo osusergo sqlite_omit_load_extension"']
-    ldflags: ["-s","-w","-linkmode","external","-extldflags","-static","-X main.BuildDate={{.Date}}","-X main.BuildMode=prod","-X main.BuildCommit={{.Commit}}","-X main.BuildVersion={{.Version}}"]
-  - id: linux-386
-    main: ./
-    goos: [linux]
-    goarch: ['386']
     flags: ['-tags="netgo osusergo sqlite_omit_load_extension"']
     ldflags: ["-s","-w","-linkmode","external","-extldflags","-static","-X main.BuildDate={{.Date}}","-X main.BuildMode=prod","-X main.BuildCommit={{.Commit}}","-X main.BuildVersion={{.Version}}"]
   - id: linux-armhf
@@ -42,11 +37,11 @@ archives:
     name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{- if eq .Arch "386" }}i386{{- else }}{{ .Arch }}{{ end }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
     format_overrides:
       - goos: windows
-        format: zip
+        formats: [zip]
 checksum:
   disable: true
 changelog:
-  skip: true
+  disable: true
 dockers:
   - use: buildx
     goos: linux
@@ -57,19 +52,6 @@ dockers:
     dockerfile: docker/Dockerfile
     build_flag_templates:
       - "--platform=linux/amd64"
-      - "--label=org.opencontainers.image.created={{.Date}}"
-      - "--label=org.opencontainers.image.title={{.ProjectName}}"
-      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
-  - use: buildx
-    goos: linux
-    goarch: '386'
-    image_templates:
-      - "traggo/server:386-latest"
-      - "traggo/server:386-{{ .RawVersion }}"
-    dockerfile: docker/Dockerfile
-    build_flag_templates:
-      - "--platform=linux/386"
       - "--label=org.opencontainers.image.created={{.Date}}"
       - "--label=org.opencontainers.image.title={{.ProjectName}}"
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
@@ -105,12 +87,10 @@ docker_manifests:
   - name_template: "traggo/server:latest"
     image_templates:
       - "traggo/server:amd64-latest"
-      - "traggo/server:386-latest"
       - "traggo/server:arm64-latest"
       - "traggo/server:armv7-latest"
   - name_template: "traggo/server:{{ .RawVersion }}"
     image_templates:
       - "traggo/server:amd64-{{ .RawVersion }}"
-      - "traggo/server:386-{{ .RawVersion }}"
       - "traggo/server:arm64-{{ .RawVersion }}"
       - "traggo/server:armv7-{{ .RawVersion }}"

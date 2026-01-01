@@ -1,3 +1,1 @@
-FROM ghcr.io/goreleaser/goreleaser-cross:v1.22.0
-
-RUN apt-get update && apt-get install -y libc6-dev-i386
+FROM ghcr.io/goreleaser/goreleaser-cross:v1.27.0
