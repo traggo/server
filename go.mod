@@ -8,12 +8,12 @@ require (
 	github.com/jmattheis/go-timemath v1.0.1
 	github.com/joho/godotenv v1.5.1
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/magiconair/properties v1.8.7
+	github.com/magiconair/properties v1.8.10
 	github.com/phayes/freeport v0.0.0-20220201140144-74d24b5ae9f5
-	github.com/rs/zerolog v1.33.0
+	github.com/rs/zerolog v1.34.0
 	github.com/stretchr/testify v1.11.1
 	github.com/vektah/gqlparser/v2 v2.5.31
-	golang.org/x/crypto v0.27.0
+	golang.org/x/crypto v0.46.0
 )
 
 require (
