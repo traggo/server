@@ -5,7 +5,6 @@ DATE=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 LD_FLAGS=-s -w -linkmode external -extldflags "-static" -X main.BuildDate=$(DATE) -X main.BuildMode=prod -X main.BuildCommit=$(COMMIT) -X main.BuildVersion=$(VERSION)
 BUILD_DIR=./build
 PWD=$(shell pwd)
-GOLANG_CROSS_VERSION=v1.22.0
 
 license-dir:
 	mkdir -p build/license || true
