@@ -24,9 +24,9 @@ export const useSuggest = (
     });
 
     const usedKeys = usedTags.map((t) => t.tag.key);
-    const usedValues = usedTags.map((t) => t.value);
 
     if (exactMatch && tagValue !== undefined && !skipValue && (allowDuplicateKeys || usedKeys.indexOf(exactMatch.key) === -1)) {
+        const usedValues = usedTags.filter((t) => t.tag.key === tagKey).map((t) => t.value);
         return suggestTagValue(exactMatch, tagValue, valueResult, usedValues, createTags);
     } else {
         return suggestTag(exactMatch, tagResult, tagKey, usedKeys, allowDuplicateKeys, createTags);
