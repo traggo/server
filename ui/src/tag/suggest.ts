@@ -21,6 +21,7 @@ export const useSuggest = (
     const valueResult = useQuery<SuggestTagValue, SuggestTagValueVariables>(gqlTags.SuggestTagValue, {
         variables: {tag: tagKey, query: tagValue},
         skip: exactMatch === undefined || skipValue,
+        fetchPolicy: 'no-cache',
     });
 
     const usedKeys = usedTags.map((t) => t.tag.key);
