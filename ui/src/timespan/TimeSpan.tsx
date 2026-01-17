@@ -296,6 +296,8 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                                 title="The amount of time between from and to">
                                 {to ? <RelativeTime from={from} to={to} /> : <RelativeToNow from={from} />}
                             </Typography>
+                        </div>
+                        <div style={{alignItems: 'center', display: 'flex'}}>
                             {to ? (
                                 <Button
                                     onClick={() => {
