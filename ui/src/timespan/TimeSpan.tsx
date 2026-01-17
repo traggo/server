@@ -297,6 +297,22 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                                 {to ? <RelativeTime from={from} to={to} /> : <RelativeToNow from={from} />}
                             </Typography>
                         </div>
+                        <div style={{alignItems: 'center', display: 'flex'}}>
+                            {to ? (
+                                <Button
+                                    onClick={() => {
+                                        startTimer({
+                                            variables: {
+                                                start: inUserTz(moment()).format(),
+                                                tags: toInputTags(selectedEntries),
+                                                note: note.current.value,
+                                            },
+                                        }).then(() => continued());
+                                    }}>
+                                    Continue
+                                </Button>
+                            ) : null}
+                        </div>
                     </div>
 
                     <IconButton
