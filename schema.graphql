@@ -21,7 +21,7 @@ type RootMutation {
     login(username: String!, pass: String!, deviceName: String!, type: DeviceType!, cookie: Boolean!): Login
 
     createDevice(name: String!, type: DeviceType!): Login @hasRole(role: USER)
-    updateDevice(id: Int!, name: String!, type: DeviceType!): Device
+    updateDevice(id: Int!, name: String!, type: DeviceType!): Device @hasRole(role: USER)
     removeDevice(id: Int!): Device @hasRole(role: USER)
     removeCurrentDevice: Device! @hasRole(role: USER)
 
@@ -36,9 +36,9 @@ type RootMutation {
     updateDashboard(id: Int!, name: String!): Dashboard! @hasRole(role: USER)
     removeDashboard(id: Int!): Dashboard! @hasRole(role: USER)
 
-    addDashboardRange(dashboardId: Int!, range: InputNamedDateRange!): NamedDateRange
-    updateDashboardRange(rangeId: Int!, range: InputNamedDateRange!): NamedDateRange
-    removeDashboardRange(rangeId: Int!): NamedDateRange
+    addDashboardRange(dashboardId: Int!, range: InputNamedDateRange!): NamedDateRange @hasRole(role: USER)
+    updateDashboardRange(rangeId: Int!, range: InputNamedDateRange!): NamedDateRange @hasRole(role: USER)
+    removeDashboardRange(rangeId: Int!): NamedDateRange @hasRole(role: USER)
 
     addDashboardEntry(dashboardId: Int!, entryType: EntryType!, title: String!, total: Boolean!, stats: InputStatsSelection!, pos: InputResponsiveDashboardEntryPos): DashboardEntry @hasRole(role: USER)
     updateDashboardEntry(entryId: Int!, entryType: EntryType, title: String, total: Boolean, stats: InputStatsSelection, pos: InputResponsiveDashboardEntryPos): DashboardEntry @hasRole(role: USER)
