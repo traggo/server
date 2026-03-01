@@ -19,10 +19,10 @@ func (r *ResolverForTag) RemoveTag(ctx context.Context, key string) (*gqlmodel.T
 	}
 
 	usedInEntries := []model.DashboardEntry{}
-	// Do not read the next statements, not proud of it.
-	if err := r.DB.Where("keys LIKE ?", "%"+key).
-		Or("keys like ?", "%"+key+"%").
-		Or("keys like ?", key+"%").
+	if err := r.DB.
+		Joins("INNER JOIN dashboards ON dashboard_entries.dashboard_id = dashboards.id").
+		Where("dashboards.user_id = ?", userID).
+		Where("keys LIKE ? OR keys LIKE ? OR keys LIKE ?", "%"+key, "%"+key+"%", key+"%").
 		Find(&usedInEntries).Error; err != nil {
 		return nil, err
 	}

@@ -81,3 +81,26 @@ func TestGQL_RemoveTag_fails_notPermission(t *testing.T) {
 	_, err := resolver.RemoveTag(fake.User(5), "existing")
 	require.EqualError(t, err, "tag with key 'existing' does not exist")
 }
+
+func TestRemove_crossUserIsolation(t *testing.T) {
+	db := test.InMemoryDB(t)
+	defer db.Close()
+	userA := db.User(5)
+	userB := db.User(2)
+
+	userA.NewTagDefinition("project")
+	userB.NewTagDefinition("project")
+
+	dashboardB := userB.Dashboard("secretDashboard")
+	dashboardB.Entry("secretEntry")
+	entryB := dashboardB.Dashboard.Entries[0]
+	entryB.Keys = "project,secret"
+	db.Save(&entryB)
+
+	resolver := ResolverForTag{DB: db.DB}
+	_, err := resolver.RemoveTag(fake.User(userA.User.ID), "project")
+	require.NoError(t, err, "removing user's own tag should succeed even if another user has a dashboard entry with that tag")
+
+	userA.AssertHasTagDefinition("project", false)
+	userB.AssertHasTagDefinition("project", true)
+}

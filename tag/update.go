@@ -49,10 +49,10 @@ func (r *ResolverForTag) UpdateTag(ctx context.Context, key string, newKey *stri
 		}
 		usedInEntries := []model.DashboardEntry{}
 
-		// Do not read the next statements, not proud of it.
-		if err := tx.Where("keys LIKE ?", "%"+key).
-			Or("keys like ?", "%"+key+"%").
-			Or("keys like ?", key+"%").
+		if err := tx.
+			Joins("INNER JOIN dashboards ON dashboard_entries.dashboard_id = dashboards.id").
+			Where("dashboards.user_id = ?", userID).
+			Where("keys LIKE ? OR keys LIKE ? OR keys LIKE ?", "%"+key, "%"+key+"%", key+"%").
 			Find(&usedInEntries).Error; err != nil {
 			tx.Rollback()
 			return nil, err

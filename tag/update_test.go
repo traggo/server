@@ -123,3 +123,36 @@ func TestUpdate_noPermissions(t *testing.T) {
 	require.EqualError(t, err, "tag with key 'coolio' does not exist")
 	right.AssertHasTagDefinition("coolio", true)
 }
+
+func TestUpdate_dashboardEntryKey_crossUserIsolation(t *testing.T) {
+	db := test.InMemoryDB(t)
+	defer db.Close()
+	userA := db.User(5)
+	userB := db.User(2)
+
+	userA.NewTagDefinition("project")
+	userB.NewTagDefinition("project")
+
+	dashboardA := userA.Dashboard("dashboardA")
+	dashboardA.Entry("entryA")
+	entryA := dashboardA.Dashboard.Entries[0]
+	entryA.Keys = "project,task1"
+	db.Save(&entryA)
+
+	dashboardB := userB.Dashboard("dashboardB")
+	dashboardB.Entry("entryB")
+	entryB := dashboardB.Dashboard.Entries[0]
+	entryB.Keys = "project,task2"
+	db.Save(&entryB)
+
+	newTag := "newproject"
+	resolver := ResolverForTag{DB: db.DB}
+	_, err := resolver.UpdateTag(fake.User(userA.User.ID), "project", &newTag, "#abc")
+	require.NoError(t, err)
+
+	db.Find(&entryA)
+	require.Equal(t, "newproject,task1", entryA.Keys, "user A's entry should be updated")
+
+	db.Find(&entryB)
+	require.Equal(t, "project,task2", entryB.Keys, "user B's entry should NOT be modified")
+}
