@@ -46,7 +46,7 @@ func Validate(value string) error {
 func ParseTime(now time.Time, value string, startOf bool, weekday time.Weekday) (time.Time, error) {
 	parse, err := time.Parse(time.RFC3339, value)
 	if err == nil {
-		return parse, nil
+		return model.Time(parse).OmitTimeZone(), nil
 	}
 
 	return timemath.Parse(now, value, startOf, weekday)
