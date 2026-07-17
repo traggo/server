@@ -1,7 +1,7 @@
 import * as React from 'react';
-import {Tags} from '../gql/__generated__/Tags';
+import {TagsQuery} from '../gql/__generated__';
 import * as gqlTags from '../gql/tags';
-import {useQuery} from '@apollo/react-hooks';
+import {useQuery} from '@apollo/client';
 import {useError} from '../utils/errors';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -57,7 +57,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
     const input = React.useRef<null | HTMLDivElement>(null);
     const container = React.useRef<null | HTMLDivElement>(null);
 
-    const tagsResult = useQuery<Tags>(gqlTags.Tags);
+    const tagsResult = useQuery<TagsQuery>(gqlTags.Tags);
 
     const suggestions = useSuggest(tagsResult, currentValue, selectedEntries, onlySelectKeys, allowDuplicateKeys, createTags);
 

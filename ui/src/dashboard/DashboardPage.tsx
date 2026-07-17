@@ -1,10 +1,11 @@
 import * as React from 'react';
-import {useMutation, useQuery} from '@apollo/react-hooks';
+import {useMutation, useQuery} from '@apollo/client';
 import * as gqlDashboard from '../gql/dashboard';
 import {default as ReactGrid, Layout, WidthProvider} from 'react-grid-layout';
-import {Dashboards, Dashboards_dashboards_items} from '../gql/__generated__/Dashboards';
-import {UpdatePos, UpdatePosVariables} from '../gql/__generated__/UpdatePos';
-import {EntryType, StatsInterval} from '../gql/__generated__/globalTypes';
+import {DashboardsQuery} from '../gql/__generated__';
+import {DashboardItem} from '../gql/types';
+import {UpdatePosMutation, UpdatePosMutationVariables} from '../gql/__generated__';
+import {EntryType, StatsInterval} from '../gql/__generated__';
 import {DashboardEntry} from './Entry/DashboardEntry';
 import Button from '@material-ui/core/Button';
 import clone from 'lodash.clonedeep';
@@ -15,7 +16,7 @@ import {CenteredSpinner} from '../common/CenteredSpinner';
 import {AddPopup} from './Entry/AddPopup';
 import {Paper} from '@material-ui/core';
 import {Center} from '../common/Center';
-import {RemoveDashboardEntry, RemoveDashboardEntryVariables} from '../gql/__generated__/RemoveDashboardEntry';
+import {RemoveDashboardEntryMutation, RemoveDashboardEntryMutationVariables} from '../gql/__generated__';
 import {useNavigate, useParams} from 'react-router-dom';
 import {useSnackbar} from 'notistack';
 import {DateRanges} from './DateRanges';
@@ -34,7 +35,7 @@ const cols: Record<ViewType, number> = {
 
 const WidthAwareReactGrid = WidthProvider(ReactGrid);
 const EditId = -1;
-const newEntry = (): Dashboards_dashboards_items => {
+const newEntry = (): DashboardItem => {
     return {
         __typename: 'DashboardEntry',
         title: '',
@@ -88,13 +89,13 @@ export const DashboardPage: React.FC = () => {
     const [preview, setPreview] = React.useState(false);
     const [diagramRanges, setDiagramRanges] = React.useState<Record<number, Range>>({});
     const [ranges, setRanges] = useStateAndDelegateWithDelayOnChange<Record<number, Range>>({}, setDiagramRanges, 2000);
-    const [addEntry, setAddEntry] = React.useState<null | Dashboards_dashboards_items>(null);
-    const [[editElement, editEntry], setEdit] = React.useState<[null] | [HTMLElement, Dashboards_dashboards_items]>([null]);
-    const {loading, data, error} = useQuery<Dashboards>(gqlDashboard.Dashboards);
-    const [updatePos] = useMutation<UpdatePos, UpdatePosVariables>(gqlDashboard.UpdatePos, {
+    const [addEntry, setAddEntry] = React.useState<null | DashboardItem>(null);
+    const [[editElement, editEntry], setEdit] = React.useState<[null] | [HTMLElement, DashboardItem]>([null]);
+    const {loading, data, error} = useQuery<DashboardsQuery>(gqlDashboard.Dashboards);
+    const [updatePos] = useMutation<UpdatePosMutation, UpdatePosMutationVariables>(gqlDashboard.UpdatePos, {
         refetchQueries: [{query: gqlDashboard.Dashboards}],
     });
-    const [removeDashboardEntry] = useMutation<RemoveDashboardEntry, RemoveDashboardEntryVariables>(
+    const [removeDashboardEntry] = useMutation<RemoveDashboardEntryMutation, RemoveDashboardEntryMutationVariables>(
         gqlDashboard.RemoveDashboardEntry,
         {
             refetchQueries: [{query: gqlDashboard.Dashboards}],

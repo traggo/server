@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Paper from '@material-ui/core/Paper';
-import {useMutation, useQuery} from '@apollo/react-hooks';
+import {useMutation, useQuery} from '@apollo/client';
 import {CenteredSpinner} from '../common/CenteredSpinner';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -16,9 +16,9 @@ import {useSnackbar} from 'notistack';
 import * as gqlDashboard from '../gql/dashboard';
 import {TextField} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import {Dashboards} from '../gql/__generated__/Dashboards';
-import {RemoveDashboard, RemoveDashboardVariables} from '../gql/__generated__/RemoveDashboard';
-import {UpdateDashboard, UpdateDashboardVariables} from '../gql/__generated__/UpdateDashboard';
+import {DashboardsQuery} from '../gql/__generated__';
+import {RemoveDashboardMutation, RemoveDashboardMutationVariables} from '../gql/__generated__';
+import {UpdateDashboardMutation, UpdateDashboardMutationVariables} from '../gql/__generated__';
 import {AddDashboardDialog} from './AddDashboardDialog';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import {ConfirmDialog} from '../common/ConfirmDialog';
@@ -38,14 +38,20 @@ const NoEdit = [-1, ''] as const;
 
 export const DashboardsPage = () => {
     const classes = useStyles();
-    const {loading, data} = useQuery<Dashboards>(gqlDashboard.Dashboards);
+    const {loading, data} = useQuery<DashboardsQuery>(gqlDashboard.Dashboards);
     const [addDashboard, setAddDashboard] = React.useState(false);
     const [removeDashboardConfirm, setRemoveDashboardConfirm] = React.useState<false | [number, string]>(false);
     const refetch = {refetchQueries: [{query: gqlDashboard.Dashboards}]};
     const {enqueueSnackbar} = useSnackbar();
-    const [removeDashboard] = useMutation<RemoveDashboard, RemoveDashboardVariables>(gqlDashboard.RemoveDashboard, refetch);
+    const [removeDashboard] = useMutation<RemoveDashboardMutation, RemoveDashboardMutationVariables>(
+        gqlDashboard.RemoveDashboard,
+        refetch
+    );
     const [[editId, editName], setEditing] = React.useState<Readonly<[number, string]>>(NoEdit);
-    const [updateDashboard] = useMutation<UpdateDashboard, UpdateDashboardVariables>(gqlDashboard.UpdateDashboard, refetch);
+    const [updateDashboard] = useMutation<UpdateDashboardMutation, UpdateDashboardMutationVariables>(
+        gqlDashboard.UpdateDashboard,
+        refetch
+    );
     if (loading || !data || !data.dashboards) {
         return <CenteredSpinner />;
     }

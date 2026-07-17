@@ -1,12 +1,12 @@
 import * as React from 'react';
-import {useQuery} from '@apollo/react-hooks';
+import {useQuery} from '@apollo/client';
 import * as gqlTimeSpan from '../gql/timeSpan';
 import * as gqlTag from '../gql/tags';
 import {TimeSpan, TimeSpanProps} from './TimeSpan';
-import {Tags} from '../gql/__generated__/Tags';
+import {TagsQuery} from '../gql/__generated__';
 import useInterval from '@rooks/use-interval';
 import moment from 'moment';
-import {TimeSpans, TimeSpansVariables} from '../gql/__generated__/TimeSpans';
+import {TimeSpansQuery, TimeSpansQueryVariables} from '../gql/__generated__';
 import {Typography} from '@material-ui/core';
 import {GroupedTimeSpanProps, toGroupedTimeSpanProps} from './timespanutils';
 import {TagSelectorEntry} from '../tag/tagSelectorEntry';
@@ -18,11 +18,11 @@ interface DoneTrackersProps {
 }
 
 export const DoneTrackers: React.FC<DoneTrackersProps> = ({addTagsToTracker}) => {
-    const trackersResult = useQuery<TimeSpans, TimeSpansVariables>(gqlTimeSpan.TimeSpans, {
+    const trackersResult = useQuery<TimeSpansQuery, TimeSpansQueryVariables>(gqlTimeSpan.TimeSpans, {
         variables: {cursor: {pageSize: 30}},
     });
     const loading = React.useRef(false);
-    const tagsResult = useQuery<Tags>(gqlTag.Tags);
+    const tagsResult = useQuery<TagsQuery>(gqlTag.Tags);
     const [infiniteLoading, setInfiniteLoading] = React.useState(false);
     const [currentDate, setCurrentDate] = React.useState(moment());
     const [heights, setHeights] = React.useState<Record<string, number>>({});
@@ -51,7 +51,7 @@ export const DoneTrackers: React.FC<DoneTrackersProps> = ({addTagsToTracker}) =>
                         pageSize,
                     },
                 },
-                updateQuery: (prev, {fetchMoreResult}): TimeSpans => {
+                updateQuery: (prev, {fetchMoreResult}): TimeSpansQuery => {
                     if (!fetchMoreResult) {
                         return prev;
                     }
@@ -84,7 +84,7 @@ export const DoneTrackers: React.FC<DoneTrackersProps> = ({addTagsToTracker}) =>
             tagsResult.error ||
             tagsResult.loading ||
             !tagsResult.data ||
-            tagsResult.data.tags === null
+            tagsResult.data.tags == null
         ) {
             return [];
         }

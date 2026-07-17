@@ -28,12 +28,13 @@ import Button from '@material-ui/core/Button';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import {Link, matchPath, useLocation} from 'react-router-dom';
 import MenuItem from '@material-ui/core/MenuItem';
-import {useMutation, useQuery} from '@apollo/react-hooks';
-import {Logout} from '../gql/__generated__/Logout';
-import {Version} from '../gql/__generated__/Version';
-import {CurrentUser} from '../gql/__generated__/CurrentUser';
+import {useMutation, useQuery} from '@apollo/client';
+import {LogoutMutation} from '../gql/__generated__';
+import {VersionQuery} from '../gql/__generated__';
+import {CurrentUserQuery} from '../gql/__generated__';
 import * as gqlDashboard from '../gql/dashboard';
-import {Dashboards, Dashboards_dashboards} from '../gql/__generated__/Dashboards';
+import {DashboardsQuery} from '../gql/__generated__';
+import {Dashboard} from '../gql/types';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
 const drawerWidth = 240;
@@ -109,7 +110,7 @@ const staticPageTitles: Array<{path: string; title: string}> = [
     {path: '/dashboards', title: 'Dashboards / Manage'},
 ];
 
-const getPageTitle = (pathname: string, dashboards: Dashboards_dashboards[]): string => {
+const getPageTitle = (pathname: string, dashboards: Dashboard[]): string => {
     for (const {path, title} of staticPageTitles) {
         if (matchPath(path, pathname)) {
             return title;
@@ -125,15 +126,15 @@ const getPageTitle = (pathname: string, dashboards: Dashboards_dashboards[]): st
 
 export const Page: React.FC = ({children}) => {
     const classes = useStyles();
-    const {data} = useQuery<CurrentUser>(gqlUser.CurrentUser);
+    const {data} = useQuery<CurrentUserQuery>(gqlUser.CurrentUser);
 
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [userMenuOpen, setUserMenuOpen] = React.useState<null | HTMLElement>(null);
-    const [logout] = useMutation<Logout>(gqlUser.Logout, {refetchQueries: [{query: gqlUser.CurrentUser}]});
-    const {data: {version = gqlVersion.VersionDefault.version} = gqlVersion.VersionDefault} = useQuery<Version>(
+    const [logout] = useMutation<LogoutMutation>(gqlUser.Logout, {refetchQueries: [{query: gqlUser.CurrentUser}]});
+    const {data: {version = gqlVersion.VersionDefault.version} = gqlVersion.VersionDefault} = useQuery<VersionQuery>(
         gqlVersion.Version
     );
-    const dashboardsQuery = useQuery<Dashboards>(gqlDashboard.Dashboards);
+    const dashboardsQuery = useQuery<DashboardsQuery>(gqlDashboard.Dashboards);
     const dashboards = (dashboardsQuery.data && dashboardsQuery.data.dashboards) || [];
 
     const username = (data && data.user && data.user.name) || 'unknown';
