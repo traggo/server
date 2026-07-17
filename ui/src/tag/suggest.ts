@@ -1,12 +1,12 @@
-import {Tags} from '../gql/__generated__/Tags';
+import {TagsQuery} from '../gql/__generated__';
 import * as gqlTags from '../gql/tags';
-import {useQuery} from '@apollo/react-hooks';
-import {SuggestTagValue, SuggestTagValueVariables} from '../gql/__generated__/SuggestTagValue';
+import {useQuery} from '@apollo/client';
+import {SuggestTagValueQuery, SuggestTagValueQueryVariables} from '../gql/__generated__';
 import {TagSelectorEntry, specialTag} from './tagSelectorEntry';
-import {QueryResult} from 'react-apollo';
+import {QueryResult} from '@apollo/client';
 
 export const useSuggest = (
-    tagResult: QueryResult<Tags, {}>,
+    tagResult: QueryResult<TagsQuery, {}>,
     inputValue: string,
     usedTags: TagSelectorEntry[],
     skipValue = false,
@@ -18,9 +18,9 @@ export const useSuggest = (
 
     const exactMatch = ((tagResult.data && tagResult.data.tags) || []).find((tag) => tag.key === tagKey);
 
-    const valueResult = useQuery<SuggestTagValue, SuggestTagValueVariables>(gqlTags.SuggestTagValue, {
+    const valueResult = useQuery<SuggestTagValueQuery, SuggestTagValueQueryVariables>(gqlTags.SuggestTagValue, {
         variables: {tag: tagKey, query: tagValue},
-        skip: exactMatch === undefined || skipValue,
+        skip: exactMatch === undefined || skipValue || tagValue === undefined,
         fetchPolicy: 'no-cache',
     });
 
@@ -36,7 +36,7 @@ export const useSuggest = (
 
 const suggestTag = (
     exactMatch: TagSelectorEntry['tag'] | undefined,
-    tagResult: QueryResult<Tags, {}>,
+    tagResult: QueryResult<TagsQuery, {}>,
     tagKey: string,
     usedTags: string[],
     allowDuplicateKeys: boolean,
@@ -67,7 +67,7 @@ const suggestTag = (
 const suggestTagValue = (
     exactMatch: TagSelectorEntry['tag'],
     tagValue: string,
-    valueResult: QueryResult<SuggestTagValue, SuggestTagValueVariables>,
+    valueResult: QueryResult<SuggestTagValueQuery, SuggestTagValueQueryVariables>,
     usedValues: string[],
     includeInputValueOnNoMatch: boolean
 ): TagSelectorEntry[] => {

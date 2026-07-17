@@ -2,7 +2,7 @@ import * as React from 'react';
 import {useSettings} from '../gql/settings';
 import {CenteredSpinner} from '../common/CenteredSpinner';
 import moment, {LocaleSpecification} from 'moment';
-import {DateLocale, WeekDay} from '../gql/__generated__/globalTypes';
+import {DateLocale, WeekDay} from '../gql/__generated__';
 import {expectNever} from '../utils/never';
 
 const setLocale = (locale: DateLocale, spec: LocaleSpecification) => {

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {withSnackbarProps} from 'notistack';
-import {ApolloError} from 'apollo-boost';
+import {ApolloError} from '@apollo/client';
 
 export const handleError = (prefix: string, enqueue: withSnackbarProps['enqueueSnackbar']): ((error: ApolloError) => void) => {
     return (error) => {

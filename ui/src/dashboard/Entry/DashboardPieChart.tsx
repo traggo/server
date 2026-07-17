@@ -1,4 +1,4 @@
-import {Stats_stats_entries} from '../../gql/__generated__/Stats';
+import {StatEntry} from '../../gql/types';
 import {Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, TooltipProps} from 'recharts';
 import * as React from 'react';
 import {Colors} from './colors';
@@ -7,7 +7,7 @@ import prettyMs from 'pretty-ms';
 import Paper from '@material-ui/core/Paper';
 
 interface DashboardPieChartProps {
-    entries: Stats_stats_entries[];
+    entries: StatEntry[];
 }
 
 export const DashboardPieChart: React.FC<DashboardPieChartProps> = ({entries}) => {

@@ -2,12 +2,12 @@ import * as React from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import {Paper} from '@material-ui/core';
 import {SetSettings as SetSettingsGQL, Settings as SettingsGQL, useSettings} from '../gql/settings';
-import {useMutation} from '@apollo/react-hooks';
-import {SetSettings, SetSettingsVariables} from '../gql/__generated__/SetSettings';
+import {useMutation} from '@apollo/client';
+import {SetSettingsMutation, SetSettingsMutationVariables} from '../gql/__generated__';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/NativeSelect/NativeSelect';
-import {DateLocale, Theme, WeekDay, DateTimeInputStyle} from '../gql/__generated__/globalTypes';
+import {DateLocale, Theme, WeekDay, DateTimeInputStyle} from '../gql/__generated__';
 import {useSnackbar} from 'notistack';
 import {handleError} from '../utils/errors';
 
@@ -25,7 +25,7 @@ export const SettingsPage: React.FC = () => {
     const classes = useStyles();
     const {done, ...settings} = useSettings();
     const {enqueueSnackbar} = useSnackbar();
-    const [setSettings] = useMutation<SetSettings, SetSettingsVariables>(SetSettingsGQL, {
+    const [setSettings] = useMutation<SetSettingsMutation, SetSettingsMutationVariables>(SetSettingsGQL, {
         refetchQueries: [{query: SettingsGQL}],
     });
     return (

@@ -1,21 +1,24 @@
-import {DataProxy} from 'apollo-cache';
-import {TimeSpans} from './__generated__/TimeSpans';
+import {DataProxy} from '@apollo/client';
 import * as gqlTimeSpan from './timeSpan';
 import moment from 'moment';
-import {AddTimeSpan_createTimeSpan} from './__generated__/AddTimeSpan';
-import {TimeSpansInRange, TimeSpansInRangeVariables} from './__generated__/TimeSpansInRange';
-import {Trackers} from './__generated__/Trackers';
-import {StopTimer} from './__generated__/StopTimer';
+import {CreatedTimeSpan} from './types';
+import {
+    TimeSpansQuery,
+    TimeSpansInRangeQuery,
+    TimeSpansInRangeQueryVariables,
+    TrackersQuery,
+    StopTimerMutation,
+} from './__generated__';
 
-export const addTimeSpanToCache = (cache: DataProxy, ts: AddTimeSpan_createTimeSpan) => {
-    let oldTimeSpans: TimeSpans | null = null;
+export const addTimeSpanToCache = (cache: DataProxy, ts: CreatedTimeSpan) => {
+    let oldTimeSpans: TimeSpansQuery | null = null;
     try {
-        oldTimeSpans = cache.readQuery<TimeSpans>({query: gqlTimeSpan.TimeSpans});
+        oldTimeSpans = cache.readQuery<TimeSpansQuery>({query: gqlTimeSpan.TimeSpans});
     } catch {}
     if (!oldTimeSpans) {
         return;
     }
-    cache.writeQuery<TimeSpans>({
+    cache.writeQuery<TimeSpansQuery>({
         query: gqlTimeSpan.TimeSpans,
         data: {
             timeSpans: {
@@ -28,12 +31,12 @@ export const addTimeSpanToCache = (cache: DataProxy, ts: AddTimeSpan_createTimeS
         },
     });
 };
-export const addTimeSpanInRangeToCache = (cache: DataProxy, ts: AddTimeSpan_createTimeSpan, vars: TimeSpansInRangeVariables) => {
-    const oldTimeSpans = cache.readQuery<TimeSpansInRange>({query: gqlTimeSpan.TimeSpansInRange, variables: vars});
+export const addTimeSpanInRangeToCache = (cache: DataProxy, ts: CreatedTimeSpan, vars: TimeSpansInRangeQueryVariables) => {
+    const oldTimeSpans = cache.readQuery<TimeSpansInRangeQuery>({query: gqlTimeSpan.TimeSpansInRange, variables: vars});
     if (!oldTimeSpans) {
         return;
     }
-    cache.writeQuery<TimeSpansInRange>({
+    cache.writeQuery<TimeSpansInRangeQuery>({
         query: gqlTimeSpan.TimeSpansInRange,
         variables: vars,
         data: {
@@ -47,12 +50,12 @@ export const addTimeSpanInRangeToCache = (cache: DataProxy, ts: AddTimeSpan_crea
         },
     });
 };
-export const removeFromTrackersCache = (cache: DataProxy, data: StopTimer) => {
-    const oldTrackers = cache.readQuery<Trackers>({query: gqlTimeSpan.Trackers});
+export const removeFromTrackersCache = (cache: DataProxy, data: StopTimerMutation) => {
+    const oldTrackers = cache.readQuery<TrackersQuery>({query: gqlTimeSpan.Trackers});
     if (!oldTrackers || !data || !data.stopTimeSpan) {
         return;
     }
-    cache.writeQuery<Trackers>({
+    cache.writeQuery<TrackersQuery>({
         query: gqlTimeSpan.Trackers,
         data: {
             timers: (oldTrackers.timers || []).filter((tracker) => tracker.id !== data.stopTimeSpan!.id),
@@ -60,12 +63,12 @@ export const removeFromTrackersCache = (cache: DataProxy, data: StopTimer) => {
     });
 };
 
-export const removeFromTimeSpanInRangeCache = (cache: DataProxy, id: number, vars: TimeSpansInRangeVariables) => {
-    const old = cache.readQuery<TimeSpansInRange>({query: gqlTimeSpan.TimeSpansInRange, variables: vars});
+export const removeFromTimeSpanInRangeCache = (cache: DataProxy, id: number, vars: TimeSpansInRangeQueryVariables) => {
+    const old = cache.readQuery<TimeSpansInRangeQuery>({query: gqlTimeSpan.TimeSpansInRange, variables: vars});
     if (!old) {
         return;
     }
-    cache.writeQuery<TimeSpansInRange>({
+    cache.writeQuery<TimeSpansInRangeQuery>({
         query: gqlTimeSpan.TimeSpansInRange,
         variables: vars,
         data: {

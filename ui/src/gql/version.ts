@@ -1,5 +1,5 @@
-import {gql} from 'apollo-boost';
-import {Version as VersionResponse} from './__generated__/Version';
+import {gql} from '@apollo/client';
+import {VersionQuery as VersionResponse} from './__generated__';
 
 export const Version = gql`
     query Version {

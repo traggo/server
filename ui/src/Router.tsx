@@ -1,12 +1,12 @@
 import * as React from 'react';
-import {useQuery} from '@apollo/react-hooks';
-import {CurrentUser} from './gql/__generated__/CurrentUser';
+import {useQuery} from '@apollo/client';
+import {CurrentUserQuery} from './gql/__generated__';
 import * as gqlUser from './gql/user';
 import {CenteredSpinner} from './common/CenteredSpinner';
 import {LoginPage} from './login/LoginPage';
 import {Typography} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import {ApolloError} from 'apollo-boost';
+import {ApolloError} from '@apollo/client';
 import Grid from '@material-ui/core/Grid';
 import {DefaultPaper} from './common/DefaultPaper';
 import {Page} from './common/Page';
@@ -21,7 +21,7 @@ import {SettingsPage} from './setting/SettingsPage';
 import {CalendarPage} from './timespan/calendar/CalendarPage';
 
 export const Router = () => {
-    const {loading, error, data, refetch} = useQuery<CurrentUser>(gqlUser.CurrentUser);
+    const {loading, error, data, refetch} = useQuery<CurrentUserQuery>(gqlUser.CurrentUser);
     if (loading) {
         return <CenteredSpinner />;
     }

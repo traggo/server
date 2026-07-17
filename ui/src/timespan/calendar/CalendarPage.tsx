@@ -1,11 +1,11 @@
 import * as React from 'react';
 import {Paper, useTheme} from '@material-ui/core';
 import moment from 'moment';
-import {useApolloClient, useMutation, useQuery} from '@apollo/react-hooks';
-import {TimeSpans_timeSpans_timeSpans} from '../../gql/__generated__/TimeSpans';
+import {useApolloClient, useMutation, useQuery} from '@apollo/client';
+import {TimeSpanItem} from '../../gql/types';
 import * as gqlTimeSpan from '../../gql/timeSpan';
-import {Trackers} from '../../gql/__generated__/Trackers';
-import {Tags} from '../../gql/__generated__/Tags';
+import {TrackersQuery} from '../../gql/__generated__';
+import {TagsQuery} from '../../gql/__generated__';
 import * as gqlTag from '../../gql/tags';
 import FullCalendar from '@fullcalendar/react';
 import {calculateColor, ColorMode} from '../colorutils';
@@ -17,26 +17,26 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import momentPlugin from '@fullcalendar/moment';
 import interactionPlugin from '@fullcalendar/interaction';
 import {OptionsInput} from '@fullcalendar/core';
-import {UpdateTimeSpan, UpdateTimeSpanVariables} from '../../gql/__generated__/UpdateTimeSpan';
+import {UpdateTimeSpanMutation, UpdateTimeSpanMutationVariables} from '../../gql/__generated__';
 import Popper from '@material-ui/core/Popper';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import {TimeSpan} from '../TimeSpan';
 import {toTagSelectorEntry} from '../../tag/tagSelectorEntry';
-import {AddTimeSpan, AddTimeSpanVariables} from '../../gql/__generated__/AddTimeSpan';
+import {AddTimeSpanMutation, AddTimeSpanMutationVariables} from '../../gql/__generated__';
 import {FullCalendarStyling} from './FullCalendarStyling';
 import useInterval from '@rooks/use-interval';
 import {EventApi} from '@fullcalendar/core/api/EventApi';
-import {StopTimer, StopTimerVariables} from '../../gql/__generated__/StopTimer';
+import {StopTimerMutation, StopTimerMutationVariables} from '../../gql/__generated__';
 import {
     addTimeSpanInRangeToCache,
     addTimeSpanToCache,
     removeFromTimeSpanInRangeCache,
     removeFromTrackersCache,
 } from '../../gql/utils';
-import {StartTimer, StartTimerVariables} from '../../gql/__generated__/StartTimer';
+import {StartTimerMutation, StartTimerMutationVariables} from '../../gql/__generated__';
 import {timeRunningCalendar} from '../timeutils';
 import {stripTypename} from '../../utils/strip';
-import {TimeSpansInRange, TimeSpansInRangeVariables} from '../../gql/__generated__/TimeSpansInRange';
+import {TimeSpansInRangeQuery, TimeSpansInRangeQueryVariables} from '../../gql/__generated__';
 import {ExtendedEventSourceInput} from '@fullcalendar/core/structs/event-source';
 
 const toMoment = (date: Date): moment.Moment => {
@@ -55,27 +55,29 @@ const StartTimerId = '-1';
 export const CalendarPage: React.FC = () => {
     const apollo = useApolloClient();
     const theme = useTheme();
-    const timeSpansResult = useQuery<TimeSpansInRange, TimeSpansInRangeVariables>(gqlTimeSpan.TimeSpansInRange, {
+    const timeSpansResult = useQuery<TimeSpansInRangeQuery, TimeSpansInRangeQueryVariables>(gqlTimeSpan.TimeSpansInRange, {
         variables: {
             start: moment().startOf('week').format(),
             end: moment().endOf('week').format(),
         },
         fetchPolicy: 'cache-and-network',
     });
-    const trackersResult = useQuery<Trackers>(gqlTimeSpan.Trackers, {fetchPolicy: 'cache-and-network'});
-    const tagsResult = useQuery<Tags>(gqlTag.Tags);
-    const [startTimer] = useMutation<StartTimer, StartTimerVariables>(gqlTimeSpan.StartTimer, {
+    const trackersResult = useQuery<TrackersQuery>(gqlTimeSpan.Trackers, {fetchPolicy: 'cache-and-network'});
+    const tagsResult = useQuery<TagsQuery>(gqlTag.Tags);
+    const [startTimer] = useMutation<StartTimerMutation, StartTimerMutationVariables>(gqlTimeSpan.StartTimer, {
         refetchQueries: [{query: gqlTimeSpan.Trackers}],
     });
-    const [updateTimeSpanMutation] = useMutation<UpdateTimeSpan, UpdateTimeSpanVariables>(gqlTimeSpan.UpdateTimeSpan);
+    const [updateTimeSpanMutation] = useMutation<UpdateTimeSpanMutation, UpdateTimeSpanMutationVariables>(
+        gqlTimeSpan.UpdateTimeSpan
+    );
     const [currentDate, setCurrentDate] = React.useState(moment());
-    const [stopTimer] = useMutation<StopTimer, StopTimerVariables>(gqlTimeSpan.StopTimer, {
+    const [stopTimer] = useMutation<StopTimerMutation, StopTimerMutationVariables>(gqlTimeSpan.StopTimer, {
         update: (cache, {data}) => {
             if (!data || !data.stopTimeSpan) {
                 return;
             }
             removeFromTrackersCache(cache, data);
-            addTimeSpanInRangeToCache(cache, data.stopTimeSpan, timeSpansResult.variables);
+            addTimeSpanInRangeToCache(cache, data.stopTimeSpan, timeSpansResult.variables!);
         },
     });
     useInterval(
@@ -90,16 +92,16 @@ export const CalendarPage: React.FC = () => {
         return () => (window.__TRAGGO_CALENDAR = undefined);
     });
     const [ignore, setIgnore] = React.useState<boolean>(false);
-    const [selected, setSelected] = React.useState<{selected: HTMLElement | null; data: TimeSpans_timeSpans_timeSpans | null}>({
+    const [selected, setSelected] = React.useState<{selected: HTMLElement | null; data: TimeSpanItem | null}>({
         selected: null,
         data: null,
     });
-    const [addTimeSpan] = useMutation<AddTimeSpan, AddTimeSpanVariables>(gqlTimeSpan.AddTimeSpan, {
+    const [addTimeSpan] = useMutation<AddTimeSpanMutation, AddTimeSpanMutationVariables>(gqlTimeSpan.AddTimeSpan, {
         update: (cache, {data}) => {
             if (!data || !data.createTimeSpan) {
                 return;
             }
-            addTimeSpanInRangeToCache(cache, data.createTimeSpan, timeSpansResult.variables);
+            addTimeSpanInRangeToCache(cache, data.createTimeSpan, timeSpansResult.variables!);
             addTimeSpanToCache(cache, data.createTimeSpan);
         },
     });
@@ -109,15 +111,15 @@ export const CalendarPage: React.FC = () => {
             timeSpansResult.error ||
             timeSpansResult.loading ||
             !timeSpansResult.data ||
-            timeSpansResult.data.timeSpans === null ||
+            timeSpansResult.data.timeSpans == null ||
             trackersResult.error ||
             trackersResult.loading ||
             !trackersResult.data ||
-            trackersResult.data.timers === null ||
+            trackersResult.data.timers == null ||
             tagsResult.error ||
             tagsResult.loading ||
             !tagsResult.data ||
-            tagsResult.data.tags === null
+            tagsResult.data.tags == null
         ) {
             return [];
         }
@@ -214,8 +216,8 @@ export const CalendarPage: React.FC = () => {
                     datesRender={(x) => {
                         const range = {start: moment(x.view.currentStart), end: moment(x.view.currentEnd)};
                         if (
-                            !moment(timeSpansResult.variables.start).isSame(range.start) ||
-                            !moment(timeSpansResult.variables.end).isSame(range.end)
+                            !moment(timeSpansResult.variables!.start).isSame(range.start) ||
+                            !moment(timeSpansResult.variables!.end).isSame(range.end)
                         ) {
                             timeSpansResult.refetch(range);
                         }
@@ -290,7 +292,7 @@ export const CalendarPage: React.FC = () => {
                                     });
                                 }}
                                 deleted={() => {
-                                    removeFromTimeSpanInRangeCache(apollo.cache, selected.data!.id, timeSpansResult.variables);
+                                    removeFromTimeSpanInRangeCache(apollo.cache, selected.data!.id, timeSpansResult.variables!);
                                     setSelected({selected: null, data: null});
                                 }}
                                 continued={() => setCurrentDate(moment())}

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Paper from '@material-ui/core/Paper';
-import {useMutation, useQuery} from '@apollo/react-hooks';
+import {useMutation, useQuery} from '@apollo/client';
 import * as gqlUser from '../gql/user';
 import {CenteredSpinner} from '../common/CenteredSpinner';
 import Table from '@material-ui/core/Table';
@@ -15,9 +15,9 @@ import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import {useSnackbar} from 'notistack';
 import {TextField} from '@material-ui/core';
-import {Users} from '../gql/__generated__/Users';
-import {RemoveUser, RemoveUserVariables} from '../gql/__generated__/RemoveUser';
-import {UpdateUser, UpdateUserVariables} from '../gql/__generated__/UpdateUser';
+import {UsersQuery} from '../gql/__generated__';
+import {RemoveUserMutation, RemoveUserMutationVariables} from '../gql/__generated__';
+import {UpdateUserMutation, UpdateUserMutationVariables} from '../gql/__generated__';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import {AddUserDialog} from './AddUserDialog';
@@ -39,15 +39,15 @@ const NoEdit = [-1, '', '', false] as const;
 
 export const UsersPage = () => {
     const classes = useStyles();
-    const {data, loading} = useQuery<Users>(gqlUser.Users);
+    const {data, loading} = useQuery<UsersQuery>(gqlUser.Users);
     const [addUser, setAddUser] = React.useState(false);
     const refetch = {refetchQueries: [{query: gqlUser.Users}, {query: gqlUser.CurrentUser}]};
     const {enqueueSnackbar} = useSnackbar();
     const [removeUserConfirmation, setRemoveUserConfirmation] = React.useState<false | [number, string]>(false);
-    const [removeUser] = useMutation<RemoveUser, RemoveUserVariables>(gqlUser.RemoveUser, refetch);
+    const [removeUser] = useMutation<RemoveUserMutation, RemoveUserMutationVariables>(gqlUser.RemoveUser, refetch);
     const [[editId, editName, editPass, editAdmin], setEditing] =
         React.useState<Readonly<[number, string, string, boolean]>>(NoEdit);
-    const [updateUser] = useMutation<UpdateUser, UpdateUserVariables>(gqlUser.UpdateUser, refetch);
+    const [updateUser] = useMutation<UpdateUserMutation, UpdateUserMutationVariables>(gqlUser.UpdateUser, refetch);
     if (loading || !data || !data.currentUser || !data.users) {
         return <CenteredSpinner />;
     }

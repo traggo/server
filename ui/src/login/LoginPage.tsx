@@ -5,8 +5,8 @@ import {LoginForm} from './LoginForm';
 import Link from '@material-ui/core/Link';
 import {DefaultPaper} from '../common/DefaultPaper';
 import * as gqlVersion from '../gql/version';
-import {useQuery} from '@apollo/react-hooks';
-import {Version} from '../gql/__generated__/Version';
+import {useQuery} from '@apollo/client';
+import {VersionQuery} from '../gql/__generated__';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
 const useStyles = makeStyles(() => ({
@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
 
 export const LoginPage = () => {
     const classes = useStyles();
-    const {data: {version = gqlVersion.VersionDefault.version} = gqlVersion.VersionDefault} = useQuery<Version>(
+    const {data: {version = gqlVersion.VersionDefault.version} = gqlVersion.VersionDefault} = useQuery<VersionQuery>(
         gqlVersion.Version
     );
     return (
