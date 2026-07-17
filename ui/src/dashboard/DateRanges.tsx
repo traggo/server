@@ -9,11 +9,16 @@ import MoreVert from '@mui/icons-material/MoreVert';
 import PlusIcon from '@mui/icons-material/Add';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import {RemoveDashboardRangeMutation, RemoveDashboardRangeMutationVariables} from '../gql/__generated__';
-import {UpdateDashboardRangeMutation, UpdateDashboardRangeMutationVariables} from '../gql/__generated__';
+import {
+    RemoveDashboardRangeMutation,
+    RemoveDashboardRangeMutationVariables,
+    UpdateDashboardRangeMutation,
+    UpdateDashboardRangeMutationVariables,
+    AddDashboardRangeMutation,
+    AddDashboardRangeMutationVariables,
+} from '../gql/__generated__';
 import {stripTypename} from '../utils/strip';
 import {Range} from '../utils/range';
-import {AddDashboardRangeMutation, AddDashboardRangeMutationVariables} from '../gql/__generated__';
 import Input from '@mui/material/Input';
 
 interface Props {

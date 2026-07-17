@@ -3,10 +3,9 @@ import {useQuery} from '@apollo/client';
 import * as gqlTimeSpan from '../gql/timeSpan';
 import * as gqlTag from '../gql/tags';
 import {TimeSpan, TimeSpanProps} from './TimeSpan';
-import {TagsQuery} from '../gql/__generated__';
+import {TagsQuery, TimeSpansQuery, TimeSpansQueryVariables} from '../gql/__generated__';
 import useInterval from '@rooks/use-interval';
 import moment from 'moment';
-import {TimeSpansQuery, TimeSpansQueryVariables} from '../gql/__generated__';
 import {Typography} from '@mui/material';
 import {GroupedTimeSpanProps, toGroupedTimeSpanProps} from './timespanutils';
 import {TagSelectorEntry} from '../tag/tagSelectorEntry';
@@ -15,6 +14,7 @@ import {isSameDate} from '../utils/time';
 
 // react-infinite 0.13's type declarations predate the React 18 types' removal of implicit
 // `children` from arbitrary component props; this package gets replaced in a later stage.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ReactInfinite = ReactInfiniteImport as React.ComponentType<any>;
 
 interface DoneTrackersProps {

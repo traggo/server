@@ -18,9 +18,13 @@ import IconButton from '@mui/material/IconButton';
 import {useSnackbar} from 'notistack';
 import {TextField} from '@mui/material';
 import Button from '@mui/material/Button';
-import {TagsQuery} from '../gql/__generated__';
-import {RemoveTagMutation, RemoveTagMutationVariables} from '../gql/__generated__';
-import {UpdateTagMutation, UpdateTagMutationVariables} from '../gql/__generated__';
+import {
+    TagsQuery,
+    RemoveTagMutation,
+    RemoveTagMutationVariables,
+    UpdateTagMutation,
+    UpdateTagMutationVariables,
+} from '../gql/__generated__';
 import {AddTagDialog} from './AddTagDialog';
 import {SliderPicker} from 'react-color';
 import {TagChip} from '../common/TagChip';

@@ -15,9 +15,13 @@ import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import {useSnackbar} from 'notistack';
 import {TextField} from '@mui/material';
-import {UsersQuery} from '../gql/__generated__';
-import {RemoveUserMutation, RemoveUserMutationVariables} from '../gql/__generated__';
-import {UpdateUserMutation, UpdateUserMutationVariables} from '../gql/__generated__';
+import {
+    UsersQuery,
+    RemoveUserMutation,
+    RemoveUserMutationVariables,
+    UpdateUserMutation,
+    UpdateUserMutationVariables,
+} from '../gql/__generated__';
 import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
 import {AddUserDialog} from './AddUserDialog';
@@ -78,6 +82,8 @@ export const UsersPage = () => {
         };
         const isCurrent = user.id === data.currentUser!.id;
         const isEdited = editId === user.id;
+        const displayName = user.name + (isCurrent ? ' (current)' : '');
+        const adminLabel = user.admin ? 'Yes' : 'No';
         return (
             <TableRow selected={isCurrent} key={user.id}>
                 <TableCell>{user.id}</TableCell>
@@ -94,7 +100,7 @@ export const UsersPage = () => {
                             onSubmit={onClickSubmit}
                         />
                     ) : (
-                        user.name + (isCurrent ? ' (current)' : '')
+                        displayName
                     )}
                 </TableCell>
                 <TableCell>
@@ -112,10 +118,8 @@ export const UsersPage = () => {
                 <TableCell>
                     {isEdited ? (
                         <Checkbox checked={editAdmin} onChange={(e) => setEditing([editId, editName, '', e.target.checked])} />
-                    ) : user.admin ? (
-                        'Yes'
                     ) : (
-                        'No'
+                        adminLabel
                     )}
                 </TableCell>
                 <TableCell align="right">

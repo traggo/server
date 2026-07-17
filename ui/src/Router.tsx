@@ -1,12 +1,11 @@
 import * as React from 'react';
-import {useQuery} from '@apollo/client';
+import {useQuery, ApolloError} from '@apollo/client';
 import {CurrentUserQuery} from './gql/__generated__';
 import * as gqlUser from './gql/user';
 import {CenteredSpinner} from './common/CenteredSpinner';
 import {LoginPage} from './login/LoginPage';
 import {Typography} from '@mui/material';
 import Button from '@mui/material/Button';
-import {ApolloError} from '@apollo/client';
 import Grid from '@mui/material/Grid';
 import {DefaultPaper} from './common/DefaultPaper';
 import {Page} from './common/Page';
@@ -26,7 +25,7 @@ export const Router = () => {
         return <CenteredSpinner />;
     }
     if (error) {
-        return <Error refetch={refetch} error={error} />;
+        return <ErrorDisplay refetch={refetch} error={error} />;
     }
     const loggedIn = data && data.user;
     const admin = data && data.user && data.user.admin;
@@ -60,7 +59,7 @@ export const Router = () => {
     );
 };
 
-const Error: React.FC<{error: ApolloError; refetch: () => void}> = ({error, refetch}) => {
+const ErrorDisplay: React.FC<{error: ApolloError; refetch: () => void}> = ({error, refetch}) => {
     return (
         <Grid container direction="row" alignItems="center" justifyContent="center" style={{height: '100%'}}>
             <Grid item>

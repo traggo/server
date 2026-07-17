@@ -1,15 +1,13 @@
-import {DashboardItem} from '../../gql/types';
+import {DashboardItem, StatEntry} from '../../gql/types';
 import * as React from 'react';
 import {DashboardPieChart} from './DashboardPieChart';
-import {StatEntry} from '../../gql/types';
 import {useQuery} from '@apollo/client';
 import * as gqlStats from '../../gql/statistics';
 import {Paper} from '@mui/material';
 import Typography from '@mui/material/Typography';
 import moment from 'moment-timezone';
-import {EntryType} from '../../gql/__generated__';
+import {EntryType, Stats2Query, Stats2QueryVariables} from '../../gql/__generated__';
 import {expectNever} from '../../utils/never';
-import {Stats2Query, Stats2QueryVariables} from '../../gql/__generated__';
 import {DashboardBarChart} from './DashboardBarChart';
 import {DashboardLineChart} from './DashboardLineChart';
 import {CenteredSpinner} from '../../common/CenteredSpinner';

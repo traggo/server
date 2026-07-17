@@ -2,10 +2,16 @@ import * as React from 'react';
 import {useMutation, useQuery} from '@apollo/client';
 import * as gqlDashboard from '../gql/dashboard';
 import {default as ReactGrid, Layout, WidthProvider} from 'react-grid-layout';
-import {DashboardsQuery} from '../gql/__generated__';
+import {
+    DashboardsQuery,
+    UpdatePosMutation,
+    UpdatePosMutationVariables,
+    EntryType,
+    StatsInterval,
+    RemoveDashboardEntryMutation,
+    RemoveDashboardEntryMutationVariables,
+} from '../gql/__generated__';
 import {DashboardItem} from '../gql/types';
-import {UpdatePosMutation, UpdatePosMutationVariables} from '../gql/__generated__';
-import {EntryType, StatsInterval} from '../gql/__generated__';
 import {DashboardEntry} from './Entry/DashboardEntry';
 import Button from '@mui/material/Button';
 import clone from 'lodash.clonedeep';
@@ -16,7 +22,6 @@ import {CenteredSpinner} from '../common/CenteredSpinner';
 import {AddPopup} from './Entry/AddPopup';
 import {Paper} from '@mui/material';
 import {Center} from '../common/Center';
-import {RemoveDashboardEntryMutation, RemoveDashboardEntryMutationVariables} from '../gql/__generated__';
 import {useNavigate, useParams} from 'react-router-dom';
 import {useSnackbar} from 'notistack';
 import {DateRanges} from './DateRanges';
@@ -36,6 +41,7 @@ const cols: Record<ViewType, number> = {
 // react-grid-layout 0.16's own type declarations predate the React 18 types' removal of
 // implicit `children` from arbitrary component props; the react-grid-layout version bump in a
 // later stage carries its own current types and won't need this cast.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const WidthAwareReactGrid = WidthProvider(ReactGrid) as React.ComponentType<any>;
 const EditId = -1;
 const newEntry = (): DashboardItem => {

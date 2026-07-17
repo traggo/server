@@ -12,9 +12,13 @@ import ClickAwayListener from '@mui/material/ClickAwayListener';
 import {DateTimeSelector} from '../common/DateTimeSelector';
 import {useMutation} from '@apollo/client';
 import * as gqlTimeSpan from '../gql/timeSpan';
-import {StartTimerMutation, StartTimerMutationVariables} from '../gql/__generated__';
-import {InputTimeSpanTag} from '../gql/__generated__';
-import {AddTimeSpanMutation, AddTimeSpanMutationVariables} from '../gql/__generated__';
+import {
+    StartTimerMutation,
+    StartTimerMutationVariables,
+    InputTimeSpanTag,
+    AddTimeSpanMutation,
+    AddTimeSpanMutationVariables,
+} from '../gql/__generated__';
 import {useSnackbar} from 'notistack';
 import {inUserTz} from './timeutils';
 import {addTimeSpanToCache} from '../gql/utils';

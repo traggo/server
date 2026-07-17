@@ -9,11 +9,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import {SliderPicker} from 'react-color';
 import {InputLabel} from '@mui/material';
 import FormControl from '@mui/material/FormControl';
-import {FetchResult} from '@apollo/client';
+import {FetchResult, useMutation} from '@apollo/client';
 import {AddTagMutation, AddTagMutationVariables} from '../gql/__generated__';
 import * as gqlTags from '../gql/tags';
 import {TagSelectorEntry} from './tagSelectorEntry';
-import {useMutation} from '@apollo/client';
 import {useSnackbar} from 'notistack';
 import {handleError} from '../utils/errors';
 
