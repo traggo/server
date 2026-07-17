@@ -24,7 +24,7 @@ export const SnackbarProvider: React.FC = ({children}) => {
             maxSnack={3}
             classes={{variantError: classes.error, variantWarning: classes.warning, variantInfo: classes.info}}
             autoHideDuration={3500}>
-            {children}
+            {children as React.ReactElement}
         </Provider>
     );
 };

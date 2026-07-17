@@ -29,15 +29,13 @@ export const toInputTags = (entries: TagSelectorEntry[]): InputTag[] => {
 };
 
 export const toTagSelectorEntry = (tags: Array<TagSelectorEntry['tag']>, entries: InputTag[]): TagSelectorEntry[] => {
-    return entries.map(
-        (timerTag): TagSelectorEntry => {
-            const definition = tags.find((tag) => tag.key === timerTag.key) || specialTag(timerTag.key, 'new');
-            return {
-                tag: definition,
-                value: timerTag.value,
-            };
-        }
-    );
+    return entries.map((timerTag): TagSelectorEntry => {
+        const definition = tags.find((tag) => tag.key === timerTag.key) || specialTag(timerTag.key, 'new');
+        return {
+            tag: definition,
+            value: timerTag.value,
+        };
+    });
 };
 
 export const specialTag = (name: string, state: SpecialTagState): TagSelectorEntry['tag'] & {usages: 0} => {
