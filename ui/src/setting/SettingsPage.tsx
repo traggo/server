@@ -1,19 +1,24 @@
 import * as React from 'react';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import {Paper} from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
+import {Paper} from '@mui/material';
 import {SetSettings as SetSettingsGQL, Settings as SettingsGQL, useSettings} from '../gql/settings';
 import {useMutation} from '@apollo/client';
 import {SetSettingsMutation, SetSettingsMutationVariables} from '../gql/__generated__';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/NativeSelect/NativeSelect';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/NativeSelect';
 import {DateLocale, Theme, WeekDay, DateTimeInputStyle} from '../gql/__generated__';
 import {useSnackbar} from 'notistack';
 import {handleError} from '../utils/errors';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        ...theme.mixins.gutters(),
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
+        [theme.breakpoints.up('sm')]: {
+            paddingLeft: theme.spacing(3),
+            paddingRight: theme.spacing(3),
+        },
         paddingTop: theme.spacing(1),
         paddingBottom: theme.spacing(3),
         maxWidth: 500,

@@ -1,33 +1,33 @@
 import * as React from 'react';
-import AppBar from '@material-ui/core/AppBar';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Divider from '@material-ui/core/Divider';
-import Drawer from '@material-ui/core/Drawer';
-import Hidden from '@material-ui/core/Hidden';
-import IconButton from '@material-ui/core/IconButton';
-import UsersIcon from '@material-ui/icons/SupervisorAccount';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import MenuIcon from '@material-ui/icons/Menu';
-import SettingsIcon from '@material-ui/icons/Settings';
-import DevicesIcon from '@material-ui/icons/DevicesOther';
-import LabelIcon from '@material-ui/icons/Label';
-import DashboardManageIcon from '@material-ui/icons/ListAlt';
-import TimeLineIcon from '@material-ui/icons/Timeline';
-import CalendarIcon from '@material-ui/icons/CalendarToday';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import {ListSubheader, Menu} from '@material-ui/core';
-import HrefLink from '@material-ui/core/Link';
+import AppBar from '@mui/material/AppBar';
+import CssBaseline from '@mui/material/CssBaseline';
+import Divider from '@mui/material/Divider';
+import Drawer from '@mui/material/Drawer';
+import Hidden from '@mui/material/Hidden';
+import IconButton from '@mui/material/IconButton';
+import UsersIcon from '@mui/icons-material/SupervisorAccount';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import MenuIcon from '@mui/icons-material/Menu';
+import SettingsIcon from '@mui/icons-material/Settings';
+import DevicesIcon from '@mui/icons-material/DevicesOther';
+import LabelIcon from '@mui/icons-material/Label';
+import DashboardManageIcon from '@mui/icons-material/ListAlt';
+import TimeLineIcon from '@mui/icons-material/Timeline';
+import CalendarIcon from '@mui/icons-material/CalendarToday';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import {ListSubheader, Menu} from '@mui/material';
+import HrefLink from '@mui/material/Link';
 import * as gqlUser from '../gql/user';
 import * as gqlVersion from '../gql/version';
-import Button from '@material-ui/core/Button';
-import AccountCircle from '@material-ui/icons/AccountCircle';
+import Button from '@mui/material/Button';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import {Link, matchPath, useLocation} from 'react-router-dom';
-import MenuItem from '@material-ui/core/MenuItem';
+import MenuItem from '@mui/material/MenuItem';
 import {useMutation, useQuery} from '@apollo/client';
 import {LogoutMutation} from '../gql/__generated__';
 import {VersionQuery} from '../gql/__generated__';
@@ -35,7 +35,7 @@ import {CurrentUserQuery} from '../gql/__generated__';
 import * as gqlDashboard from '../gql/dashboard';
 import {DashboardsQuery} from '../gql/__generated__';
 import {Dashboard} from '../gql/types';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles';
 
 const drawerWidth = 240;
 
@@ -124,8 +124,8 @@ const getPageTitle = (pathname: string, dashboards: Dashboard[]): string => {
     return '';
 };
 
-export const Page: React.FC = ({children}) => {
-    const classes = useStyles();
+export const Page: React.FC<React.PropsWithChildren> = ({children}) => {
+    const classes = useStyles({});
     const {data} = useQuery<CurrentUserQuery>(gqlUser.CurrentUser);
 
     const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -241,7 +241,8 @@ export const Page: React.FC = ({children}) => {
                         color="inherit"
                         aria-label="Open drawer"
                         onClick={() => setMobileOpen(!mobileOpen)}
-                        className={classes.menuButton}>
+                        className={classes.menuButton}
+                        size="large">
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" color="inherit" noWrap>
@@ -285,7 +286,7 @@ export const Page: React.FC = ({children}) => {
                         {drawer}
                     </Drawer>
                 </Hidden>
-                <Hidden smDown implementation="js">
+                <Hidden mdDown implementation="js">
                     <Drawer
                         classes={{
                             paper: classes.drawerPaper,

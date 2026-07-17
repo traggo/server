@@ -59,7 +59,7 @@ const weekDayToMoment = (s: WeekDay): number => {
     }
 };
 
-export const BootUserSettings: React.FC = ({children}): React.ReactElement => {
+export const BootUserSettings: React.FC<React.PropsWithChildren> = ({children}): React.ReactElement => {
     const {done, firstDayOfTheWeek, dateLocale} = useSettings();
 
     React.useEffect(() => {

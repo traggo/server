@@ -7,14 +7,14 @@ import {DashboardItem} from '../gql/types';
 import {UpdatePosMutation, UpdatePosMutationVariables} from '../gql/__generated__';
 import {EntryType, StatsInterval} from '../gql/__generated__';
 import {DashboardEntry} from './Entry/DashboardEntry';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import clone from 'lodash.clonedeep';
 import {EditPopup} from './Entry/EditPopup';
 import {EditGlass} from './Entry/EditGlass';
 import {Fade} from '../common/Fade';
 import {CenteredSpinner} from '../common/CenteredSpinner';
 import {AddPopup} from './Entry/AddPopup';
-import {Paper} from '@material-ui/core';
+import {Paper} from '@mui/material';
 import {Center} from '../common/Center';
 import {RemoveDashboardEntryMutation, RemoveDashboardEntryMutationVariables} from '../gql/__generated__';
 import {useNavigate, useParams} from 'react-router-dom';
@@ -33,7 +33,10 @@ const cols: Record<ViewType, number> = {
     [ViewType.Desktop]: 20,
 };
 
-const WidthAwareReactGrid = WidthProvider(ReactGrid);
+// react-grid-layout 0.16's own type declarations predate the React 18 types' removal of
+// implicit `children` from arbitrary component props; the react-grid-layout version bump in a
+// later stage carries its own current types and won't need this cast.
+const WidthAwareReactGrid = WidthProvider(ReactGrid) as React.ComponentType<any>;
 const EditId = -1;
 const newEntry = (): DashboardItem => {
     return {

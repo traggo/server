@@ -7,11 +7,15 @@ import {TagsQuery} from '../gql/__generated__';
 import useInterval from '@rooks/use-interval';
 import moment from 'moment';
 import {TimeSpansQuery, TimeSpansQueryVariables} from '../gql/__generated__';
-import {Typography} from '@material-ui/core';
+import {Typography} from '@mui/material';
 import {GroupedTimeSpanProps, toGroupedTimeSpanProps} from './timespanutils';
 import {TagSelectorEntry} from '../tag/tagSelectorEntry';
-import ReactInfinite from 'react-infinite';
+import ReactInfiniteImport from 'react-infinite';
 import {isSameDate} from '../utils/time';
+
+// react-infinite 0.13's type declarations predate the React 18 types' removal of implicit
+// `children` from arbitrary component props; this package gets replaced in a later stage.
+const ReactInfinite = ReactInfiniteImport as React.ComponentType<any>;
 
 interface DoneTrackersProps {
     addTagsToTracker?: (entries: TagSelectorEntry[]) => void;

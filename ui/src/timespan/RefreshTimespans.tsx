@@ -5,8 +5,8 @@ import * as gqlTimeSpan from '../gql/timeSpan';
 import {useSnackbar} from 'notistack';
 import {isSameDate} from '../utils/time';
 import moment from 'moment';
-import {Fab, Zoom} from '@material-ui/core';
-import RefreshIcon from '@material-ui/icons/Refresh';
+import {Fab, Zoom} from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 export const RefreshTimeSpans: React.FC = () => {
     const {refetch, data} = useQuery<TimeSpansQuery, TimeSpansQueryVariables>(gqlTimeSpan.TimeSpans, {

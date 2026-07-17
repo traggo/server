@@ -1,15 +1,15 @@
 import * as React from 'react';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 import {useSnackbar} from 'notistack';
 import {handleError} from '../utils/errors';
 import * as gqlUser from '../gql/user';
 import {LoginMutation, LoginMutationVariables} from '../gql/__generated__';
 import {useMutation} from '@apollo/client';
-import {Checkbox} from '@material-ui/core';
+import {Checkbox} from '@mui/material';
 import {DeviceType} from '../gql/__generated__';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import makeStyles from '@mui/styles/makeStyles';
 import {Settings as SettingsGQL} from '../gql/settings';
 
 const useStyles = makeStyles((theme) => ({

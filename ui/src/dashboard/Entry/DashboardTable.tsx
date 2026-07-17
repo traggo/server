@@ -2,8 +2,8 @@ import * as React from 'react';
 import {StatsInterval} from '../../gql/__generated__';
 import {StatsRangeEntries} from '../../gql/types';
 import moment from 'moment';
-import {Table, TableBody, TableCell, TableRow} from '@material-ui/core';
-import TableHead from '@material-ui/core/TableHead';
+import {Table, TableBody, TableCell, TableRow} from '@mui/material';
+import TableHead from '@mui/material/TableHead';
 import {ofInterval} from './dateformat';
 import prettyMs from 'pretty-ms';
 

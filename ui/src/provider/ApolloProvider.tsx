@@ -6,6 +6,6 @@ const client = new ApolloClient({
     cache: new InMemoryCache(),
 });
 
-export const ApolloProvider: React.FC = ({children}) => {
+export const ApolloProvider: React.FC<React.PropsWithChildren> = ({children}) => {
     return <Provider client={client}>{children}</Provider>;
 };

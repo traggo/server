@@ -2,9 +2,9 @@ import {StatEntry} from '../../gql/types';
 import {Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, TooltipProps} from 'recharts';
 import * as React from 'react';
 import {Colors} from './colors';
-import {Typography} from '@material-ui/core';
+import {Typography} from '@mui/material';
 import prettyMs from 'pretty-ms';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 
 interface DashboardPieChartProps {
     entries: StatEntry[];
