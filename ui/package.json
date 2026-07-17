@@ -20,6 +20,7 @@
     "apollo-boost": "^0.4.4",
     "color-hash": "^1.0.3",
     "downshift": "^3.2.10",
+    "events": "^3.3.0",
     "get-best-contrast-color": "^0.2.2",
     "graphql": "^14.5.8",
     "lodash.clonedeep": "^4.5.0",
@@ -41,10 +42,9 @@
   },
   "devDependencies": {
     "@types/graphql": "^14.0.7",
-    "@types/jest": "^24.0.15",
     "@types/lodash.clonedeep": "^4.5.6",
     "@types/moment-timezone": "^0.5.12",
-    "@types/node": "11.11.3",
+    "@types/node": "^22.0.0",
     "@types/pretty-ms": "^4.0.0",
     "@types/react": "16.8.8",
     "@types/react-color": "^2.17.0",
@@ -54,11 +54,15 @@
     "@types/react-router": "^5.0.1",
     "@types/react-router-dom": "^5.1.2",
     "@types/recharts": "^1.8.3",
+    "@vitejs/plugin-react": "^4.7.0",
     "apollo": "^2.21.0",
+    "jsdom": "^29.1.1",
     "prettier": "^1.19.1",
-    "react-scripts": "^3.2.0",
+    "rimraf": "^6.1.3",
     "tslint": "^5.20.1",
-    "tslint-sonarts": "^1.9.0"
+    "tslint-sonarts": "^1.9.0",
+    "vite": "^6.4.3",
+    "vitest": "^3.2.4"
   },
   "scripts": {
     "lint": "tslint --fix --project .",
@@ -66,17 +70,9 @@
     "generate": "apollo client:codegen --target typescript --localSchemaFile ../schema.graphql --excludes **/*local.ts --globalTypesFile src/gql/__generated__/globalTypes.ts",
     "format": "prettier \"**/*.{html,ts,tsx,css}\" --write",
     "format:check": "prettier \"**/*.{html,ts,tsx,css}\" --list-different",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "vite",
+    "build": "vite build",
     "postbuild": "rimraf build/**/*.map",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
-  "proxy": "http://localhost:3030"
+    "test": "vitest run"
+  }
 }

@@ -20,11 +20,9 @@ func Register(r *mux.Router) {
 	r.Handle("/", serveFile("index.html", "text/html"))
 	r.Handle("/index.html", serveFile("index.html", "text/html"))
 	r.Handle("/manifest.json", serveFile("manifest.json", "application/json"))
-	r.Handle("/service-worker.js", serveFile("service-worker.js", "text/javascript"))
-	r.Handle("/asset-manifest.json", serveFile("asset-manifest.json", "application/json"))
 
 	fileServer := http.FileServer(http.FS(buildDir))
-	r.Handle("/static/{type}/{resource}", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	r.Handle("/assets/{resource}", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
 		fileServer.ServeHTTP(w, r)
 	}))
