@@ -4,10 +4,10 @@ import {CurrentUserQuery} from './gql/__generated__';
 import * as gqlUser from './gql/user';
 import {CenteredSpinner} from './common/CenteredSpinner';
 import {LoginPage} from './login/LoginPage';
-import {Typography} from '@material-ui/core';
-import Button from '@material-ui/core/Button';
+import {Typography} from '@mui/material';
+import Button from '@mui/material/Button';
 import {ApolloError} from '@apollo/client';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import {DefaultPaper} from './common/DefaultPaper';
 import {Page} from './common/Page';
 import {Navigate, Route, Routes} from 'react-router-dom';
@@ -62,7 +62,7 @@ export const Router = () => {
 
 const Error: React.FC<{error: ApolloError; refetch: () => void}> = ({error, refetch}) => {
     return (
-        <Grid container direction="row" alignItems="center" justify="center" style={{height: '100%'}}>
+        <Grid container direction="row" alignItems="center" justifyContent="center" style={{height: '100%'}}>
             <Grid item>
                 <DefaultPaper>
                     <Typography variant="h3" component="h1" gutterBottom={true}>

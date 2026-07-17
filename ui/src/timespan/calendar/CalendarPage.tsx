@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Paper, useTheme} from '@material-ui/core';
+import {Paper, useTheme} from '@mui/material';
 import moment from 'moment';
 import {useApolloClient, useMutation, useQuery} from '@apollo/client';
 import {TimeSpanItem} from '../../gql/types';
@@ -18,8 +18,8 @@ import momentPlugin from '@fullcalendar/moment';
 import interactionPlugin from '@fullcalendar/interaction';
 import {OptionsInput} from '@fullcalendar/core';
 import {UpdateTimeSpanMutation, UpdateTimeSpanMutationVariables} from '../../gql/__generated__';
-import Popper from '@material-ui/core/Popper';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Popper from '@mui/material/Popper';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 import {TimeSpan} from '../TimeSpan';
 import {toTagSelectorEntry} from '../../tag/tagSelectorEntry';
 import {AddTimeSpanMutation, AddTimeSpanMutationVariables} from '../../gql/__generated__';
@@ -131,8 +131,8 @@ export const CalendarPage: React.FC = () => {
                     .tags!.map((t) => t.key + ':' + t.value)
                     .sort((a, b) => a.localeCompare(b))
                     .join(' ');
-                const color = calculateColor(colorKey, ColorMode.Bold, theme.palette.type);
-                const borderColor = calculateColor(colorKey, ColorMode.None, theme.palette.type);
+                const color = calculateColor(colorKey, ColorMode.Bold, theme.palette.mode);
+                const borderColor = calculateColor(colorKey, ColorMode.None, theme.palette.mode);
                 return {
                     start: moment(ts.start).toDate(),
                     end: moment(ts.end || currentDate).toDate(),

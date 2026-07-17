@@ -2,13 +2,13 @@ import * as React from 'react';
 import {TagSelectorEntry} from '../tag/tagSelectorEntry';
 import {TagSelector} from '../tag/TagSelector';
 import moment from 'moment-timezone';
-import {Button} from '@material-ui/core';
-import {MoreVert} from '@material-ui/icons';
-import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import {Button} from '@mui/material';
+import {MoreVert} from '@mui/icons-material';
+import IconButton from '@mui/material/IconButton';
+import Paper from '@mui/material/Paper';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 import {DateTimeSelector} from '../common/DateTimeSelector';
 import {useMutation} from '@apollo/client';
 import * as gqlTimeSpan from '../gql/timeSpan';
@@ -131,7 +131,7 @@ export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntr
                 <Button variant="text" style={{height: 50}} onClick={submit}>
                     {type === Type.Manual ? 'add' : 'start'}
                 </Button>
-                <IconButton onClick={(e: React.MouseEvent<HTMLElement>) => setOpenMenu(e.currentTarget)}>
+                <IconButton onClick={(e: React.MouseEvent<HTMLElement>) => setOpenMenu(e.currentTarget)} size="large">
                     <MoreVert />
                 </IconButton>
                 <Menu aria-haspopup="true" anchorEl={openMenu} open={openMenu !== null}>

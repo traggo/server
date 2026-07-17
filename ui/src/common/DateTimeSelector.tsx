@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {KeyboardDateTimePicker} from '@material-ui/pickers';
+import {DesktopDateTimePicker} from '@mui/x-date-pickers/DesktopDateTimePicker';
 import moment from 'moment';
 import {uglyConvertToLocalTime} from '../timespan/timeutils';
 import {useSettings} from '../gql/settings';
@@ -39,25 +39,27 @@ export const DateTimeSelector: React.FC<DateTimeSelectorProps> = React.memo(
         const format = showDate ? localeData.longDateFormat('L') + ' ' + time : time;
 
         return (
-            <KeyboardDateTimePicker
+            <DesktopDateTimePicker
                 className="time-picker"
-                variant="inline"
-                InputProps={{disableUnderline: true}}
-                title={selectedDate.format()}
-                style={{width: (showDate ? 185 : 105) + (ampm ? 20 : 0)}}
-                PopoverProps={{
-                    onEntered: () => {
-                        popoverOpen(true);
-                        setOpen(true);
-                    },
-                    onExited: () => {
-                        popoverOpen(false);
-                        setOpen(false);
+                sx={{width: (showDate ? 185 : 105) + (ampm ? 20 : 0)}}
+                onOpen={() => {
+                    popoverOpen(true);
+                    setOpen(true);
+                }}
+                onClose={() => {
+                    popoverOpen(false);
+                    setOpen(false);
+                }}
+                slotProps={{
+                    textField: {
+                        title: selectedDate.format(),
+                        variant: 'standard',
+                        margin: 'none',
+                        InputProps: {disableUnderline: true},
                     },
                 }}
-                margin="none"
-                value={uglyConvertToLocalTime(selectedDate).format()}
-                onChange={(date: moment.Moment) => {
+                value={uglyConvertToLocalTime(selectedDate)}
+                onChange={(date: moment.Moment | null) => {
                     if (!date || !date.isValid()) {
                         return;
                     }
@@ -78,7 +80,7 @@ export const DateTimeSelector: React.FC<DateTimeSelectorProps> = React.memo(
                 ampm={ampm}
                 format={format}
                 label={label}
-                openTo={showDate ? 'date' : 'hours'}
+                openTo={showDate ? 'day' : 'hours'}
             />
         );
     }

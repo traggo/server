@@ -1,9 +1,9 @@
 import * as React from 'react';
-import Popper from '@material-ui/core/Popper';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import {Paper} from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
+import Popper from '@mui/material/Popper';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import {Paper} from '@mui/material';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 import {DashboardItem} from '../../gql/types';
 import {useMutation} from '@apollo/client';
 import * as gqlDashboard from '../../gql/dashboard';

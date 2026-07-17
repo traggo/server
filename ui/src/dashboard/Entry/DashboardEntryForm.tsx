@@ -1,8 +1,8 @@
 import * as React from 'react';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/NativeSelect/NativeSelect';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/NativeSelect';
 import {useQuery} from '@apollo/client';
 import {TagsQuery} from '../../gql/__generated__';
 import * as gqlTags from '../../gql/tags';
@@ -12,7 +12,7 @@ import {FormTagSelector} from '../../tag/FormTagSelector';
 import {DashboardItem, DashboardItemRange} from '../../gql/types';
 import {RelativeDateTimeSelector} from '../../common/RelativeDateTimeSelector';
 import {parseRelativeTime} from '../../utils/time';
-import {Grid, Typography, Switch} from '@material-ui/core';
+import {Grid, Typography, Switch} from '@mui/material';
 
 interface EditPopupProps {
     entry: DashboardItem;

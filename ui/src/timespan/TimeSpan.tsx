@@ -2,18 +2,19 @@ import * as React from 'react';
 import {TagSelectorEntry, toInputTags} from '../tag/tagSelectorEntry';
 import {TagSelector} from '../tag/TagSelector';
 import moment from 'moment';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import {DateTimeSelector} from '../common/DateTimeSelector';
-import {Button, TextField, Typography, makeStyles} from '@material-ui/core';
+import {Button, TextField, Typography} from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import {inUserTz} from './timeutils';
 import {useMutation} from '@apollo/client';
 import {StopTimerMutation, StopTimerMutationVariables} from '../gql/__generated__';
 import * as gqlTimeSpan from '../gql/timeSpan';
 import {UpdateTimeSpanMutation, UpdateTimeSpanMutationVariables} from '../gql/__generated__';
-import IconButton from '@material-ui/core/IconButton';
-import {MoreVert} from '@material-ui/icons';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import IconButton from '@mui/material/IconButton';
+import {MoreVert} from '@mui/icons-material';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import {RemoveTimeSpanMutation, RemoveTimeSpanMutationVariables} from '../gql/__generated__';
 import {useStateAndDelegateWithDelayOnChange} from '../utils/hooks';
 import {TimeSpansQuery} from '../gql/__generated__';
@@ -304,7 +305,8 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
 
                     <IconButton
                         className={styles.showMoreButton}
-                        onClick={(e: React.MouseEvent<HTMLElement>) => setOpenMenu(e.currentTarget)}>
+                        onClick={(e: React.MouseEvent<HTMLElement>) => setOpenMenu(e.currentTarget)}
+                        size="large">
                         <MoreVert />
                     </IconButton>
 

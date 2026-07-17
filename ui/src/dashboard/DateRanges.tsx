@@ -2,19 +2,19 @@ import * as React from 'react';
 import {useMutation} from '@apollo/client';
 import * as gqlDashboard from '../gql/dashboard';
 import {Dashboard, DashboardRange} from '../gql/types';
-import {IconButton, Paper, Typography} from '@material-ui/core';
+import {IconButton, Paper, Typography} from '@mui/material';
 import {RelativeDateTimeSelector} from '../common/RelativeDateTimeSelector';
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
-import MoreVert from '@material-ui/icons/MoreVert';
-import PlusIcon from '@material-ui/icons/Add';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import MoreVert from '@mui/icons-material/MoreVert';
+import PlusIcon from '@mui/icons-material/Add';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import {RemoveDashboardRangeMutation, RemoveDashboardRangeMutationVariables} from '../gql/__generated__';
 import {UpdateDashboardRangeMutation, UpdateDashboardRangeMutationVariables} from '../gql/__generated__';
 import {stripTypename} from '../utils/strip';
 import {Range} from '../utils/range';
 import {AddDashboardRangeMutation, AddDashboardRangeMutationVariables} from '../gql/__generated__';
-import Input from '@material-ui/core/Input';
+import Input from '@mui/material/Input';
 
 interface Props {
     changeMode: boolean;
@@ -206,7 +206,8 @@ export const DateRanges: React.FC<Props> = ({changeMode, dashboard, ranges, setR
                                     range: {name: 'new range', editable: true, range: {from: 'now/w', to: 'now/w'}},
                                 },
                             });
-                        }}>
+                        }}
+                        size="large">
                         <PlusIcon />
                     </IconButton>
                 </Paper>

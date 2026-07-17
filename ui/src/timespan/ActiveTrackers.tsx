@@ -6,7 +6,7 @@ import {TrackersQuery} from '../gql/__generated__';
 import {TagsQuery} from '../gql/__generated__';
 import {TimeSpan} from './TimeSpan';
 import {toTimeSpanProps} from './timespanutils';
-import {Typography} from '@material-ui/core';
+import {Typography} from '@mui/material';
 
 export const ActiveTrackers = () => {
     const trackersResult = useQuery<TrackersQuery>(gqlTimeSpan.Trackers, {fetchPolicy: 'cache-and-network'});

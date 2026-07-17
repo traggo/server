@@ -1,7 +1,7 @@
 import * as React from 'react';
-import {TextField} from '@material-ui/core';
+import {TextField} from '@mui/material';
 import {parseRelativeTime} from '../utils/time';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import useTimeout from '@rooks/use-timeout';
 
 interface RelativeDateTimeSelectorProps {
