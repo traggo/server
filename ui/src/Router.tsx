@@ -10,7 +10,7 @@ import {ApolloError} from 'apollo-boost';
 import Grid from '@material-ui/core/Grid';
 import {DefaultPaper} from './common/DefaultPaper';
 import {Page} from './common/Page';
-import {Redirect, Route, Switch} from 'react-router';
+import {Navigate, Route, Routes} from 'react-router-dom';
 import {DailyPage} from './timespan/DailyPage';
 import {DevicesPage} from './devices/DevicesPage';
 import {UsersPage} from './user/UsersPage';
@@ -32,22 +32,31 @@ export const Router = () => {
     const admin = data && data.user && data.user.admin;
 
     return (
-        <Switch>
-            <Route path="/user/login">{loggedIn ? <Redirect to="/" /> : <LoginPage />}</Route>
-            {loggedIn ? null : <Redirect to="/user/login" />}
-
-            <Page>
-                <Route path="/dashboards" component={DashboardsPage} />
-                <Route path="/dashboard/:id" component={DashboardPage} />
-                <Route exact path="/timesheet/list" component={DailyPage} />
-                <Route exact path="/timesheet/calendar" component={CalendarPage} />
-                <Route exact path="/user/settings" component={SettingsPage} />
-                <Route exact path="/user/devices" component={DevicesPage} />
-                <Route exact path="/user/tags" component={TagPage} />
-                {admin ? <Route exact path="/admin/users" component={UsersPage} /> : null}
-                <Route exact path="/" render={() => <Redirect to="/timesheet/list" />} />
-            </Page>
-        </Switch>
+        <Routes>
+            <Route path="/user/login" element={loggedIn ? <Navigate to="/" /> : <LoginPage />} />
+            <Route
+                path="/*"
+                element={
+                    loggedIn ? (
+                        <Page>
+                            <Routes>
+                                <Route path="dashboards" element={<DashboardsPage />} />
+                                <Route path="dashboard/:id/*" element={<DashboardPage />} />
+                                <Route path="timesheet/list" element={<DailyPage />} />
+                                <Route path="timesheet/calendar" element={<CalendarPage />} />
+                                <Route path="user/settings" element={<SettingsPage />} />
+                                <Route path="user/devices" element={<DevicesPage />} />
+                                <Route path="user/tags" element={<TagPage />} />
+                                {admin ? <Route path="admin/users" element={<UsersPage />} /> : null}
+                                <Route path="/" element={<Navigate to="/timesheet/list" replace />} />
+                            </Routes>
+                        </Page>
+                    ) : (
+                        <Navigate to="/user/login" />
+                    )
+                }
+            />
+        </Routes>
     );
 };
 

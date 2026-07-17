@@ -16,7 +16,7 @@ import {AddPopup} from './Entry/AddPopup';
 import {Paper} from '@material-ui/core';
 import {Center} from '../common/Center';
 import {RemoveDashboardEntry, RemoveDashboardEntryVariables} from '../gql/__generated__/RemoveDashboardEntry';
-import {RouteChildrenProps} from 'react-router';
+import {useNavigate, useParams} from 'react-router-dom';
 import {useSnackbar} from 'notistack';
 import {DateRanges} from './DateRanges';
 import {Range} from '../utils/range';
@@ -78,9 +78,9 @@ const newEntry = (): Dashboards_dashboards_items => {
     };
 };
 
-type RouterProps = RouteChildrenProps<{id?: string}>;
-
-export const DashboardPage: React.FC<RouterProps> = ({match, history}) => {
+export const DashboardPage: React.FC = () => {
+    const {id} = useParams<{id: string}>();
+    const navigate = useNavigate();
     const [addRef, setAddRef] = React.useState<null | HTMLElement>(null);
     const endRef = React.useRef<null | HTMLDivElement>(null);
     const [changeMode, setChangeMode] = React.useState(false);
@@ -110,15 +110,15 @@ export const DashboardPage: React.FC<RouterProps> = ({match, history}) => {
 
     const dashboards = data.dashboards || [];
 
-    if (!match || !match.params.id) {
+    if (!id) {
         enqueueSnackbar('id parameter is missing in url', {variant: 'warning'});
-        history.push('/dashboards');
+        navigate('/dashboards');
         return <></>;
     }
-    const dashboard = dashboards.find((db) => '' + db.id === match.params.id);
+    const dashboard = dashboards.find((db) => '' + db.id === id);
     if (!dashboard) {
         enqueueSnackbar('dashboard does not exist', {variant: 'warning'});
-        history.push('/dashboards');
+        navigate('/dashboards');
         return <></>;
     }
 

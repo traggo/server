@@ -26,16 +26,15 @@ import * as gqlUser from '../gql/user';
 import * as gqlVersion from '../gql/version';
 import Button from '@material-ui/core/Button';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import {Link} from 'react-router-dom';
+import {Link, matchPath, useLocation} from 'react-router-dom';
 import MenuItem from '@material-ui/core/MenuItem';
 import {useMutation, useQuery} from '@apollo/react-hooks';
 import {Logout} from '../gql/__generated__/Logout';
 import {Version} from '../gql/__generated__/Version';
 import {CurrentUser} from '../gql/__generated__/CurrentUser';
 import * as gqlDashboard from '../gql/dashboard';
-import {Dashboards} from '../gql/__generated__/Dashboards';
+import {Dashboards, Dashboards_dashboards} from '../gql/__generated__/Dashboards';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import {Route, RouteChildrenProps, Switch} from 'react-router';
 
 const drawerWidth = 240;
 
@@ -95,9 +94,33 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-// tslint:disable-next-line:no-any
+// MUI v4's `component` prop isn't polymorphism-typed; revisited in the MUI v5 migration.
 const routerLink = (to: string): any => {
-    return React.forwardRef<HTMLAnchorElement>((props, ref) => <Link innerRef={ref} to={to} {...props} />);
+    return React.forwardRef<HTMLAnchorElement>((props, ref) => <Link ref={ref} to={to} {...props} />);
+};
+
+const staticPageTitles: Array<{path: string; title: string}> = [
+    {path: '/timesheet/list', title: 'Timesheet / List'},
+    {path: '/timesheet/calendar', title: 'Timesheet / Calendar'},
+    {path: '/user/settings', title: 'User / Settings'},
+    {path: '/user/devices', title: 'User / Devices'},
+    {path: '/user/tags', title: 'User / Tags'},
+    {path: '/admin/users', title: 'Admin / Users'},
+    {path: '/dashboards', title: 'Dashboards / Manage'},
+];
+
+const getPageTitle = (pathname: string, dashboards: Dashboards_dashboards[]): string => {
+    for (const {path, title} of staticPageTitles) {
+        if (matchPath(path, pathname)) {
+            return title;
+        }
+    }
+    const dashboardMatch = matchPath('/dashboard/:id/*', pathname);
+    if (dashboardMatch && dashboardMatch.params.id) {
+        const db = dashboards.find((dashboard) => dashboard.id === parseInt(dashboardMatch.params.id!, 10));
+        return 'Dashboards / ' + (db ? db.name : '...');
+    }
+    return '';
 };
 
 export const Page: React.FC = ({children}) => {
@@ -115,6 +138,9 @@ export const Page: React.FC = ({children}) => {
 
     const username = (data && data.user && data.user.name) || 'unknown';
     const admin = data && data.user && data.user.admin;
+
+    const location = useLocation();
+    const pageTitle = getPageTitle(location.pathname, dashboards);
 
     const drawer = (
         <div>
@@ -218,37 +244,7 @@ export const Page: React.FC = ({children}) => {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" color="inherit" noWrap>
-                        <Switch>
-                            <Route exact path="/timesheet/list">
-                                Timesheet / List
-                            </Route>
-                            <Route exact path="/timesheet/calendar">
-                                Timesheet / Calendar
-                            </Route>
-                            <Route exact path="/user/settings">
-                                User / Settings
-                            </Route>
-                            <Route exact path="/user/devices">
-                                User / Devices
-                            </Route>
-                            <Route exact path="/user/tags">
-                                User / Tags
-                            </Route>
-                            <Route exact path="/admin/users">
-                                Admin / Users
-                            </Route>
-                            <Route exact path="/dashboards">
-                                Dashboards / Manage
-                            </Route>
-                            <Route exact path="/dashboard/:id/:name">
-                                {(props: RouteChildrenProps<{id: string}>) => {
-                                    const db = dashboards.find(
-                                        (dashboard) => dashboard.id === parseInt(props.match!.params.id, 10)
-                                    );
-                                    return 'Dashboards / ' + (db ? db.name : '...');
-                                }}
-                            </Route>
-                        </Switch>
+                        {pageTitle}
                     </Typography>
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop}>
