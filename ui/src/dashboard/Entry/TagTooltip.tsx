@@ -25,9 +25,7 @@ export const TagTooltip = ({active, payload, dateFormat, total}: TooltipProps & 
                         Total:
                         {prettyMs(sum(payload) * 1000)}
                     </Typography>
-                ) : (
-                    undefined
-                )}
+                ) : undefined}
             </Paper>
         );
     }

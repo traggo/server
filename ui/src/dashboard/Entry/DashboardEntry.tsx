@@ -20,10 +20,9 @@ import {DashboardTable} from './DashboardTable';
 interface DashboardEntryProps {
     entry: Dashboards_dashboards_items;
     ranges: Record<number, Range>;
-    ref?: React.Ref<HTMLElement>;
 }
 
-export const DashboardEntry: React.FC<DashboardEntryProps> = React.forwardRef<{}, DashboardEntryProps>(({entry, ranges}, ref) => {
+export const DashboardEntry = React.forwardRef<HTMLDivElement, DashboardEntryProps>(({entry, ranges}, ref) => {
     const range = findRange(entry.statsSelection, ranges);
     return (
         <Paper style={{width: '100%', height: '100%'}} ref={ref}>
@@ -45,9 +44,7 @@ const SpecificDashboardEntry: React.FC<{entry: Dashboards_dashboards_items; rang
     const interval = entry.statsSelection.interval;
     const stats = useQuery<Stats2, Stats2Variables>(gqlStats.Stats2, {
         variables: {
-            now: moment()
-                .startOf('hour')
-                .format(),
+            now: moment().startOf('hour').format(),
             stats: {
                 range,
                 interval,

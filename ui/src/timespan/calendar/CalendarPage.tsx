@@ -57,12 +57,8 @@ export const CalendarPage: React.FC = () => {
     const theme = useTheme();
     const timeSpansResult = useQuery<TimeSpansInRange, TimeSpansInRangeVariables>(gqlTimeSpan.TimeSpansInRange, {
         variables: {
-            start: moment()
-                .startOf('week')
-                .format(),
-            end: moment()
-                .endOf('week')
-                .format(),
+            start: moment().startOf('week').format(),
+            end: moment().endOf('week').format(),
         },
         fetchPolicy: 'cache-and-network',
     });
@@ -201,9 +197,7 @@ export const CalendarPage: React.FC = () => {
     if (trackersResult.data && !(trackersResult.data.timers || []).length) {
         const startTimerEvent: ExtendedEventSourceInput = {
             start: currentDate.toDate(),
-            end: moment(currentDate)
-                .add(15, 'minute')
-                .toDate(),
+            end: moment(currentDate).add(15, 'minute').toDate(),
             className: '__start',
             editable: false,
             id: StartTimerId,

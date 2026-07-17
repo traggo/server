@@ -52,9 +52,7 @@ export const RelativeDateTimeSelector: React.FC<RelativeDateTimeSelectorProps> =
             }}
             error={error !== ''}
             helperText={
-                small ? (
-                    undefined
-                ) : errVisible ? (
+                small ? undefined : errVisible ? (
                     <Typography color={'secondary'} variant={'caption'}>
                         {error}
                     </Typography>

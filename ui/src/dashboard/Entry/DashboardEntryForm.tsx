@@ -165,9 +165,7 @@ export const DashboardEntryForm: React.FC<EditPopupProps> = ({entry, onChange: s
                         entry.statsSelection.range = null;
                         setEntry(entry);
                     }}>
-                    {entry.statsSelection.rangeId ? (
-                        undefined
-                    ) : (
+                    {entry.statsSelection.rangeId ? undefined : (
                         <option key={''} value={''}>
                             Select a date range
                         </option>
@@ -194,9 +192,7 @@ export const DashboardEntryForm: React.FC<EditPopupProps> = ({entry, onChange: s
                         </Grid>
                     </Grid>
                 </Typography>
-            ) : (
-                undefined
-            )}
+            ) : undefined}
             <FormTagSelector
                 label="Tags"
                 selectedEntries={tagKeys || []}

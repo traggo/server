@@ -14,7 +14,6 @@ export const stripTypename = <T>(value: T): T => {
 
     Object.values(value).forEach(stripTypename);
     if ('__typename' in value) {
-        // @ts-ignore
         delete value.__typename;
     }
 

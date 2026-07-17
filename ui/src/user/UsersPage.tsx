@@ -45,9 +45,8 @@ export const UsersPage = () => {
     const {enqueueSnackbar} = useSnackbar();
     const [removeUserConfirmation, setRemoveUserConfirmation] = React.useState<false | [number, string]>(false);
     const [removeUser] = useMutation<RemoveUser, RemoveUserVariables>(gqlUser.RemoveUser, refetch);
-    const [[editId, editName, editPass, editAdmin], setEditing] = React.useState<Readonly<[number, string, string, boolean]>>(
-        NoEdit
-    );
+    const [[editId, editName, editPass, editAdmin], setEditing] =
+        React.useState<Readonly<[number, string, string, boolean]>>(NoEdit);
     const [updateUser] = useMutation<UpdateUser, UpdateUserVariables>(gqlUser.UpdateUser, refetch);
     if (loading || !data || !data.currentUser || !data.users) {
         return <CenteredSpinner />;
