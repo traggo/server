@@ -29,11 +29,8 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import {Link, matchPath, useLocation} from 'react-router-dom';
 import MenuItem from '@mui/material/MenuItem';
 import {useMutation, useQuery} from '@apollo/client';
-import {LogoutMutation} from '../gql/__generated__';
-import {VersionQuery} from '../gql/__generated__';
-import {CurrentUserQuery} from '../gql/__generated__';
+import {LogoutMutation, VersionQuery, CurrentUserQuery, DashboardsQuery} from '../gql/__generated__';
 import * as gqlDashboard from '../gql/dashboard';
-import {DashboardsQuery} from '../gql/__generated__';
 import {Dashboard} from '../gql/types';
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -95,7 +92,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-// MUI v4's `component` prop isn't polymorphism-typed; revisited in the MUI v5 migration.
+// MUI's `component` prop isn't polymorphism-typed against an arbitrary forwardRef component.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const routerLink = (to: string): any => {
     return React.forwardRef<HTMLAnchorElement>((props, ref) => <Link ref={ref} to={to} {...props} />);
 };

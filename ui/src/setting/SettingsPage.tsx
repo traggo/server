@@ -3,11 +3,17 @@ import makeStyles from '@mui/styles/makeStyles';
 import {Paper} from '@mui/material';
 import {SetSettings as SetSettingsGQL, Settings as SettingsGQL, useSettings} from '../gql/settings';
 import {useMutation} from '@apollo/client';
-import {SetSettingsMutation, SetSettingsMutationVariables} from '../gql/__generated__';
+import {
+    SetSettingsMutation,
+    SetSettingsMutationVariables,
+    DateLocale,
+    Theme,
+    WeekDay,
+    DateTimeInputStyle,
+} from '../gql/__generated__';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/NativeSelect';
-import {DateLocale, Theme, WeekDay, DateTimeInputStyle} from '../gql/__generated__';
 import {useSnackbar} from 'notistack';
 import {handleError} from '../utils/errors';
 

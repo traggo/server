@@ -1,9 +1,7 @@
-import {TagsQuery} from '../gql/__generated__';
+import {TagsQuery, SuggestTagValueQuery, SuggestTagValueQueryVariables} from '../gql/__generated__';
 import * as gqlTags from '../gql/tags';
-import {useQuery} from '@apollo/client';
-import {SuggestTagValueQuery, SuggestTagValueQueryVariables} from '../gql/__generated__';
+import {useQuery, QueryResult} from '@apollo/client';
 import {TagSelectorEntry, specialTag} from './tagSelectorEntry';
-import {QueryResult} from '@apollo/client';
 
 export const useSuggest = (
     tagResult: QueryResult<TagsQuery, {}>,

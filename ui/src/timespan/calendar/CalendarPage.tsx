@@ -4,8 +4,20 @@ import moment from 'moment';
 import {useApolloClient, useMutation, useQuery} from '@apollo/client';
 import {TimeSpanItem} from '../../gql/types';
 import * as gqlTimeSpan from '../../gql/timeSpan';
-import {TrackersQuery} from '../../gql/__generated__';
-import {TagsQuery} from '../../gql/__generated__';
+import {
+    TrackersQuery,
+    TagsQuery,
+    UpdateTimeSpanMutation,
+    UpdateTimeSpanMutationVariables,
+    AddTimeSpanMutation,
+    AddTimeSpanMutationVariables,
+    StopTimerMutation,
+    StopTimerMutationVariables,
+    StartTimerMutation,
+    StartTimerMutationVariables,
+    TimeSpansInRangeQuery,
+    TimeSpansInRangeQueryVariables,
+} from '../../gql/__generated__';
 import * as gqlTag from '../../gql/tags';
 import FullCalendar from '@fullcalendar/react';
 import {calculateColor, ColorMode} from '../colorutils';
@@ -17,26 +29,21 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import momentPlugin from '@fullcalendar/moment';
 import interactionPlugin from '@fullcalendar/interaction';
 import {OptionsInput} from '@fullcalendar/core';
-import {UpdateTimeSpanMutation, UpdateTimeSpanMutationVariables} from '../../gql/__generated__';
 import Popper from '@mui/material/Popper';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import {TimeSpan} from '../TimeSpan';
 import {toTagSelectorEntry} from '../../tag/tagSelectorEntry';
-import {AddTimeSpanMutation, AddTimeSpanMutationVariables} from '../../gql/__generated__';
 import {FullCalendarStyling} from './FullCalendarStyling';
 import useInterval from '@rooks/use-interval';
 import {EventApi} from '@fullcalendar/core/api/EventApi';
-import {StopTimerMutation, StopTimerMutationVariables} from '../../gql/__generated__';
 import {
     addTimeSpanInRangeToCache,
     addTimeSpanToCache,
     removeFromTimeSpanInRangeCache,
     removeFromTrackersCache,
 } from '../../gql/utils';
-import {StartTimerMutation, StartTimerMutationVariables} from '../../gql/__generated__';
 import {timeRunningCalendar} from '../timeutils';
 import {stripTypename} from '../../utils/strip';
-import {TimeSpansInRangeQuery, TimeSpansInRangeQueryVariables} from '../../gql/__generated__';
 import {ExtendedEventSourceInput} from '@fullcalendar/core/structs/event-source';
 
 const toMoment = (date: Date): moment.Moment => {
@@ -45,7 +52,7 @@ const toMoment = (date: Date): moment.Moment => {
 
 declare global {
     interface Window {
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         __TRAGGO_CALENDAR: any;
     }
 }
@@ -193,8 +200,7 @@ export const CalendarPage: React.FC = () => {
             return;
         }
 
-        // tslint:disable-next-line:no-any
-        setSelected({data: data.event.extendedProps.ts, selected: data.jsEvent.target as any});
+        setSelected({data: data.event.extendedProps.ts, selected: data.jsEvent.target as HTMLElement});
     };
     if (trackersResult.data && !(trackersResult.data.timers || []).length) {
         const startTimerEvent: ExtendedEventSourceInput = {

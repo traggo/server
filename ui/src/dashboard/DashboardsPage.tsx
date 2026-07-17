@@ -16,9 +16,13 @@ import {useSnackbar} from 'notistack';
 import * as gqlDashboard from '../gql/dashboard';
 import {TextField} from '@mui/material';
 import Button from '@mui/material/Button';
-import {DashboardsQuery} from '../gql/__generated__';
-import {RemoveDashboardMutation, RemoveDashboardMutationVariables} from '../gql/__generated__';
-import {UpdateDashboardMutation, UpdateDashboardMutationVariables} from '../gql/__generated__';
+import {
+    DashboardsQuery,
+    RemoveDashboardMutation,
+    RemoveDashboardMutationVariables,
+    UpdateDashboardMutation,
+    UpdateDashboardMutationVariables,
+} from '../gql/__generated__';
 import {AddDashboardDialog} from './AddDashboardDialog';
 import makeStyles from '@mui/styles/makeStyles';
 import {ConfirmDialog} from '../common/ConfirmDialog';

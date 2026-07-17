@@ -19,7 +19,9 @@ export const DashboardPieChart: React.FC<DashboardPieChartProps> = ({entries}) =
                     isAnimationActive={false}
                     dataKey="timeSpendInSeconds"
                     nameKey={(entry) => {
-                        // tslint:disable-next-line:no-any
+                        // recharts' own types don't allow nameKey to be a function returning a
+                        // composite string; the runtime accepts it fine.
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         return (entry.key + ':' + entry.value) as any;
                     }}
                     data={entries}

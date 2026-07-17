@@ -4,7 +4,14 @@ import makeStyles from '@mui/styles/makeStyles';
 import {useMutation, useQuery} from '@apollo/client';
 import * as gqlDevice from '../gql/device';
 import * as gqlUser from '../gql/user';
-import {DevicesQuery} from '../gql/__generated__';
+import {
+    DevicesQuery,
+    RemoveDeviceMutation,
+    RemoveDeviceMutationVariables,
+    UpdateDeviceMutation,
+    UpdateDeviceMutationVariables,
+    DeviceType,
+} from '../gql/__generated__';
 import {CenteredSpinner} from '../common/CenteredSpinner';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -17,13 +24,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
-import {RemoveDeviceMutation, RemoveDeviceMutationVariables} from '../gql/__generated__';
-import {UpdateDeviceMutation, UpdateDeviceMutationVariables} from '../gql/__generated__';
 import {useSnackbar} from 'notistack';
 import {TextField} from '@mui/material';
 import Button from '@mui/material/Button';
 import {AddDeviceDialog} from './AddDeviceDialog';
-import {DeviceType} from '../gql/__generated__';
 import {deviceTypeToString} from './typeutils';
 import Select from '@mui/material/NativeSelect';
 
@@ -75,6 +79,7 @@ export const DevicesPage = () => {
         };
         const isCurrent = device.id === data.currentDevice!.id;
         const isEdited = editId === device.id;
+        const displayName = device.name + (isCurrent ? ' (current)' : '');
         return (
             <TableRow key={device.id} selected={isCurrent}>
                 <TableCell>{device.id}</TableCell>
@@ -92,7 +97,7 @@ export const DevicesPage = () => {
                             style={{minWidth: 128}}
                         />
                     ) : (
-                        device.name + (isCurrent ? ' (current)' : '')
+                        displayName
                     )}
                 </TableCell>
                 <TableCell title={device.createdAt}>{moment(device.createdAt).fromNow()}</TableCell>

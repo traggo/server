@@ -225,7 +225,9 @@ const useStyle = makeStyles((theme) => {
             '& .fc .__start:hover': {
                 background: theme.palette.primary.light,
             },
-            // tslint:disable-next-line:no-any important breaks it
+            // makeStyles' own type inference breaks on this shape without the cast (the
+            // "important" nested selector syntax below isn't part of its typed style object).
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any,
     };
 });

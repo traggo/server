@@ -124,7 +124,6 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
 
         setSelectedEntries([...selectedEntries, entry]);
         setCurrentValue('');
-        return;
     };
 
     const onTagClicked = (entry: TagSelectorEntry, edit: boolean) => {

@@ -8,20 +8,26 @@ import {Button, TextField, Typography} from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import {inUserTz} from './timeutils';
 import {useMutation} from '@apollo/client';
-import {StopTimerMutation, StopTimerMutationVariables} from '../gql/__generated__';
+import {
+    StopTimerMutation,
+    StopTimerMutationVariables,
+    UpdateTimeSpanMutation,
+    UpdateTimeSpanMutationVariables,
+    RemoveTimeSpanMutation,
+    RemoveTimeSpanMutationVariables,
+    TimeSpansQuery,
+    TrackersQuery,
+    StartTimerMutation,
+    StartTimerMutationVariables,
+} from '../gql/__generated__';
 import * as gqlTimeSpan from '../gql/timeSpan';
-import {UpdateTimeSpanMutation, UpdateTimeSpanMutationVariables} from '../gql/__generated__';
 import IconButton from '@mui/material/IconButton';
 import {MoreVert} from '@mui/icons-material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import {RemoveTimeSpanMutation, RemoveTimeSpanMutationVariables} from '../gql/__generated__';
 import {useStateAndDelegateWithDelayOnChange} from '../utils/hooks';
-import {TimeSpansQuery} from '../gql/__generated__';
 import {isSameDate} from '../utils/time';
-import {TrackersQuery} from '../gql/__generated__';
 import {addTimeSpanToCache, removeFromTrackersCache} from '../gql/utils';
-import {StartTimerMutation, StartTimerMutationVariables} from '../gql/__generated__';
 import {RelativeTime, RelativeToNow} from '../common/RelativeTime';
 
 interface Range {
