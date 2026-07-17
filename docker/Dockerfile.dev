@@ -1,6 +1,8 @@
 FROM golang:1.18.1 as builder
 
-RUN apt-get update && apt-get install --yes nodejs npm && npm install --global yarn
+RUN apt-get update && apt-get install --yes curl && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install --yes nodejs && npm install --global yarn
 
 WORKDIR /app
 COPY . .
