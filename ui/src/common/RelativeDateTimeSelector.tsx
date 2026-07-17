@@ -2,7 +2,7 @@ import * as React from 'react';
 import {TextField} from '@mui/material';
 import {parseRelativeTime} from '../utils/time';
 import Typography from '@mui/material/Typography';
-import useTimeout from '@rooks/use-timeout';
+import {useTimeout} from '../utils/hooks';
 
 interface RelativeDateTimeSelectorProps {
     value: string;

@@ -14,7 +14,6 @@ import {
 import {DashboardItem} from '../gql/types';
 import {DashboardEntry} from './Entry/DashboardEntry';
 import Button from '@mui/material/Button';
-import clone from 'lodash.clonedeep';
 import {EditPopup} from './Entry/EditPopup';
 import {EditGlass} from './Entry/EditGlass';
 import {Fade} from '../common/Fade';
@@ -38,11 +37,7 @@ const cols: Record<ViewType, number> = {
     [ViewType.Desktop]: 20,
 };
 
-// react-grid-layout 0.16's own type declarations predate the React 18 types' removal of
-// implicit `children` from arbitrary component props; the react-grid-layout version bump in a
-// later stage carries its own current types and won't need this cast.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const WidthAwareReactGrid = WidthProvider(ReactGrid) as React.ComponentType<any>;
+const WidthAwareReactGrid = WidthProvider(ReactGrid);
 const EditId = -1;
 const newEntry = (): DashboardItem => {
     return {
@@ -232,7 +227,7 @@ export const DashboardPage: React.FC = () => {
                                 {changeMode ? (
                                     <Fade fullyVisible={!currentEditedAndPreviewed} opacity={0}>
                                         <EditGlass
-                                            doEdit={(elm) => setEdit([elm, clone(entry)])}
+                                            doEdit={(elm) => setEdit([elm, structuredClone(entry)])}
                                             doDelete={() => removeDashboardEntry({variables: {id: entry.id}})}
                                         />
                                     </Fade>
@@ -267,7 +262,7 @@ export const DashboardPage: React.FC = () => {
                                     entry={addEntry}
                                     anchorEl={addRef}
                                     onChange={(e) => {
-                                        return setAddEntry(clone(e));
+                                        return setAddEntry(structuredClone(e));
                                     }}
                                     finish={() => {
                                         setAddEntry(null);

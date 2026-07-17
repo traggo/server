@@ -26,7 +26,7 @@ import {
     UpdateTagMutationVariables,
 } from '../gql/__generated__';
 import {AddTagDialog} from './AddTagDialog';
-import {SliderPicker} from 'react-color';
+import {HexColorPicker} from 'react-colorful';
 import {TagChip} from '../common/TagChip';
 import {handleError} from '../utils/errors';
 import {ConfirmDialog} from '../common/ConfirmDialog';
@@ -101,7 +101,7 @@ export const TagPage = () => {
                 </TableCell>
                 <TableCell style={{minWidth: 128}}>
                     {isEdited ? (
-                        <SliderPicker onChange={(c) => setEditing([editKey, editKeyNew, c.hex])} color={editColor} />
+                        <HexColorPicker onChange={(c) => setEditing([editKey, editKeyNew, c])} color={editColor} />
                     ) : (
                         <TagChip label={tag.color} color={tag.color} />
                     )}

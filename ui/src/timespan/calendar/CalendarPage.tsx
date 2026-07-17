@@ -21,21 +21,17 @@ import {
 import * as gqlTag from '../../gql/tags';
 import FullCalendar from '@fullcalendar/react';
 import {calculateColor, ColorMode} from '../colorutils';
-import '@fullcalendar/core/main.css';
-import '@fullcalendar/daygrid/main.css';
-import '@fullcalendar/timegrid/main.css';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import momentPlugin from '@fullcalendar/moment';
 import interactionPlugin from '@fullcalendar/interaction';
-import {OptionsInput} from '@fullcalendar/core';
+import {CalendarOptions, EventApi, EventInput} from '@fullcalendar/core';
 import Popper from '@mui/material/Popper';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import {TimeSpan} from '../TimeSpan';
 import {toTagSelectorEntry} from '../../tag/tagSelectorEntry';
 import {FullCalendarStyling} from './FullCalendarStyling';
-import useInterval from '@rooks/use-interval';
-import {EventApi} from '@fullcalendar/core/api/EventApi';
+import {useInterval} from '../../utils/hooks';
 import {
     addTimeSpanInRangeToCache,
     addTimeSpanToCache,
@@ -44,7 +40,6 @@ import {
 } from '../../gql/utils';
 import {timeRunningCalendar} from '../timeutils';
 import {stripTypename} from '../../utils/strip';
-import {ExtendedEventSourceInput} from '@fullcalendar/core/structs/event-source';
 
 const toMoment = (date: Date): moment.Moment => {
     return moment(date).tz('utc');
@@ -113,7 +108,7 @@ export const CalendarPage: React.FC = () => {
         },
     });
 
-    const values: ExtendedEventSourceInput[] = (() => {
+    const values: EventInput[] = (() => {
         if (
             timeSpansResult.error ||
             timeSpansResult.loading ||
@@ -147,7 +142,7 @@ export const CalendarPage: React.FC = () => {
                     editable: !!ts.end,
                     backgroundColor: color,
                     startEditable: true,
-                    id: ts.id,
+                    id: '' + ts.id,
                     tags: ts.tags!.map(({value, key}) => ({key, value})),
                     title: ts.tags!.map((t) => t.key + ':' + t.value).join(' '),
                     extendedProps: {ts},
@@ -157,7 +152,7 @@ export const CalendarPage: React.FC = () => {
             });
     })();
 
-    const onDrop: OptionsInput['eventDrop'] = (data) => {
+    const onDropOrResize: CalendarOptions['eventDrop'] & CalendarOptions['eventResize'] = (data) => {
         updateTimeSpanMutation({
             variables: {
                 oldStart: moment(data.oldEvent.start!).format(),
@@ -169,19 +164,7 @@ export const CalendarPage: React.FC = () => {
             },
         });
     };
-    const onResize: OptionsInput['eventResize'] = (data) => {
-        updateTimeSpanMutation({
-            variables: {
-                oldStart: moment(data.prevEvent.start!).format(),
-                start: moment(data.event.start!).format(),
-                end: moment(data.event.end!).format(),
-                id: parseInt(data.event.id, 10),
-                tags: stripTypename(data.event.extendedProps.ts.tags),
-                note: data.event.extendedProps.ts.note,
-            },
-        });
-    };
-    const onSelect: OptionsInput['select'] = (data) => {
+    const onSelect: CalendarOptions['select'] = (data) => {
         addTimeSpan({
             variables: {
                 start: moment(data.start).format(),
@@ -191,7 +174,7 @@ export const CalendarPage: React.FC = () => {
             },
         });
     };
-    const onClick: OptionsInput['eventClick'] = (data) => {
+    const onClick: CalendarOptions['eventClick'] = (data) => {
         data.jsEvent.preventDefault();
         if (data.event.id === StartTimerId) {
             startTimer({variables: {start: moment().format(), tags: [], note: ''}}).then(() => {
@@ -203,7 +186,7 @@ export const CalendarPage: React.FC = () => {
         setSelected({data: data.event.extendedProps.ts, selected: data.jsEvent.target as HTMLElement});
     };
     if (trackersResult.data && !(trackersResult.data.timers || []).length) {
-        const startTimerEvent: ExtendedEventSourceInput = {
+        const startTimerEvent: EventInput = {
             start: currentDate.toDate(),
             end: moment(currentDate).add(15, 'minute').toDate(),
             className: '__start',
@@ -217,9 +200,8 @@ export const CalendarPage: React.FC = () => {
         <Paper style={{padding: 10, bottom: 10, top: 80, position: 'absolute'}} color="red">
             <FullCalendarStyling>
                 <FullCalendar
-                    defaultView="timeGridWeek"
-                    rerenderDelay={30}
-                    datesRender={(x) => {
+                    initialView="timeGridWeek"
+                    datesSet={(x) => {
                         const range = {start: moment(x.view.currentStart), end: moment(x.view.currentEnd)};
                         if (
                             !moment(timeSpansResult.variables!.start).isSame(range.start) ||
@@ -246,16 +228,14 @@ export const CalendarPage: React.FC = () => {
                     selectMinDistance={20}
                     now={currentDate.toDate()}
                     defaultTimedEventDuration={{minute: 15}}
-                    eventRender={(e) => {
-                        const content = e.el.getElementsByClassName('fc-content').item(0);
-                        if (content) {
-                            content.innerHTML = getElementContent(e.event, () => {
-                                stopTimer({
-                                    variables: {id: e.event.extendedProps.ts.id, end: moment().format()},
-                                });
+                    eventContent={(e) => ({
+                        html: getElementContent(e.event, () => {
+                            stopTimer({
+                                variables: {id: e.event.extendedProps.ts.id, end: moment().format()},
                             });
-                        }
-
+                        }),
+                    })}
+                    eventDidMount={(e) => {
                         e.el.setAttribute('data-has-end', '' + (!e.event.extendedProps.ts || !!e.event.extendedProps.ts.end));
                     }}
                     slotLabelInterval={{minute: 60}}
@@ -263,14 +243,14 @@ export const CalendarPage: React.FC = () => {
                     scrollTime={{hour: 6, minute: 30}}
                     select={onSelect}
                     firstDay={moment.localeData().firstDayOfWeek()}
-                    eventResize={onResize}
+                    eventResize={onDropOrResize}
                     eventClick={onClick}
-                    eventDrop={onDrop}
+                    eventDrop={onDropOrResize}
                     slotLabelFormat={(s) => toMoment(s.start.marker).format('LT')}
-                    columnHeaderFormat={(s) => toMoment(s.start.marker).format('DD ddd')}
+                    dayHeaderFormat={(s) => toMoment(s.start.marker).format('DD ddd')}
                     nowIndicator={true}
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, momentPlugin]}
-                    header={{
+                    headerToolbar={{
                         center: 'title',
                         left: 'prev,next today',
                         right: 'timeGridWeek,timeGrid5Day,timeGridDay',
