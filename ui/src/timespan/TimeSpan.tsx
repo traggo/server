@@ -72,6 +72,7 @@ const useStyles = makeStyles(() => ({
     },
     timeSelection: {
         display: 'inline-flex',
+        alignItems: 'center',
         '@media (max-width: 750px)': {
             justifyContent: 'space-evenly',
             width: '100%',
@@ -106,6 +107,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
         const styles = useStyles();
         const [showNotes, toggleShowingNotes] = React.useState(initialNote !== '');
         const note = React.useRef<{value: string; handle?: number}>({value: initialNote});
+        const pendingRangeUpdate = React.useRef<number>();
 
         const [selectedEntries, setSelectedEntries] = React.useState<TagSelectorEntry[]>(initialTags);
         const [openMenu, setOpenMenu] = useStateAndDelegateWithDelayOnChange<null | HTMLElement>(null, (o) =>
@@ -228,28 +230,35 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                                         return;
                                     }
                                     newFrom.set({second: 0});
-                                    if (to && moment(newFrom).isAfter(to)) {
-                                        const newTo = moment(newFrom).add(15, 'minute');
-                                        noteAwareUpdateTimeSpan({
-                                            variables: {
-                                                oldStart: oldFrom,
-                                                id,
-                                                start: inUserTz(newFrom).format(),
-                                                end: inUserTz(newTo).format(),
-                                                tags: toInputTags(selectedEntries),
-                                            },
-                                        }).then(() => rangeChange({from: newFrom, to: newTo}));
-                                    } else {
-                                        noteAwareUpdateTimeSpan({
-                                            variables: {
-                                                id,
-                                                oldStart: oldFrom,
-                                                start: inUserTz(newFrom).format(),
-                                                end: to && inUserTz(to).format(),
-                                                tags: toInputTags(selectedEntries),
-                                            },
-                                        }).then(() => rangeChange({from: newFrom, to}));
-                                    }
+                                    // The picker fires onChange on every section edit (hour, minute, meridiem
+                                    // individually), not just once a full value has been entered - debounce so
+                                    // a half-typed intermediate time can't trigger the "before/after the other
+                                    // end" auto-correction below or get persisted.
+                                    window.clearTimeout(pendingRangeUpdate.current);
+                                    pendingRangeUpdate.current = window.setTimeout(() => {
+                                        if (to && moment(newFrom).isAfter(to)) {
+                                            const newTo = moment(newFrom).add(15, 'minute');
+                                            noteAwareUpdateTimeSpan({
+                                                variables: {
+                                                    oldStart: oldFrom,
+                                                    id,
+                                                    start: inUserTz(newFrom).format(),
+                                                    end: inUserTz(newTo).format(),
+                                                    tags: toInputTags(selectedEntries),
+                                                },
+                                            }).then(() => rangeChange({from: newFrom, to: newTo}));
+                                        } else {
+                                            noteAwareUpdateTimeSpan({
+                                                variables: {
+                                                    id,
+                                                    oldStart: oldFrom,
+                                                    start: inUserTz(newFrom).format(),
+                                                    end: to && inUserTz(to).format(),
+                                                    tags: toInputTags(selectedEntries),
+                                                },
+                                            }).then(() => rangeChange({from: newFrom, to}));
+                                        }
+                                    }, 500);
                                 }}
                                 showDate={showDate}
                                 label="start"
@@ -263,28 +272,32 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                                             return;
                                         }
                                         newTo.set({second: 0});
-                                        if (moment(newTo).isBefore(from)) {
-                                            const newFrom = moment(newTo).subtract(15, 'minute');
-                                            noteAwareUpdateTimeSpan({
-                                                variables: {
-                                                    id,
-                                                    oldStart: oldFrom,
-                                                    start: inUserTz(newFrom).format(),
-                                                    end: inUserTz(newTo).format(),
-                                                    tags: toInputTags(selectedEntries),
-                                                },
-                                            }).then(() => rangeChange({from: newFrom, to: newTo}));
-                                        } else {
-                                            noteAwareUpdateTimeSpan({
-                                                variables: {
-                                                    id,
-                                                    oldStart: oldFrom,
-                                                    start: inUserTz(from).format(),
-                                                    end: inUserTz(newTo).format(),
-                                                    tags: toInputTags(selectedEntries),
-                                                },
-                                            }).then(() => rangeChange({from, to: newTo}));
-                                        }
+                                        // see the matching comment on the start picker above
+                                        window.clearTimeout(pendingRangeUpdate.current);
+                                        pendingRangeUpdate.current = window.setTimeout(() => {
+                                            if (moment(newTo).isBefore(from)) {
+                                                const newFrom = moment(newTo).subtract(15, 'minute');
+                                                noteAwareUpdateTimeSpan({
+                                                    variables: {
+                                                        id,
+                                                        oldStart: oldFrom,
+                                                        start: inUserTz(newFrom).format(),
+                                                        end: inUserTz(newTo).format(),
+                                                        tags: toInputTags(selectedEntries),
+                                                    },
+                                                }).then(() => rangeChange({from: newFrom, to: newTo}));
+                                            } else {
+                                                noteAwareUpdateTimeSpan({
+                                                    variables: {
+                                                        id,
+                                                        oldStart: oldFrom,
+                                                        start: inUserTz(from).format(),
+                                                        end: inUserTz(newTo).format(),
+                                                        tags: toInputTags(selectedEntries),
+                                                    },
+                                                }).then(() => rangeChange({from, to: newTo}));
+                                            }
+                                        }, 500);
                                     }}
                                     showDate={showDate}
                                     label="end"
