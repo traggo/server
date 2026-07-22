@@ -69,7 +69,15 @@ export const DateTimeSelector: React.FC<DateTimeSelectorProps> = React.memo(
         return (
             <DesktopDateTimePicker
                 className="time-picker"
-                sx={{width: (showDate ? 185 : 105) + (ampm ? 20 : 0)}}
+                sx={{
+                    width: (showDate ? 185 : 105) + (ampm ? 20 : 0),
+                    // The calendar-icon adornment centers itself across the whole labeled field
+                    // (label row + value row), while the value text sits lower - offset by the
+                    // 12px marginTop MUI puts on the input to make room for the shrunk label
+                    // above it. Match that offset so the icon lines up with the value/duration
+                    // text instead of floating above it.
+                    '& .MuiInputAdornment-root': {marginTop: '12px'},
+                }}
                 onOpen={() => {
                     popoverOpen(true);
                     setOpen(true);
