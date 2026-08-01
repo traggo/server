@@ -2,25 +2,32 @@ import * as React from 'react';
 import {TagSelectorEntry, toInputTags} from '../tag/tagSelectorEntry';
 import {TagSelector} from '../tag/TagSelector';
 import moment from 'moment';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import {DateTimeSelector} from '../common/DateTimeSelector';
-import {Button, TextField, Typography, makeStyles} from '@material-ui/core';
+import {Button, TextField, Typography} from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import {inUserTz} from './timeutils';
-import {useMutation} from '@apollo/react-hooks';
-import {StopTimer, StopTimerVariables} from '../gql/__generated__/StopTimer';
+import {useMutation} from '@apollo/client';
+import {
+    StopTimerMutation,
+    StopTimerMutationVariables,
+    UpdateTimeSpanMutation,
+    UpdateTimeSpanMutationVariables,
+    RemoveTimeSpanMutation,
+    RemoveTimeSpanMutationVariables,
+    TimeSpansQuery,
+    TrackersQuery,
+    StartTimerMutation,
+    StartTimerMutationVariables,
+} from '../gql/__generated__';
 import * as gqlTimeSpan from '../gql/timeSpan';
-import {UpdateTimeSpan, UpdateTimeSpanVariables} from '../gql/__generated__/UpdateTimeSpan';
-import IconButton from '@material-ui/core/IconButton';
-import {MoreVert} from '@material-ui/icons';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import {RemoveTimeSpan, RemoveTimeSpanVariables} from '../gql/__generated__/RemoveTimeSpan';
+import IconButton from '@mui/material/IconButton';
+import {MoreVert} from '@mui/icons-material';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import {useStateAndDelegateWithDelayOnChange} from '../utils/hooks';
-import {TimeSpans} from '../gql/__generated__/TimeSpans';
 import {isSameDate} from '../utils/time';
-import {Trackers} from '../gql/__generated__/Trackers';
 import {addTimeSpanToCache, removeFromTrackersCache} from '../gql/utils';
-import {StartTimer, StartTimerVariables} from '../gql/__generated__/StartTimer';
 import {RelativeTime, RelativeToNow} from '../common/RelativeTime';
 
 interface Range {
@@ -65,6 +72,11 @@ const useStyles = makeStyles(() => ({
     },
     timeSelection: {
         display: 'inline-flex',
+        // flex-end (not center): the start/end pickers have a floating label above their value,
+        // making them taller than the plain duration text - centering both as whole boxes leaves
+        // the duration vertically centered in the row while the picker's actual value text (below
+        // its label) sits lower, looking misaligned. Aligning bottoms lines up the value baselines.
+        alignItems: 'flex-end',
         '@media (max-width: 750px)': {
             justifyContent: 'space-evenly',
             width: '100%',
@@ -104,7 +116,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
         const [openMenu, setOpenMenu] = useStateAndDelegateWithDelayOnChange<null | HTMLElement>(null, (o) =>
             dateSelectorOpen(!!o)
         );
-        const [stopTimer] = useMutation<StopTimer, StopTimerVariables>(gqlTimeSpan.StopTimer, {
+        const [stopTimer] = useMutation<StopTimerMutation, StopTimerMutationVariables>(gqlTimeSpan.StopTimer, {
             update: (cache, {data}) => {
                 if (!data || !data.stopTimeSpan) {
                     return;
@@ -113,48 +125,51 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                 addTimeSpanToCache(cache, data.stopTimeSpan);
             },
         });
-        const [startTimer] = useMutation<StartTimer, StartTimerVariables>(gqlTimeSpan.StartTimer, {
+        const [startTimer] = useMutation<StartTimerMutation, StartTimerMutationVariables>(gqlTimeSpan.StartTimer, {
             refetchQueries: [{query: gqlTimeSpan.Trackers}],
         });
-        const [updateTimeSpan] = useMutation<UpdateTimeSpan, UpdateTimeSpanVariables>(gqlTimeSpan.UpdateTimeSpan);
-        const noteAwareUpdateTimeSpan = ({variables}: {variables: Omit<UpdateTimeSpanVariables, 'note'>}) => {
+        const [updateTimeSpan] = useMutation<UpdateTimeSpanMutation, UpdateTimeSpanMutationVariables>(gqlTimeSpan.UpdateTimeSpan);
+        const noteAwareUpdateTimeSpan = ({variables}: {variables: Omit<UpdateTimeSpanMutationVariables, 'note'>}) => {
             clearTimeout(note.current.handle);
             return updateTimeSpan({variables: {...variables, note: note.current.value}});
         };
-        const [removeTimeSpan] = useMutation<RemoveTimeSpan, RemoveTimeSpanVariables>(gqlTimeSpan.RemoveTimeSpan, {
-            update: (cache, {data}) => {
-                let oldData: TimeSpans | null = null;
-                try {
-                    oldData = cache.readQuery<TimeSpans>({query: gqlTimeSpan.TimeSpans});
-                } catch (e) {}
+        const [removeTimeSpan] = useMutation<RemoveTimeSpanMutation, RemoveTimeSpanMutationVariables>(
+            gqlTimeSpan.RemoveTimeSpan,
+            {
+                update: (cache, {data}) => {
+                    let oldData: TimeSpansQuery | null = null;
+                    try {
+                        oldData = cache.readQuery<TimeSpansQuery>({query: gqlTimeSpan.TimeSpans});
+                    } catch {}
 
-                const oldTrackers = cache.readQuery<Trackers>({query: gqlTimeSpan.Trackers});
-                if (!data || !data.removeTimeSpan) {
-                    return;
-                }
-                const removedId = data.removeTimeSpan.id;
-                if (oldTrackers) {
-                    cache.writeQuery<Trackers>({
-                        query: gqlTimeSpan.Trackers,
-                        data: {
-                            timers: (oldTrackers.timers || []).filter((tracker) => tracker.id !== removedId),
-                        },
-                    });
-                }
-                if (oldData) {
-                    cache.writeQuery<TimeSpans>({
-                        query: gqlTimeSpan.TimeSpans,
-                        data: {
-                            timeSpans: {
-                                __typename: 'PagedTimeSpans',
-                                timeSpans: oldData.timeSpans.timeSpans.filter((ts) => ts.id !== removedId),
-                                cursor: oldData.timeSpans.cursor,
+                    const oldTrackers = cache.readQuery<TrackersQuery>({query: gqlTimeSpan.Trackers});
+                    if (!data || !data.removeTimeSpan) {
+                        return;
+                    }
+                    const removedId = data.removeTimeSpan.id;
+                    if (oldTrackers) {
+                        cache.writeQuery<TrackersQuery>({
+                            query: gqlTimeSpan.Trackers,
+                            data: {
+                                timers: (oldTrackers.timers || []).filter((tracker) => tracker.id !== removedId),
                             },
-                        },
-                    });
-                }
-            },
-        });
+                        });
+                    }
+                    if (oldData) {
+                        cache.writeQuery<TimeSpansQuery>({
+                            query: gqlTimeSpan.TimeSpans,
+                            data: {
+                                timeSpans: {
+                                    __typename: 'PagedTimeSpans',
+                                    timeSpans: oldData.timeSpans.timeSpans.filter((ts) => ts.id !== removedId),
+                                    cursor: oldData.timeSpans.cursor,
+                                },
+                            },
+                        });
+                    }
+                },
+            }
+        );
 
         const updateNote = (newValue: string) => {
             window.clearTimeout(note.current.handle);
@@ -292,7 +307,11 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                         <div style={{alignItems: 'center', display: 'flex'}}>
                             <Typography
                                 variant="subtitle1"
-                                style={{minWidth: '70px'}}
+                                // Matches the start/end pickers' MUI standard-variant input, which has
+                                // padding: 4px 0 5px below its own text - without this, aligning by
+                                // flex-end lines up the two elements' boxes but not their actual text,
+                                // since this Typography has no padding of its own to account for.
+                                style={{minWidth: '70px', paddingBottom: '5px'}}
                                 title="The amount of time between from and to">
                                 {to ? <RelativeTime from={from} to={to} /> : <RelativeToNow from={from} />}
                             </Typography>
@@ -301,7 +320,8 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
 
                     <IconButton
                         className={styles.showMoreButton}
-                        onClick={(e: React.MouseEvent<HTMLElement>) => setOpenMenu(e.currentTarget)}>
+                        onClick={(e: React.MouseEvent<HTMLElement>) => setOpenMenu(e.currentTarget)}
+                        size="large">
                         <MoreVert />
                     </IconButton>
 

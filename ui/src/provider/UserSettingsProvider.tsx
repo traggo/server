@@ -2,7 +2,8 @@ import * as React from 'react';
 import {useSettings} from '../gql/settings';
 import {CenteredSpinner} from '../common/CenteredSpinner';
 import moment, {LocaleSpecification} from 'moment';
-import {DateLocale, WeekDay} from '../gql/__generated__/globalTypes';
+import '../utils/momentLocales';
+import {DateLocale, WeekDay} from '../gql/__generated__';
 import {expectNever} from '../utils/never';
 
 const setLocale = (locale: DateLocale, spec: LocaleSpecification) => {
@@ -59,20 +60,26 @@ const weekDayToMoment = (s: WeekDay): number => {
     }
 };
 
-export const BootUserSettings: React.FC = ({children}): React.ReactElement => {
+export const BootUserSettings: React.FC<React.PropsWithChildren> = ({children}): React.ReactElement => {
     const {done, firstDayOfTheWeek, dateLocale} = useSettings();
+    const applied = React.useRef<string | null>(null);
 
-    React.useEffect(() => {
-        if (!done) {
-            return;
+    // Applied directly during render (not in a useEffect): children are rendered for the
+    // first time in this exact same pass once `done` flips to true, so a useEffect here would
+    // always run one tick too late for their first paint, leaving them stuck reading whatever
+    // locale was active before this ever ran.
+    if (done) {
+        const key = `${dateLocale}-${firstDayOfTheWeek}`;
+        if (applied.current !== key) {
+            applied.current = key;
+            setLocale(dateLocale, {
+                week: {
+                    dow: weekDayToMoment(firstDayOfTheWeek),
+                    doy: moment.localeData(moment.locale()).firstDayOfYear(),
+                },
+            });
         }
-        setLocale(dateLocale, {
-            week: {
-                dow: weekDayToMoment(firstDayOfTheWeek),
-                doy: moment.localeData(moment.locale()).firstDayOfYear(),
-            },
-        });
-    }, [dateLocale, firstDayOfTheWeek, done]);
+    }
 
     if (!done) {
         return <CenteredSpinner />;

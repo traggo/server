@@ -1,5 +1,6 @@
-import {Tags, Tags_tags} from '../gql/__generated__/Tags';
-import {QueryResult} from 'react-apollo';
+import {TagsQuery} from '../gql/__generated__';
+import {Tag} from '../gql/types';
+import {QueryResult} from '@apollo/client';
 
 export interface TagInputError {
     error: string;
@@ -15,7 +16,7 @@ export interface SpecialTag {
 }
 
 export interface TagSelectorEntry {
-    tag: Omit<Tags_tags, 'usages'> & SpecialTag;
+    tag: Omit<Tag, 'usages'> & SpecialTag;
     value: string;
 }
 
@@ -29,15 +30,13 @@ export const toInputTags = (entries: TagSelectorEntry[]): InputTag[] => {
 };
 
 export const toTagSelectorEntry = (tags: Array<TagSelectorEntry['tag']>, entries: InputTag[]): TagSelectorEntry[] => {
-    return entries.map(
-        (timerTag): TagSelectorEntry => {
-            const definition = tags.find((tag) => tag.key === timerTag.key) || specialTag(timerTag.key, 'new');
-            return {
-                tag: definition,
-                value: timerTag.value,
-            };
-        }
-    );
+    return entries.map((timerTag): TagSelectorEntry => {
+        const definition = tags.find((tag) => tag.key === timerTag.key) || specialTag(timerTag.key, 'new');
+        return {
+            tag: definition,
+            value: timerTag.value,
+        };
+    });
 };
 
 export const specialTag = (name: string, state: SpecialTagState): TagSelectorEntry['tag'] & {usages: 0} => {
@@ -53,7 +52,7 @@ export const specialTag = (name: string, state: SpecialTagState): TagSelectorEnt
     };
 };
 
-const tryAdd = (tagsResult: QueryResult<Tags, {}>, entry: string, onlyKeys: boolean): TagSelectorEntry | TagInputError => {
+const tryAdd = (tagsResult: QueryResult<TagsQuery, {}>, entry: string, onlyKeys: boolean): TagSelectorEntry | TagInputError => {
     const [keySomeCase, value, ...other] = entry.split(':');
     const key = keySomeCase.toLowerCase();
 
@@ -101,7 +100,7 @@ const groupAndCheckExistence = (onlyKeys: boolean, allowDuplicateKeys: boolean) 
 
 export const addValues = (
     newValue: string,
-    tagsResult: QueryResult<Tags, {}>,
+    tagsResult: QueryResult<TagsQuery, {}>,
     selectedEntries: TagSelectorEntry[],
     onlyKeys: boolean,
     allowDuplicateKeys: boolean

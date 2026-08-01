@@ -1,35 +1,44 @@
 import * as React from 'react';
-import Paper from '@material-ui/core/Paper';
-import {makeStyles} from '@material-ui/core/styles';
-import {useMutation, useQuery} from '@apollo/react-hooks';
+import Paper from '@mui/material/Paper';
+import makeStyles from '@mui/styles/makeStyles';
+import {useMutation, useQuery} from '@apollo/client';
 import * as gqlTag from '../gql/tags';
 import * as gqlDashboard from '../gql/dashboard';
 import {CenteredSpinner} from '../common/CenteredSpinner';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import DoneIcon from '@material-ui/icons/Done';
-import CloseIcon from '@material-ui/icons/Close';
-import IconButton from '@material-ui/core/IconButton';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import DoneIcon from '@mui/icons-material/Done';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
 import {useSnackbar} from 'notistack';
-import {TextField} from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import {Tags} from '../gql/__generated__/Tags';
-import {RemoveTag, RemoveTagVariables} from '../gql/__generated__/RemoveTag';
-import {UpdateTag, UpdateTagVariables} from '../gql/__generated__/UpdateTag';
+import {TextField} from '@mui/material';
+import Button from '@mui/material/Button';
+import {
+    TagsQuery,
+    RemoveTagMutation,
+    RemoveTagMutationVariables,
+    UpdateTagMutation,
+    UpdateTagMutationVariables,
+} from '../gql/__generated__';
 import {AddTagDialog} from './AddTagDialog';
-import {SliderPicker} from 'react-color';
+import {HexColorPicker} from 'react-colorful';
 import {TagChip} from '../common/TagChip';
 import {handleError} from '../utils/errors';
 import {ConfirmDialog} from '../common/ConfirmDialog';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        ...theme.mixins.gutters(),
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
+        [theme.breakpoints.up('sm')]: {
+            paddingLeft: theme.spacing(3),
+            paddingRight: theme.spacing(3),
+        },
         paddingTop: theme.spacing(3),
         paddingBottom: theme.spacing(3),
         textAlign: 'center',
@@ -40,14 +49,14 @@ const useStyles = makeStyles((theme) => ({
 
 export const TagPage = () => {
     const classes = useStyles();
-    const {data, loading} = useQuery<Tags>(gqlTag.Tags);
+    const {data, loading} = useQuery<TagsQuery>(gqlTag.Tags);
     const [removeTagConfirm, setRemoveTagConfirm] = React.useState('');
     const refetch = {refetchQueries: [{query: gqlTag.Tags}, {query: gqlDashboard.Dashboards}]};
     const {enqueueSnackbar} = useSnackbar();
-    const [removeTag] = useMutation<RemoveTag, RemoveTagVariables>(gqlTag.RemoveTag, refetch);
+    const [removeTag] = useMutation<RemoveTagMutation, RemoveTagMutationVariables>(gqlTag.RemoveTag, refetch);
     const [[editKey, editKeyNew, editColor], setEditing] = React.useState<[string, string, string]>(['', '', '']);
     const [addActive, setAddActive] = React.useState(false);
-    const [updateTag] = useMutation<UpdateTag, UpdateTagVariables>(gqlTag.UpdateTag, refetch);
+    const [updateTag] = useMutation<UpdateTagMutation, UpdateTagMutationVariables>(gqlTag.UpdateTag, refetch);
     if (loading || !data || !data.tags) {
         return <CenteredSpinner />;
     }
@@ -92,7 +101,7 @@ export const TagPage = () => {
                 </TableCell>
                 <TableCell style={{minWidth: 128}}>
                     {isEdited ? (
-                        <SliderPicker onChange={(c) => setEditing([editKey, editKeyNew, c.hex])} color={editColor} />
+                        <HexColorPicker onChange={(c) => setEditing([editKey, editKeyNew, c])} color={editColor} />
                     ) : (
                         <TagChip label={tag.color} color={tag.color} />
                     )}
@@ -101,19 +110,19 @@ export const TagPage = () => {
                 <TableCell align="right">
                     {isEdited ? (
                         <>
-                            <IconButton onClick={onClickSubmit} title="Save">
+                            <IconButton onClick={onClickSubmit} title="Save" size="large">
                                 <DoneIcon />
                             </IconButton>
-                            <IconButton onClick={() => setEditing(['', '', ''])} title="Cancel">
+                            <IconButton onClick={() => setEditing(['', '', ''])} title="Cancel" size="large">
                                 <CloseIcon />
                             </IconButton>
                         </>
                     ) : (
                         <>
-                            <IconButton onClick={() => setEditing([tag.key, tag.key, tag.color])} title="Edit">
+                            <IconButton onClick={() => setEditing([tag.key, tag.key, tag.color])} title="Edit" size="large">
                                 <EditIcon />
                             </IconButton>
-                            <IconButton onClick={() => setRemoveTagConfirm(tag.key)} title="Delete">
+                            <IconButton onClick={() => setRemoveTagConfirm(tag.key)} title="Delete" size="large">
                                 <DeleteIcon />
                             </IconButton>
                         </>

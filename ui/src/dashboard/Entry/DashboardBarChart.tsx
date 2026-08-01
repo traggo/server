@@ -1,15 +1,15 @@
-import {Stats_stats} from '../../gql/__generated__/Stats';
+import {StatsRangeEntries} from '../../gql/types';
 import {Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
 import * as React from 'react';
 import {Colors} from './colors';
 import {ofSeconds} from './unit';
 import {ofInterval} from './dateformat';
-import {StatsInterval} from '../../gql/__generated__/globalTypes';
+import {StatsInterval} from '../../gql/__generated__';
 import moment from 'moment';
 import {TagTooltip} from './TagTooltip';
 
 interface DashboardPieChartProps {
-    entries: Stats_stats[];
+    entries: StatsRangeEntries[];
     interval: StatsInterval;
     type: 'stacked' | 'normal';
     total: boolean;

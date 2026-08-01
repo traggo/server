@@ -1,4 +1,4 @@
-import {DeviceType} from '../gql/__generated__/globalTypes';
+import {DeviceType} from '../gql/__generated__';
 import {expectNever} from '../utils/never';
 
 export const deviceTypeToString = (type: DeviceType) => {

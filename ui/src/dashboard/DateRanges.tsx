@@ -1,24 +1,29 @@
 import * as React from 'react';
-import {useMutation} from '@apollo/react-hooks';
+import {useMutation} from '@apollo/client';
 import * as gqlDashboard from '../gql/dashboard';
-import {Dashboards_dashboards, Dashboards_dashboards_ranges} from '../gql/__generated__/Dashboards';
-import {IconButton, Paper, Typography} from '@material-ui/core';
+import {Dashboard, DashboardRange} from '../gql/types';
+import {IconButton, Paper, Typography} from '@mui/material';
 import {RelativeDateTimeSelector} from '../common/RelativeDateTimeSelector';
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
-import MoreVert from '@material-ui/icons/MoreVert';
-import PlusIcon from '@material-ui/icons/Add';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import {RemoveDashboardRange, RemoveDashboardRangeVariables} from '../gql/__generated__/RemoveDashboardRange';
-import {UpdateDashboardRange, UpdateDashboardRangeVariables} from '../gql/__generated__/UpdateDashboardRange';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import MoreVert from '@mui/icons-material/MoreVert';
+import PlusIcon from '@mui/icons-material/Add';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import {
+    RemoveDashboardRangeMutation,
+    RemoveDashboardRangeMutationVariables,
+    UpdateDashboardRangeMutation,
+    UpdateDashboardRangeMutationVariables,
+    AddDashboardRangeMutation,
+    AddDashboardRangeMutationVariables,
+} from '../gql/__generated__';
 import {stripTypename} from '../utils/strip';
 import {Range} from '../utils/range';
-import {AddDashboardRange, AddDashboardRangeVariables} from '../gql/__generated__/AddDashboardRange';
-import Input from '@material-ui/core/Input';
+import Input from '@mui/material/Input';
 
 interface Props {
     changeMode: boolean;
-    dashboard: Dashboards_dashboards;
+    dashboard: Dashboard;
     setRanges: (cb: (ranges: Record<number, Range>) => Record<number, Range>) => void;
     ranges: Record<number, Range>;
 }
@@ -29,16 +34,25 @@ export const DateRanges: React.FC<Props> = ({changeMode, dashboard, ranges, setR
     const [editedNames, setEditedNames] = React.useState<Record<number, string>>({});
     const [openMenu, setOpenMenu] = React.useState<null | [HTMLButtonElement, number]>(null);
 
-    const [removeRange] = useMutation<RemoveDashboardRange, RemoveDashboardRangeVariables>(gqlDashboard.RemoveDashboardRange, {
-        refetchQueries: [{query: gqlDashboard.Dashboards}],
-    });
-    const [updateRange] = useMutation<UpdateDashboardRange, UpdateDashboardRangeVariables>(gqlDashboard.UpdateDashboardRange, {
-        refetchQueries: [{query: gqlDashboard.Dashboards}],
-    });
-    const [addRange] = useMutation<AddDashboardRange, AddDashboardRangeVariables>(gqlDashboard.AddDashboardRange, {
-        refetchQueries: [{query: gqlDashboard.Dashboards}],
-    });
-    const saveRanges = (range: Dashboards_dashboards_ranges, newRange: Range, newName: string) => {
+    const [removeRange] = useMutation<RemoveDashboardRangeMutation, RemoveDashboardRangeMutationVariables>(
+        gqlDashboard.RemoveDashboardRange,
+        {
+            refetchQueries: [{query: gqlDashboard.Dashboards}],
+        }
+    );
+    const [updateRange] = useMutation<UpdateDashboardRangeMutation, UpdateDashboardRangeMutationVariables>(
+        gqlDashboard.UpdateDashboardRange,
+        {
+            refetchQueries: [{query: gqlDashboard.Dashboards}],
+        }
+    );
+    const [addRange] = useMutation<AddDashboardRangeMutation, AddDashboardRangeMutationVariables>(
+        gqlDashboard.AddDashboardRange,
+        {
+            refetchQueries: [{query: gqlDashboard.Dashboards}],
+        }
+    );
+    const saveRanges = (range: DashboardRange, newRange: Range, newName: string) => {
         if (saveRef.current) {
             clearTimeout(saveRef.current);
         }
@@ -143,9 +157,7 @@ export const DateRanges: React.FC<Props> = ({changeMode, dashboard, ranges, setR
                                             </IconButton>
                                         </Typography>
                                     </>
-                                ) : (
-                                    undefined
-                                )}
+                                ) : undefined}
                                 {openMenu && openMenu[1] === range.id ? (
                                     <Menu
                                         key="uff"
@@ -184,9 +196,7 @@ export const DateRanges: React.FC<Props> = ({changeMode, dashboard, ranges, setR
                                             {range.editable ? 'make static' : 'make editable'}
                                         </MenuItem>
                                     </Menu>
-                                ) : (
-                                    undefined
-                                )}
+                                ) : undefined}
                             </Paper>
                         </React.Fragment>
                     );
@@ -201,13 +211,12 @@ export const DateRanges: React.FC<Props> = ({changeMode, dashboard, ranges, setR
                                     range: {name: 'new range', editable: true, range: {from: 'now/w', to: 'now/w'}},
                                 },
                             });
-                        }}>
+                        }}
+                        size="large">
                         <PlusIcon />
                     </IconButton>
                 </Paper>
-            ) : (
-                undefined
-            )}
+            ) : undefined}
         </>
     );
 };

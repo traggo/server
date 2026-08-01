@@ -32,6 +32,10 @@ enum Unit {
     Second = 's',
 }
 
+// This hand-written relative-time-expression parser (state machine over Type/Operation/Unit)
+// is inherently branchy; splitting it up is a real refactor with correctness risk for a
+// small, already-tested utility, not something to do as a side effect of a lint-config change.
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export const parseRelativeTime = (value: string, divide: 'endOf' | 'startOf', nowDate = moment()): Success | Failure => {
     if (isValidDate(value)) {
         return success(asDate(value));
@@ -55,7 +59,7 @@ export const parseRelativeTime = (value: string, divide: 'endOf' | 'startOf', no
                     expectNext = currentChar === Operation.Divide ? Type.Unit : Type.Value;
                     currentIndex++;
                     break;
-                case Type.Value:
+                case Type.Value: {
                     if (isNaN(parseInt(currentChar, 10))) {
                         return failure('Expected number at index ' + currentIndex + ' but was ' + currentChar);
                     }
@@ -68,6 +72,7 @@ export const parseRelativeTime = (value: string, divide: 'endOf' | 'startOf', no
                     expectNext = Type.Unit;
                     currentIndex = valueIndex + 1;
                     break;
+                }
                 case Type.Unit:
                     if (!isUnit(currentChar)) {
                         return failure(

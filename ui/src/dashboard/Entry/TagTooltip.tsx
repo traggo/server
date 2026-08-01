@@ -1,7 +1,7 @@
 import {TooltipProps, TooltipPayload} from 'recharts';
 import {FInterval} from './dateformat';
-import Paper from '@material-ui/core/Paper';
-import {Typography} from '@material-ui/core';
+import Paper from '@mui/material/Paper';
+import {Typography} from '@mui/material';
 import moment from 'moment-timezone';
 import prettyMs from 'pretty-ms';
 import * as React from 'react';
@@ -25,9 +25,7 @@ export const TagTooltip = ({active, payload, dateFormat, total}: TooltipProps & 
                         Total:
                         {prettyMs(sum(payload) * 1000)}
                     </Typography>
-                ) : (
-                    undefined
-                )}
+                ) : undefined}
             </Paper>
         );
     }

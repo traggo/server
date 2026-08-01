@@ -8,7 +8,11 @@ const defaultStyle = {
     opacity: 0,
 };
 
-export const Fade: React.FC<{fullyVisible: boolean; opacity?: number}> = ({fullyVisible, children, opacity = 0.4}) => {
+export const Fade: React.FC<React.PropsWithChildren<{fullyVisible: boolean; opacity?: number}>> = ({
+    fullyVisible,
+    children,
+    opacity = 0.4,
+}) => {
     const transitionStyles: Record<string, React.CSSProperties> = {
         entering: {opacity: 1},
         entered: {opacity: 1},

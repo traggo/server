@@ -1,35 +1,44 @@
 import * as React from 'react';
-import Paper from '@material-ui/core/Paper';
-import {makeStyles} from '@material-ui/core/styles';
-import {useMutation, useQuery} from '@apollo/react-hooks';
+import Paper from '@mui/material/Paper';
+import makeStyles from '@mui/styles/makeStyles';
+import {useMutation, useQuery} from '@apollo/client';
 import * as gqlDevice from '../gql/device';
 import * as gqlUser from '../gql/user';
-import {Devices} from '../gql/__generated__/Devices';
+import {
+    DevicesQuery,
+    RemoveDeviceMutation,
+    RemoveDeviceMutationVariables,
+    UpdateDeviceMutation,
+    UpdateDeviceMutationVariables,
+    DeviceType,
+} from '../gql/__generated__';
 import {CenteredSpinner} from '../common/CenteredSpinner';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import moment from 'moment-timezone';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import DoneIcon from '@material-ui/icons/Done';
-import CloseIcon from '@material-ui/icons/Close';
-import IconButton from '@material-ui/core/IconButton';
-import {RemoveDevice, RemoveDeviceVariables} from '../gql/__generated__/RemoveDevice';
-import {UpdateDevice, UpdateDeviceVariables} from '../gql/__generated__/UpdateDevice';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import DoneIcon from '@mui/icons-material/Done';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
 import {useSnackbar} from 'notistack';
-import {TextField} from '@material-ui/core';
-import Button from '@material-ui/core/Button';
+import {TextField} from '@mui/material';
+import Button from '@mui/material/Button';
 import {AddDeviceDialog} from './AddDeviceDialog';
-import {DeviceType} from '../gql/__generated__/globalTypes';
 import {deviceTypeToString} from './typeutils';
-import Select from '@material-ui/core/NativeSelect';
+import Select from '@mui/material/NativeSelect';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        ...theme.mixins.gutters(),
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
+        [theme.breakpoints.up('sm')]: {
+            paddingLeft: theme.spacing(3),
+            paddingRight: theme.spacing(3),
+        },
         paddingTop: theme.spacing(3),
         paddingBottom: theme.spacing(3),
         textAlign: 'center',
@@ -40,17 +49,17 @@ const useStyles = makeStyles((theme) => ({
 
 export const DevicesPage = () => {
     const classes = useStyles();
-    const {data, loading} = useQuery<Devices>(gqlDevice.Devices);
+    const {data, loading} = useQuery<DevicesQuery>(gqlDevice.Devices);
     const refetch = {refetchQueries: [{query: gqlDevice.Devices}, {query: gqlUser.CurrentUser}]};
     const {enqueueSnackbar} = useSnackbar();
-    const [removeDevice] = useMutation<RemoveDevice, RemoveDeviceVariables>(gqlDevice.RemoveDevice, refetch);
+    const [removeDevice] = useMutation<RemoveDeviceMutation, RemoveDeviceMutationVariables>(gqlDevice.RemoveDevice, refetch);
     const [[editId, editName, editDeviceType], setEditing] = React.useState<[number, string, DeviceType]>([
         -1,
         '',
         DeviceType.NoExpiry,
     ]);
     const [addActive, setAddActive] = React.useState(false);
-    const [updateDevice] = useMutation<UpdateDevice, UpdateDeviceVariables>(gqlDevice.UpdateDevice, refetch);
+    const [updateDevice] = useMutation<UpdateDeviceMutation, UpdateDeviceMutationVariables>(gqlDevice.UpdateDevice, refetch);
     if (loading || !data || !data.currentDevice || !data.devices) {
         return <CenteredSpinner />;
     }
@@ -70,6 +79,7 @@ export const DevicesPage = () => {
         };
         const isCurrent = device.id === data.currentDevice!.id;
         const isEdited = editId === device.id;
+        const displayName = device.name + (isCurrent ? ' (current)' : '');
         return (
             <TableRow key={device.id} selected={isCurrent}>
                 <TableCell>{device.id}</TableCell>
@@ -87,7 +97,7 @@ export const DevicesPage = () => {
                             style={{minWidth: 128}}
                         />
                     ) : (
-                        device.name + (isCurrent ? ' (current)' : '')
+                        displayName
                     )}
                 </TableCell>
                 <TableCell title={device.createdAt}>{moment(device.createdAt).fromNow()}</TableCell>
@@ -108,19 +118,22 @@ export const DevicesPage = () => {
                 <TableCell align="right">
                     {isEdited ? (
                         <>
-                            <IconButton onClick={onClickSubmit} title="Save">
+                            <IconButton onClick={onClickSubmit} title="Save" size="large">
                                 <DoneIcon />
                             </IconButton>
-                            <IconButton onClick={() => setEditing([-1, '', DeviceType.NoExpiry])} title="Cancel">
+                            <IconButton onClick={() => setEditing([-1, '', DeviceType.NoExpiry])} title="Cancel" size="large">
                                 <CloseIcon />
                             </IconButton>
                         </>
                     ) : (
                         <>
-                            <IconButton onClick={() => setEditing([device.id, device.name, device.type])} title="Edit">
+                            <IconButton
+                                onClick={() => setEditing([device.id, device.name, device.type])}
+                                title="Edit"
+                                size="large">
                                 <EditIcon />
                             </IconButton>
-                            <IconButton onClick={onClickDelete} title="Delete">
+                            <IconButton onClick={onClickDelete} title="Delete" size="large">
                                 <DeleteIcon />
                             </IconButton>
                         </>
