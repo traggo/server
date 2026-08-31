@@ -218,7 +218,10 @@ export const CalendarPage: React.FC = () => {
                     defaultView="timeGridWeek"
                     rerenderDelay={30}
                     datesRender={(x) => {
-                        const range = {start: moment(x.view.currentStart), end: moment(x.view.currentEnd)};
+                        const range = {
+                            start: moment(x.view.currentStart).format(),
+                            end: moment(x.view.currentEnd).format(),
+                        };
                         if (
                             !moment(timeSpansResult.variables.start).isSame(range.start) ||
                             !moment(timeSpansResult.variables.end).isSame(range.end)
