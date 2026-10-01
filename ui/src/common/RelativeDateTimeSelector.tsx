@@ -16,7 +16,7 @@ interface RelativeDateTimeSelectorProps {
 }
 
 export const RelativeDateTimeSelector: React.FC<RelativeDateTimeSelectorProps> = ({
-    value,
+    value: apiValue,
     onChange: setValue,
     type,
     style,
@@ -28,18 +28,17 @@ export const RelativeDateTimeSelector: React.FC<RelativeDateTimeSelectorProps> =
     const [errVisible, setErrVisible] = React.useState(false);
     const [error, setError] = React.useState('');
     const {start, stop} = useTimeout(() => setErrVisible(true), 200);
+    const parsed = parseRelativeTime(apiValue, type);
 
-    const parsed = parseRelativeTime(value, type);
     return (
         <TextField
             fullWidth
             style={style}
-            value={value}
+            value={parsed.success ? parsed.localized : apiValue}
             disabled={disabled}
             InputProps={{disableUnderline}}
             onChange={(e) => {
-                const newValue = e.target.value;
-                const result = parseRelativeTime(newValue, type);
+                const result = parseRelativeTime(e.target.value, type);
                 setErrVisible(false);
                 stop();
                 if (!result.success) {
@@ -48,7 +47,7 @@ export const RelativeDateTimeSelector: React.FC<RelativeDateTimeSelectorProps> =
                 } else {
                     setError('');
                 }
-                setValue(newValue, result.success);
+                setValue(result.success ? result.normalized : e.target.value, result.success);
             }}
             error={error !== ''}
             helperText={
@@ -59,7 +58,7 @@ export const RelativeDateTimeSelector: React.FC<RelativeDateTimeSelectorProps> =
                         {error}
                     </Typography>
                 ) : (
-                    <Typography variant={'caption'}>{!parsed.success ? '...' : parsed.value.format('llll')}</Typography>
+                    <Typography variant={'caption'}>{!parsed.success ? '...' : parsed.preview.format('llll')}</Typography>
                 )
             }
             label={label}
