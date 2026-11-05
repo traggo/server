@@ -28,11 +28,14 @@ func (t DeviceType) Value() (driver.Value, error) {
 
 // Scan for db
 func (t *DeviceType) Scan(value interface{}) error {
-	s, ok := value.([]byte)
-	if !ok {
-		return fmt.Errorf("expected []byte but was %#v", value)
+	switch v := value.(type) {
+	case []byte:
+		*t = DeviceType(v)
+	case string:
+		*t = DeviceType(v)
+	default:
+		return fmt.Errorf("expected string or []byte but was %#v", value)
 	}
-	*t = DeviceType(s)
 	return nil
 }
 
