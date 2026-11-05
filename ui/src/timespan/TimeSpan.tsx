@@ -66,6 +66,11 @@ const useStyles = makeStyles(() => ({
     },
     timeSelection: {
         display: 'inline-flex',
+        // flex-end (not center): the start/end pickers have a floating label above their value,
+        // making them taller than the plain duration text - centering both as whole boxes leaves
+        // the duration vertically centered in the row while the picker's actual value text (below
+        // its label) sits lower, looking misaligned. Aligning bottoms lines up the value baselines.
+        alignItems: 'flex-end',
         '@media (max-width: 750px)': {
             justifyContent: 'space-evenly',
             width: '100%',
@@ -296,7 +301,11 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                         <div style={{alignItems: 'center', display: 'flex'}}>
                             <Typography
                                 variant="subtitle1"
-                                style={{minWidth: '70px'}}
+                                // Matches the start/end pickers' MUI standard-variant input, which has
+                                // padding: 4px 0 5px below its own text - without this, aligning by
+                                // flex-end lines up the two elements' boxes but not their actual text,
+                                // since this Typography has no padding of its own to account for.
+                                style={{minWidth: '70px', paddingBottom: '5px'}}
                                 title="The amount of time between from and to">
                                 {to ? <RelativeTime from={from} to={to} /> : <RelativeToNow from={from} />}
                             </Typography>
