@@ -2,19 +2,23 @@ import * as React from 'react';
 import {TagSelectorEntry} from '../tag/tagSelectorEntry';
 import {TagSelector} from '../tag/TagSelector';
 import moment from 'moment-timezone';
-import {Button} from '@material-ui/core';
-import {MoreVert} from '@material-ui/icons';
-import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import {Button} from '@mui/material';
+import {MoreVert} from '@mui/icons-material';
+import IconButton from '@mui/material/IconButton';
+import Paper from '@mui/material/Paper';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 import {DateTimeSelector} from '../common/DateTimeSelector';
-import {useMutation} from '@apollo/react-hooks';
+import {useMutation} from '@apollo/client';
 import * as gqlTimeSpan from '../gql/timeSpan';
-import {StartTimer, StartTimerVariables} from '../gql/__generated__/StartTimer';
-import {InputTimeSpanTag} from '../gql/__generated__/globalTypes';
-import {AddTimeSpan, AddTimeSpanVariables} from '../gql/__generated__/AddTimeSpan';
+import {
+    StartTimerMutation,
+    StartTimerMutationVariables,
+    InputTimeSpanTag,
+    AddTimeSpanMutation,
+    AddTimeSpanMutationVariables,
+} from '../gql/__generated__';
 import {useSnackbar} from 'notistack';
 import {inUserTz} from './timeutils';
 import {addTimeSpanToCache} from '../gql/utils';
@@ -40,10 +44,10 @@ export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntr
     const [from, setFrom] = React.useState<moment.Moment>(moment().subtract(15, 'minute'));
     const [to, setTo] = React.useState<moment.Moment>(moment());
     const [showDate, setShowDate] = React.useState(false);
-    const [startTimer] = useMutation<StartTimer, StartTimerVariables>(gqlTimeSpan.StartTimer, {
+    const [startTimer] = useMutation<StartTimerMutation, StartTimerMutationVariables>(gqlTimeSpan.StartTimer, {
         refetchQueries: [{query: gqlTimeSpan.Trackers}],
     });
-    const [addTimeSpan] = useMutation<AddTimeSpan, AddTimeSpanVariables>(gqlTimeSpan.AddTimeSpan, {
+    const [addTimeSpan] = useMutation<AddTimeSpanMutation, AddTimeSpanMutationVariables>(gqlTimeSpan.AddTimeSpan, {
         update: (cache, {data}) => {
             if (!data || !data.createTimeSpan) {
                 return;
@@ -61,9 +65,10 @@ export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntr
     }, [showDate, from, to]);
 
     const submit = () => {
-        const tags = selectedEntries.map(
-            (entry: TagSelectorEntry): InputTimeSpanTag => ({key: entry.tag.key, value: entry.value})
-        );
+        const tags = selectedEntries.map((entry: TagSelectorEntry): InputTimeSpanTag => ({
+            key: entry.tag.key,
+            value: entry.value,
+        }));
         if (type === Type.Tracker) {
             startTimer({variables: {start: inUserTz(moment()).format(), tags, note: ''}}).then(() => {
                 setSelectedEntries([]);
@@ -130,7 +135,7 @@ export const Tracker: React.FC<TrackerProps> = ({selectedEntries, onSelectedEntr
                 <Button variant="text" style={{height: 50}} onClick={submit}>
                     {type === Type.Manual ? 'add' : 'start'}
                 </Button>
-                <IconButton onClick={(e: React.MouseEvent<HTMLElement>) => setOpenMenu(e.currentTarget)}>
+                <IconButton onClick={(e: React.MouseEvent<HTMLElement>) => setOpenMenu(e.currentTarget)} size="large">
                     <MoreVert />
                 </IconButton>
                 <Menu aria-haspopup="true" anchorEl={openMenu} open={openMenu !== null}>

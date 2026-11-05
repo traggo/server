@@ -1,22 +1,27 @@
 import * as React from 'react';
-import {useMutation, useQuery} from '@apollo/react-hooks';
+import {useMutation, useQuery} from '@apollo/client';
 import * as gqlDashboard from '../gql/dashboard';
 import {default as ReactGrid, Layout, WidthProvider} from 'react-grid-layout';
-import {Dashboards, Dashboards_dashboards_items} from '../gql/__generated__/Dashboards';
-import {UpdatePos, UpdatePosVariables} from '../gql/__generated__/UpdatePos';
-import {EntryType, StatsInterval} from '../gql/__generated__/globalTypes';
+import {
+    DashboardsQuery,
+    UpdatePosMutation,
+    UpdatePosMutationVariables,
+    EntryType,
+    StatsInterval,
+    RemoveDashboardEntryMutation,
+    RemoveDashboardEntryMutationVariables,
+} from '../gql/__generated__';
+import {DashboardItem} from '../gql/types';
 import {DashboardEntry} from './Entry/DashboardEntry';
-import Button from '@material-ui/core/Button';
-import clone from 'lodash.clonedeep';
+import Button from '@mui/material/Button';
 import {EditPopup} from './Entry/EditPopup';
 import {EditGlass} from './Entry/EditGlass';
 import {Fade} from '../common/Fade';
 import {CenteredSpinner} from '../common/CenteredSpinner';
 import {AddPopup} from './Entry/AddPopup';
-import {Paper} from '@material-ui/core';
+import {Paper} from '@mui/material';
 import {Center} from '../common/Center';
-import {RemoveDashboardEntry, RemoveDashboardEntryVariables} from '../gql/__generated__/RemoveDashboardEntry';
-import {RouteChildrenProps} from 'react-router';
+import {useNavigate, useParams} from 'react-router-dom';
 import {useSnackbar} from 'notistack';
 import {DateRanges} from './DateRanges';
 import {Range} from '../utils/range';
@@ -34,7 +39,7 @@ const cols: Record<ViewType, number> = {
 
 const WidthAwareReactGrid = WidthProvider(ReactGrid);
 const EditId = -1;
-const newEntry = (): Dashboards_dashboards_items => {
+const newEntry = (): DashboardItem => {
     return {
         __typename: 'DashboardEntry',
         title: '',
@@ -78,9 +83,9 @@ const newEntry = (): Dashboards_dashboards_items => {
     };
 };
 
-type RouterProps = RouteChildrenProps<{id?: string}>;
-
-export const DashboardPage: React.FC<RouterProps> = ({match, history}) => {
+export const DashboardPage: React.FC = () => {
+    const {id} = useParams<{id: string}>();
+    const navigate = useNavigate();
     const [addRef, setAddRef] = React.useState<null | HTMLElement>(null);
     const endRef = React.useRef<null | HTMLDivElement>(null);
     const [changeMode, setChangeMode] = React.useState(false);
@@ -88,13 +93,13 @@ export const DashboardPage: React.FC<RouterProps> = ({match, history}) => {
     const [preview, setPreview] = React.useState(false);
     const [diagramRanges, setDiagramRanges] = React.useState<Record<number, Range>>({});
     const [ranges, setRanges] = useStateAndDelegateWithDelayOnChange<Record<number, Range>>({}, setDiagramRanges, 2000);
-    const [addEntry, setAddEntry] = React.useState<null | Dashboards_dashboards_items>(null);
-    const [[editElement, editEntry], setEdit] = React.useState<[null] | [HTMLElement, Dashboards_dashboards_items]>([null]);
-    const {loading, data, error} = useQuery<Dashboards>(gqlDashboard.Dashboards);
-    const [updatePos] = useMutation<UpdatePos, UpdatePosVariables>(gqlDashboard.UpdatePos, {
+    const [addEntry, setAddEntry] = React.useState<null | DashboardItem>(null);
+    const [[editElement, editEntry], setEdit] = React.useState<[null] | [HTMLElement, DashboardItem]>([null]);
+    const {loading, data, error} = useQuery<DashboardsQuery>(gqlDashboard.Dashboards);
+    const [updatePos] = useMutation<UpdatePosMutation, UpdatePosMutationVariables>(gqlDashboard.UpdatePos, {
         refetchQueries: [{query: gqlDashboard.Dashboards}],
     });
-    const [removeDashboardEntry] = useMutation<RemoveDashboardEntry, RemoveDashboardEntryVariables>(
+    const [removeDashboardEntry] = useMutation<RemoveDashboardEntryMutation, RemoveDashboardEntryMutationVariables>(
         gqlDashboard.RemoveDashboardEntry,
         {
             refetchQueries: [{query: gqlDashboard.Dashboards}],
@@ -110,15 +115,15 @@ export const DashboardPage: React.FC<RouterProps> = ({match, history}) => {
 
     const dashboards = data.dashboards || [];
 
-    if (!match || !match.params.id) {
+    if (!id) {
         enqueueSnackbar('id parameter is missing in url', {variant: 'warning'});
-        history.push('/dashboards');
+        navigate('/dashboards');
         return <></>;
     }
-    const dashboard = dashboards.find((db) => '' + db.id === match.params.id);
+    const dashboard = dashboards.find((db) => '' + db.id === id);
     if (!dashboard) {
         enqueueSnackbar('dashboard does not exist', {variant: 'warning'});
-        history.push('/dashboards');
+        navigate('/dashboards');
         return <></>;
     }
 
@@ -222,7 +227,7 @@ export const DashboardPage: React.FC<RouterProps> = ({match, history}) => {
                                 {changeMode ? (
                                     <Fade fullyVisible={!currentEditedAndPreviewed} opacity={0}>
                                         <EditGlass
-                                            doEdit={(elm) => setEdit([elm, clone(entry)])}
+                                            doEdit={(elm) => setEdit([elm, structuredClone(entry)])}
                                             doDelete={() => removeDashboardEntry({variables: {id: entry.id}})}
                                         />
                                     </Fade>
@@ -257,7 +262,7 @@ export const DashboardPage: React.FC<RouterProps> = ({match, history}) => {
                                     entry={addEntry}
                                     anchorEl={addRef}
                                     onChange={(e) => {
-                                        return setAddEntry(clone(e));
+                                        return setAddEntry(structuredClone(e));
                                     }}
                                     finish={() => {
                                         setAddEntry(null);

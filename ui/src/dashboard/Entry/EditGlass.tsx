@@ -1,9 +1,9 @@
 import * as React from 'react';
-import EditIcon from '@material-ui/icons/Edit';
-import Typography from '@material-ui/core/Typography';
+import EditIcon from '@mui/icons-material/Edit';
+import Typography from '@mui/material/Typography';
 import {Center} from '../../common/Center';
-import DeleteIcon from '@material-ui/icons/Delete';
-import {Button} from '@material-ui/core';
+import DeleteIcon from '@mui/icons-material/Delete';
+import {Button} from '@mui/material';
 
 interface EditGlassProps {
     doEdit: (elm: HTMLElement) => void;

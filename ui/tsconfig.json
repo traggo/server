@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2020",
     "lib": [
       "dom",
       "dom.iterable",
@@ -23,13 +23,13 @@
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
-    "suppressImplicitAnyIndexErrors": false,
     "strictPropertyInitialization": true,
     "strictNullChecks": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "strictFunctionTypes": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "types": ["vite/client", "vitest/globals"]
   },
   "include": [
     "src"

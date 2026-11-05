@@ -1,29 +1,28 @@
 import * as React from 'react';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/NativeSelect/NativeSelect';
-import {useQuery} from 'react-apollo';
-import {Tags} from '../../gql/__generated__/Tags';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/NativeSelect';
+import {useQuery} from '@apollo/client';
+import {TagsQuery, EntryType, StatsInterval} from '../../gql/__generated__';
 import * as gqlTags from '../../gql/tags';
-import {EntryType, StatsInterval} from '../../gql/__generated__/globalTypes';
 import {toTagSelectorEntry} from '../../tag/tagSelectorEntry';
 import {FormTagSelector} from '../../tag/FormTagSelector';
-import {Dashboards_dashboards_items, Dashboards_dashboards_items_statsSelection_range} from '../../gql/__generated__/Dashboards';
+import {DashboardItem, DashboardItemRange} from '../../gql/types';
 import {RelativeDateTimeSelector} from '../../common/RelativeDateTimeSelector';
 import {parseRelativeTime} from '../../utils/time';
-import {Grid, Typography, Switch} from '@material-ui/core';
+import {Grid, Typography, Switch} from '@mui/material';
 
 interface EditPopupProps {
-    entry: Dashboards_dashboards_items;
-    onChange: (entry: Dashboards_dashboards_items | null) => void;
+    entry: DashboardItem;
+    onChange: (entry: DashboardItem | null) => void;
     disabled?: boolean;
     ranges: Record<string, string>;
 }
 
-export const isValidDashboardEntry = (item: Dashboards_dashboards_items): boolean => {
+export const isValidDashboardEntry = (item: DashboardItem): boolean => {
     return (
-        item.statsSelection.tags !== null &&
+        item.statsSelection.tags != null &&
         item.statsSelection.tags.length > 0 &&
         ((item.statsSelection.range &&
             parseRelativeTime(item.statsSelection.range.from, 'startOf').success &&
@@ -35,7 +34,7 @@ export const isValidDashboardEntry = (item: Dashboards_dashboards_items): boolea
 export const DashboardEntryForm: React.FC<EditPopupProps> = ({entry, onChange: setEntry, disabled = false, ranges}) => {
     const [staticRange, setStaticRange] = React.useState(!entry.statsSelection.rangeId);
 
-    const tagsResult = useQuery<Tags>(gqlTags.Tags);
+    const tagsResult = useQuery<TagsQuery>(gqlTags.Tags);
 
     let tagKeys;
     let excludeTags;
@@ -47,7 +46,7 @@ export const DashboardEntryForm: React.FC<EditPopupProps> = ({entry, onChange: s
         includeTags = toTagSelectorEntry(tagsResult.data.tags, entry.statsSelection.includeTags || []);
     }
 
-    const range: Dashboards_dashboards_items_statsSelection_range = entry.statsSelection.range
+    const range: DashboardItemRange = entry.statsSelection.range
         ? entry.statsSelection.range
         : {
               from: 'now/w',
@@ -165,9 +164,7 @@ export const DashboardEntryForm: React.FC<EditPopupProps> = ({entry, onChange: s
                         entry.statsSelection.range = null;
                         setEntry(entry);
                     }}>
-                    {entry.statsSelection.rangeId ? (
-                        undefined
-                    ) : (
+                    {entry.statsSelection.rangeId ? undefined : (
                         <option key={''} value={''}>
                             Select a date range
                         </option>
@@ -194,9 +191,7 @@ export const DashboardEntryForm: React.FC<EditPopupProps> = ({entry, onChange: s
                         </Grid>
                     </Grid>
                 </Typography>
-            ) : (
-                undefined
-            )}
+            ) : undefined}
             <FormTagSelector
                 label="Tags"
                 selectedEntries={tagKeys || []}

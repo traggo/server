@@ -1,20 +1,22 @@
 import * as React from 'react';
-import {Tags} from '../gql/__generated__/Tags';
+import {TagsQuery} from '../gql/__generated__';
 import * as gqlTags from '../gql/tags';
-import {useQuery} from '@apollo/react-hooks';
+import {useQuery} from '@apollo/client';
 import {useError} from '../utils/errors';
-import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
-import MenuItem from '@material-ui/core/MenuItem';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
 import {AddTagDialog} from './AddTagDialog';
 import {TagSelectorEntry, itemLabel, label, addValues} from './tagSelectorEntry';
 import {useSuggest} from './suggest';
-import Paper from '@material-ui/core/Paper';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Input from '@material-ui/core/Input';
+import Paper from '@mui/material/Paper';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import Input from '@mui/material/Input';
 import {useStateAndDelegateWithDelayOnChange} from '../utils/hooks';
 import {TagChip} from '../common/TagChip';
-import {makeStyles, Theme} from '@material-ui/core/styles';
+import {Theme} from '@mui/material/styles';
+
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -57,7 +59,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
     const input = React.useRef<null | HTMLDivElement>(null);
     const container = React.useRef<null | HTMLDivElement>(null);
 
-    const tagsResult = useQuery<Tags>(gqlTags.Tags);
+    const tagsResult = useQuery<TagsQuery>(gqlTags.Tags);
 
     const suggestions = useSuggest(tagsResult, currentValue, selectedEntries, onlySelectKeys, allowDuplicateKeys, createTags);
 
@@ -122,7 +124,6 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
 
         setSelectedEntries([...selectedEntries, entry]);
         setCurrentValue('');
-        return;
     };
 
     const onTagClicked = (entry: TagSelectorEntry, edit: boolean) => {
