@@ -1,22 +1,20 @@
 import * as React from 'react';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import * as gqlDevice from '../gql/device';
-import {MutationFetchResult} from 'react-apollo';
-import {useMutation} from '@apollo/react-hooks';
-import {CreateDevice, CreateDeviceVariables} from '../gql/__generated__/CreateDevice';
+import {FetchResult, useMutation} from '@apollo/client';
+import {CreateDeviceMutation, CreateDeviceMutationVariables, DeviceType} from '../gql/__generated__';
 import {useSnackbar} from 'notistack';
 import {handleError} from '../utils/errors';
-import {DeviceType} from '../gql/__generated__/globalTypes';
 import {deviceTypeToString} from './typeutils';
-import Select from '@material-ui/core/NativeSelect';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@mui/material/NativeSelect';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
 
 interface AddTagDialogProps {
     initialName: string;
@@ -30,13 +28,13 @@ export const AddDeviceDialog: React.FC<AddTagDialogProps> = ({close, open, initi
     const [deviceType, setDeviceType] = React.useState(DeviceType.NoExpiry);
     const {enqueueSnackbar} = useSnackbar();
 
-    const [addDevice] = useMutation<CreateDevice, CreateDeviceVariables>(gqlDevice.CreateDevice, {
+    const [addDevice] = useMutation<CreateDeviceMutation, CreateDeviceMutationVariables>(gqlDevice.CreateDevice, {
         refetchQueries: [{query: gqlDevice.Devices}],
     });
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         addDevice({variables: {deviceType, name}})
-            .then((result: MutationFetchResult<CreateDevice>) => {
+            .then((result: FetchResult<CreateDeviceMutation>) => {
                 if (result.data && result.data.device) {
                     enqueueSnackbar('Client created', {variant: 'success'});
                     setToken(result.data.device.token);

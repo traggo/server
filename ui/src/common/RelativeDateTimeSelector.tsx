@@ -1,7 +1,7 @@
 import * as React from 'react';
-import {TextField} from '@material-ui/core';
+import {TextField} from '@mui/material';
 import {parseRelativeTime} from '../utils/time';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import useTimeout from '@rooks/use-timeout';
 
 interface RelativeDateTimeSelectorProps {
@@ -30,6 +30,18 @@ export const RelativeDateTimeSelector: React.FC<RelativeDateTimeSelectorProps> =
     const {start, stop} = useTimeout(() => setErrVisible(true), 200);
 
     const parsed = parseRelativeTime(value, type);
+    let helperText: React.ReactNode;
+    if (small) {
+        helperText = undefined;
+    } else if (errVisible) {
+        helperText = (
+            <Typography color={'secondary'} variant={'caption'}>
+                {error}
+            </Typography>
+        );
+    } else {
+        helperText = <Typography variant={'caption'}>{!parsed.success ? '...' : parsed.value.format('llll')}</Typography>;
+    }
     return (
         <TextField
             fullWidth
@@ -51,17 +63,7 @@ export const RelativeDateTimeSelector: React.FC<RelativeDateTimeSelectorProps> =
                 setValue(newValue, result.success);
             }}
             error={error !== ''}
-            helperText={
-                small ? (
-                    undefined
-                ) : errVisible ? (
-                    <Typography color={'secondary'} variant={'caption'}>
-                        {error}
-                    </Typography>
-                ) : (
-                    <Typography variant={'caption'}>{!parsed.success ? '...' : parsed.value.format('llll')}</Typography>
-                )
-            }
+            helperText={helperText}
             label={label}
         />
     );

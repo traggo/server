@@ -1,4 +1,4 @@
-import {gql} from 'apollo-boost';
+import {gql} from '@apollo/client';
 
 export const Stats = gql`
     query Stats($ranges: [Range!], $tags: [String!], $excludeTags: [InputTimeSpanTag!], $requireTags: [InputTimeSpanTag!]) {

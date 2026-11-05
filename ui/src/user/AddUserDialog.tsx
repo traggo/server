@@ -1,17 +1,17 @@
 import * as React from 'react';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import * as gqlUser from '../gql/user';
-import {useMutation} from '@apollo/react-hooks';
+import {useMutation} from '@apollo/client';
 import {useSnackbar} from 'notistack';
 import {handleError} from '../utils/errors';
-import {Checkbox} from '@material-ui/core';
-import {CreateUser, CreateUserVariables} from '../gql/__generated__/CreateUser';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import {Checkbox} from '@mui/material';
+import {CreateUserMutation, CreateUserMutationVariables} from '../gql/__generated__';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 interface AddTagDialogProps {
     open: boolean;
@@ -24,7 +24,7 @@ export const AddUserDialog: React.FC<AddTagDialogProps> = ({close, open}) => {
     const [admin, setAdmin] = React.useState(false);
     const {enqueueSnackbar} = useSnackbar();
 
-    const [addUser] = useMutation<CreateUser, CreateUserVariables>(gqlUser.CreateUser, {
+    const [addUser] = useMutation<CreateUserMutation, CreateUserMutationVariables>(gqlUser.CreateUser, {
         refetchQueries: [{query: gqlUser.Users}],
     });
     const submit = (e: React.FormEvent) => {
@@ -61,11 +61,7 @@ export const AddUserDialog: React.FC<AddTagDialogProps> = ({close, open}) => {
                         onChange={(e) => setPass(e.target.value)}
                     />
                     <FormControlLabel
-                        control={
-                            <Checkbox checked={admin} onChange={(e) => setAdmin(e.target.checked)}>
-                                Admin
-                            </Checkbox>
-                        }
+                        control={<Checkbox checked={admin} onChange={(e) => setAdmin(e.target.checked)} />}
                         label="Admin"
                     />
                 </DialogContent>
