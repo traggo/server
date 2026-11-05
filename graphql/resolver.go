@@ -19,8 +19,8 @@ import (
 )
 
 // NewResolver combines all resolvers to a resolver root.
-func NewResolver(db *gorm.DB, passStrength int, version model.Version) gqlschema.ResolverRoot {
-	return &resolver{
+func NewResolver(db *gorm.DB, passStrength int, version model.Version, opts ...Option) gqlschema.ResolverRoot {
+	r := &resolver{
 		ResolverForUser: user.ResolverForUser{
 			DB:           db,
 			PassStrength: passStrength,
@@ -42,6 +42,20 @@ func NewResolver(db *gorm.DB, passStrength int, version model.Version) gqlschema
 		},
 		ResolverForDashboard: dashboard.NewResolverForDashboard(db),
 		version:              version,
+	}
+	for _, opt := range opts {
+		opt(r)
+	}
+	return r
+}
+
+// Option configures the resolver.
+type Option func(*resolver)
+
+// WithPasswordLoginDisabled rejects the username/password login.
+func WithPasswordLoginDisabled() Option {
+	return func(r *resolver) {
+		r.ResolverForDevice.PasswordLoginDisabled = true
 	}
 }
 

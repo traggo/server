@@ -269,3 +269,18 @@ func fakeToken(token ...string) func() {
 		randToken = old
 	}
 }
+
+func TestGQL_Login_fails_passwordLoginDisabled(t *testing.T) {
+	db := test.InMemoryDB(t)
+	defer db.Close()
+	db.Create(&model.User{Name: "jmattheis", ID: 1, Pass: existingPassword})
+	pwDispose := fakePassword()
+	defer pwDispose()
+
+	resolver := ResolverForDevice{DB: db.DB, PasswordLoginDisabled: true}
+	login, err := resolver.Login(context.Background(), "jmattheis", "123", "test", gqlmodel.DeviceTypeLongExpiry, false)
+
+	assert.Nil(t, login)
+	assert.Equal(t, errPasswordLoginDisabled, err)
+	assertDeviceCount(t, db, 0)
+}

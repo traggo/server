@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/copier"
+	"github.com/jinzhu/gorm"
 	"github.com/traggo/server/auth"
 	"github.com/traggo/server/auth/rand"
 	"github.com/traggo/server/generated/gqlmodel"
@@ -18,10 +19,15 @@ var (
 	randToken        = rand.Token
 	comparePassword  = password.ComparePassword
 	errUserPassWrong = errors.New("username/password combination does not exist")
+
+	errPasswordLoginDisabled = errors.New("password login is disabled, use single sign-on")
 )
 
 // Login creates a device.
 func (r *ResolverForDevice) Login(ctx context.Context, username string, pass string, deviceName string, deviceType gqlmodel.DeviceType, cookie bool) (*gqlmodel.Login, error) {
+	if r.PasswordLoginDisabled {
+		return nil, errPasswordLoginDisabled
+	}
 
 	user := new(model.User)
 	find := r.DB.Where("name = ?", username).Find(user)
@@ -46,31 +52,14 @@ func (r *ResolverForDevice) CreateDevice(ctx context.Context, deviceName string,
 }
 
 func (r *ResolverForDevice) createDeviceInternal(ctx context.Context, user *model.User, deviceName string, deviceType gqlmodel.DeviceType, cookie bool) (*gqlmodel.Login, error) {
-
-	token := randToken(20)
-	for !r.DB.Where("token = ?", token).Find(new(model.Device)).RecordNotFound() {
-		token = randToken(20)
-	}
-
-	now := timeNow()
-	device := &model.Device{
-		Token:     token,
-		UserID:    user.ID,
-		Name:      deviceName,
-		Type:      model.DeviceType(deviceType),
-		CreatedAt: now.UTC(),
-		ActiveAt:  now.UTC(),
-	}
-
-	if err := device.Type.Valid(); err != nil {
+	device, err := Create(r.DB, user, deviceName, model.DeviceType(deviceType))
+	if err != nil {
 		return nil, err
 	}
 
 	if cookie {
-		auth.GetCreateSession(ctx)(token, device.Type.Seconds())
+		auth.GetCreateSession(ctx)(device.Token, device.Type.Seconds())
 	}
-
-	create := r.DB.Create(device)
 
 	gqlUser := &gqlmodel.User{}
 	copier.Copy(gqlUser, user)
@@ -79,5 +68,32 @@ func (r *ResolverForDevice) createDeviceInternal(ctx context.Context, user *mode
 	return &gqlmodel.Login{
 		User:   gqlUser,
 		Device: gqlDevice,
-		Token:  token}, create.Error
+		Token:  device.Token}, nil
+}
+
+// Create persists a new device with a fresh token for the user.
+func Create(db *gorm.DB, user *model.User, deviceName string, deviceType model.DeviceType) (*model.Device, error) {
+	if err := deviceType.Valid(); err != nil {
+		return nil, err
+	}
+
+	token := randToken(20)
+	for !db.Where("token = ?", token).Find(new(model.Device)).RecordNotFound() {
+		token = randToken(20)
+	}
+
+	now := timeNow()
+	device := &model.Device{
+		Token:     token,
+		UserID:    user.ID,
+		Name:      deviceName,
+		Type:      deviceType,
+		CreatedAt: now.UTC(),
+		ActiveAt:  now.UTC(),
+	}
+
+	if err := db.Create(device).Error; err != nil {
+		return nil, err
+	}
+	return device, nil
 }
