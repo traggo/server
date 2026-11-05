@@ -39,6 +39,7 @@ func sessionCookie(request *http.Request, token string, maxAge int) *http.Cookie
 	return &http.Cookie{
 		Name:     traggoSession,
 		Value:    token,
+		Path:     "/",
 		MaxAge:   maxAge,
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
