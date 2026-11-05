@@ -1,22 +1,23 @@
 import * as React from 'react';
-import {useMutation, useQuery} from '@apollo/react-hooks';
+import {useMutation, useQuery} from '@apollo/client';
 import * as gqlDashboard from '../gql/dashboard';
 import {default as ReactGrid, Layout, WidthProvider} from 'react-grid-layout';
-import {Dashboards, Dashboards_dashboards_items} from '../gql/__generated__/Dashboards';
-import {UpdatePos, UpdatePosVariables} from '../gql/__generated__/UpdatePos';
-import {EntryType, StatsInterval} from '../gql/__generated__/globalTypes';
+import {DashboardsQuery} from '../gql/__generated__';
+import {DashboardItem} from '../gql/types';
+import {UpdatePosMutation, UpdatePosMutationVariables} from '../gql/__generated__';
+import {EntryType, StatsInterval} from '../gql/__generated__';
 import {DashboardEntry} from './Entry/DashboardEntry';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import clone from 'lodash.clonedeep';
 import {EditPopup} from './Entry/EditPopup';
 import {EditGlass} from './Entry/EditGlass';
 import {Fade} from '../common/Fade';
 import {CenteredSpinner} from '../common/CenteredSpinner';
 import {AddPopup} from './Entry/AddPopup';
-import {Paper} from '@material-ui/core';
+import {Paper} from '@mui/material';
 import {Center} from '../common/Center';
-import {RemoveDashboardEntry, RemoveDashboardEntryVariables} from '../gql/__generated__/RemoveDashboardEntry';
-import {RouteChildrenProps} from 'react-router';
+import {RemoveDashboardEntryMutation, RemoveDashboardEntryMutationVariables} from '../gql/__generated__';
+import {useNavigate, useParams} from 'react-router-dom';
 import {useSnackbar} from 'notistack';
 import {DateRanges} from './DateRanges';
 import {Range} from '../utils/range';
@@ -32,9 +33,12 @@ const cols: Record<ViewType, number> = {
     [ViewType.Desktop]: 20,
 };
 
-const WidthAwareReactGrid = WidthProvider(ReactGrid);
+// react-grid-layout 0.16's own type declarations predate the React 18 types' removal of
+// implicit `children` from arbitrary component props; the react-grid-layout version bump in a
+// later stage carries its own current types and won't need this cast.
+const WidthAwareReactGrid = WidthProvider(ReactGrid) as React.ComponentType<any>;
 const EditId = -1;
-const newEntry = (): Dashboards_dashboards_items => {
+const newEntry = (): DashboardItem => {
     return {
         __typename: 'DashboardEntry',
         title: '',
@@ -78,9 +82,9 @@ const newEntry = (): Dashboards_dashboards_items => {
     };
 };
 
-type RouterProps = RouteChildrenProps<{id?: string}>;
-
-export const DashboardPage: React.FC<RouterProps> = ({match, history}) => {
+export const DashboardPage: React.FC = () => {
+    const {id} = useParams<{id: string}>();
+    const navigate = useNavigate();
     const [addRef, setAddRef] = React.useState<null | HTMLElement>(null);
     const endRef = React.useRef<null | HTMLDivElement>(null);
     const [changeMode, setChangeMode] = React.useState(false);
@@ -88,13 +92,13 @@ export const DashboardPage: React.FC<RouterProps> = ({match, history}) => {
     const [preview, setPreview] = React.useState(false);
     const [diagramRanges, setDiagramRanges] = React.useState<Record<number, Range>>({});
     const [ranges, setRanges] = useStateAndDelegateWithDelayOnChange<Record<number, Range>>({}, setDiagramRanges, 2000);
-    const [addEntry, setAddEntry] = React.useState<null | Dashboards_dashboards_items>(null);
-    const [[editElement, editEntry], setEdit] = React.useState<[null] | [HTMLElement, Dashboards_dashboards_items]>([null]);
-    const {loading, data, error} = useQuery<Dashboards>(gqlDashboard.Dashboards);
-    const [updatePos] = useMutation<UpdatePos, UpdatePosVariables>(gqlDashboard.UpdatePos, {
+    const [addEntry, setAddEntry] = React.useState<null | DashboardItem>(null);
+    const [[editElement, editEntry], setEdit] = React.useState<[null] | [HTMLElement, DashboardItem]>([null]);
+    const {loading, data, error} = useQuery<DashboardsQuery>(gqlDashboard.Dashboards);
+    const [updatePos] = useMutation<UpdatePosMutation, UpdatePosMutationVariables>(gqlDashboard.UpdatePos, {
         refetchQueries: [{query: gqlDashboard.Dashboards}],
     });
-    const [removeDashboardEntry] = useMutation<RemoveDashboardEntry, RemoveDashboardEntryVariables>(
+    const [removeDashboardEntry] = useMutation<RemoveDashboardEntryMutation, RemoveDashboardEntryMutationVariables>(
         gqlDashboard.RemoveDashboardEntry,
         {
             refetchQueries: [{query: gqlDashboard.Dashboards}],
@@ -110,15 +114,15 @@ export const DashboardPage: React.FC<RouterProps> = ({match, history}) => {
 
     const dashboards = data.dashboards || [];
 
-    if (!match || !match.params.id) {
+    if (!id) {
         enqueueSnackbar('id parameter is missing in url', {variant: 'warning'});
-        history.push('/dashboards');
+        navigate('/dashboards');
         return <></>;
     }
-    const dashboard = dashboards.find((db) => '' + db.id === match.params.id);
+    const dashboard = dashboards.find((db) => '' + db.id === id);
     if (!dashboard) {
         enqueueSnackbar('dashboard does not exist', {variant: 'warning'});
-        history.push('/dashboards');
+        navigate('/dashboards');
         return <></>;
     }
 

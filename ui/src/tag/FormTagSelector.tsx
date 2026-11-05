@@ -1,7 +1,7 @@
 import React from 'react';
-import FormControl from '@material-ui/core/FormControl';
-import Box from '@material-ui/core/Box';
-import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
 import {TagSelector, TagSelectorProps} from './TagSelector';
 
 interface FormTagSelectorProps extends TagSelectorProps {
@@ -12,7 +12,7 @@ interface FormTagSelectorProps extends TagSelectorProps {
 export const FormTagSelector = ({label, required = false, ...props}: FormTagSelectorProps) => {
     return (
         <Box mt={1}>
-            <FormControl fullWidth required>
+            <FormControl fullWidth required={required}>
                 <Box pt={2}>
                     <InputLabel shrink> {label} </InputLabel>
                     <Box className="MuiInput-underline">

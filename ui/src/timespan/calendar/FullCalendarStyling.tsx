@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {makeStyles} from '@material-ui/core';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyle = makeStyles((theme) => {
     return {
@@ -67,28 +67,28 @@ const useStyle = makeStyles((theme) => {
             },
             '& .fc tr:nth-child(4n)': {
                 borderStyle: 'solid !important',
-                borderColor: theme.palette.type === 'dark' ? 'rgba(255,255,255,.2)' : 'rgba(0,0,0,.2)',
+                borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,.2)' : 'rgba(0,0,0,.2)',
                 borderWidth: '0 0 2px 0 !important',
                 padding: '0 !important',
                 verticalAlign: 'top !important',
             },
             '& .fc tbody tr:first-child': {
                 borderStyle: 'solid !important',
-                borderColor: theme.palette.type === 'dark' ? 'rgba(255,255,255,.2)' : 'rgba(0,0,0,.2)',
+                borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,.2)' : 'rgba(0,0,0,.2)',
                 borderWidth: '2px 0 0 0 !important',
                 padding: '0 !important',
                 verticalAlign: 'top !important',
             },
             '& .fc td': {
                 borderStyle: 'solid !important',
-                borderColor: theme.palette.type === 'dark' ? 'rgba(255,255,255,.1)' : 'rgba(0,0,0,.1)',
+                borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,.1)' : 'rgba(0,0,0,.1)',
                 borderWidth: '0 1px 0 0 !important',
                 padding: '0 !important',
                 verticalAlign: 'top !important',
             },
             '& .fc tr:nth-child(4n+2)': {
                 borderStyle: 'solid !important',
-                borderColor: theme.palette.type === 'dark' ? 'rgba(255,255,255,.1)' : 'rgba(0,0,0,.1)',
+                borderColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,.1)' : 'rgba(0,0,0,.1)',
                 borderWidth: '0 0 1px 0 !important',
                 padding: '0 !important',
                 verticalAlign: 'top !important',
@@ -112,7 +112,7 @@ const useStyle = makeStyles((theme) => {
                 padding: '5px !important',
             },
             '& .fc-today': {
-                background: theme.palette.type === 'dark' ? 'rgba(199,199,199,.1) !important' : 'rgba(0,0,0,.1) !important',
+                background: theme.palette.mode === 'dark' ? 'rgba(199,199,199,.1) !important' : 'rgba(0,0,0,.1) !important',
             },
             '& .fc-button': {
                 display: 'inline-block',
@@ -180,7 +180,7 @@ const useStyle = makeStyles((theme) => {
                 height: '100%',
             },
             '& .fc .fc-content .stop': {
-                background: theme.palette.type === 'dark' ? 'rgba(255,255,255,.2) !important' : 'rgba(0,0,0,.1) !important',
+                background: theme.palette.mode === 'dark' ? 'rgba(255,255,255,.2) !important' : 'rgba(0,0,0,.1) !important',
                 borderRadius: '6px 0 0 0',
                 fontSize: '10px',
                 width: '50%',
@@ -192,7 +192,7 @@ const useStyle = makeStyles((theme) => {
                 display: 'inline-block',
             },
             '& .fc .fc-content .stop:hover': {
-                background: theme.palette.type === 'dark' ? 'rgba(255,255,255,.3) !important' : 'rgba(0,0,0,.2) !important',
+                background: theme.palette.mode === 'dark' ? 'rgba(255,255,255,.3) !important' : 'rgba(0,0,0,.2) !important',
             },
             '& .fc .fc-content .stop a': {
                 width: '100%',
@@ -230,7 +230,7 @@ const useStyle = makeStyles((theme) => {
     };
 });
 
-export const FullCalendarStyling: React.FC = ({children}) => {
+export const FullCalendarStyling: React.FC<React.PropsWithChildren> = ({children}) => {
     const classes = useStyle();
     return <div className={classes.root}>{children}</div>;
 };

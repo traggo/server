@@ -1,9 +1,9 @@
 import * as React from 'react';
-import {KeyboardDateTimePicker} from '@material-ui/pickers';
-import * as moment from 'moment';
+import {DesktopDateTimePicker} from '@mui/x-date-pickers/DesktopDateTimePicker';
+import moment from 'moment';
 import {uglyConvertToLocalTime} from '../timespan/timeutils';
 import {useSettings} from '../gql/settings';
-import {DateTimeInputStyle} from '../gql/__generated__/globalTypes';
+import {DateTimeInputStyle} from '../gql/__generated__';
 
 interface DateTimeSelectorProps {
     selectedDate: moment.Moment;
@@ -16,6 +16,21 @@ interface DateTimeSelectorProps {
 export const DateTimeSelector: React.FC<DateTimeSelectorProps> = React.memo(
     ({selectedDate, onSelectDate, showDate, label, popoverOpen = () => {}}) => {
         const {done, dateTimeInputStyle} = useSettings();
+        const [open, setOpen] = React.useState(false);
+        // The field fires onChange on every section edit (hour, minute, meridiem individually),
+        // not just once a full value has been typed - if we forwarded those straight to
+        // onSelectDate, a half-typed intermediate value could get persisted/trigger the parent's
+        // before/after-the-other-field correction. So onChange only updates this local draft (for
+        // responsive typing), and onSelectDate only fires once editing is actually done: on blur,
+        // or on accepting a value from the popup calendar/clock.
+        const [draft, setDraft] = React.useState<moment.Moment>(() => uglyConvertToLocalTime(selectedDate));
+        const isEditing = React.useRef(false);
+
+        React.useEffect(() => {
+            if (!isEditing.current) {
+                setDraft(uglyConvertToLocalTime(selectedDate));
+            }
+        }, [selectedDate]);
 
         if (!done) {
             return <span>...</span>;
@@ -27,59 +42,85 @@ export const DateTimeSelector: React.FC<DateTimeSelectorProps> = React.memo(
                     type="datetime-local"
                     value={selectedDate.format(selectedDate.format('YYYY-MM-DDTHH:mm'))}
                     onChange={(e) => {
-                        onSelectDate(moment.default(e.target.value));
+                        onSelectDate(moment(e.target.value));
                     }}
                 />
             );
         }
-
-        const [open, setOpen] = React.useState(false);
         const localeData = moment.localeData();
         const time = localeData.longDateFormat('LT').replace('A', 'a');
         const ampm = time.indexOf('a') !== -1;
         const format = showDate ? localeData.longDateFormat('L') + ' ' + time : time;
 
+        const commit = (date: moment.Moment) => {
+            if (!showDate && !open) {
+                date = date.clone().set({
+                    date: selectedDate.date(),
+                    month: selectedDate.month(),
+                    year: selectedDate.year(),
+                });
+            }
+            if (uglyConvertToLocalTime(selectedDate).isSame(date)) {
+                return;
+            }
+            onSelectDate(date);
+        };
+
         return (
-            <KeyboardDateTimePicker
+            <DesktopDateTimePicker
                 className="time-picker"
-                variant="inline"
-                InputProps={{disableUnderline: true}}
-                title={selectedDate.format()}
-                style={{width: (showDate ? 185 : 105) + (ampm ? 20 : 0)}}
-                PopoverProps={{
-                    onEntered: () => {
-                        popoverOpen(true);
-                        setOpen(true);
-                    },
-                    onExited: () => {
-                        popoverOpen(false);
-                        setOpen(false);
+                sx={{
+                    width: (showDate ? 185 : 105) + (ampm ? 20 : 0),
+                    // The calendar-icon adornment centers itself across the whole labeled field
+                    // (label row + value row), while the value text sits lower - offset by the
+                    // 12px marginTop MUI puts on the input to make room for the shrunk label
+                    // above it. Match that offset so the icon lines up with the value/duration
+                    // text instead of floating above it.
+                    '& .MuiInputAdornment-root': {marginTop: '12px'},
+                }}
+                onOpen={() => {
+                    popoverOpen(true);
+                    setOpen(true);
+                    isEditing.current = true;
+                }}
+                onClose={() => {
+                    popoverOpen(false);
+                    setOpen(false);
+                }}
+                slotProps={{
+                    textField: {
+                        title: selectedDate.format(),
+                        variant: 'standard',
+                        margin: 'none',
+                        InputProps: {disableUnderline: true},
+                        onFocus: () => {
+                            isEditing.current = true;
+                        },
+                        onBlur: () => {
+                            isEditing.current = false;
+                            if (draft.isValid()) {
+                                commit(draft);
+                            }
+                        },
                     },
                 }}
-                margin="none"
-                value={uglyConvertToLocalTime(selectedDate).format()}
-                onChange={(date: moment.Moment) => {
+                value={draft}
+                onChange={(date: moment.Moment | null) => {
                     if (!date || !date.isValid()) {
                         return;
                     }
-
-                    if (!showDate && !open) {
-                        date = date.set({
-                            date: selectedDate.date(),
-                            month: selectedDate.month(),
-                            year: selectedDate.year(),
-                        });
+                    setDraft(date);
+                }}
+                onAccept={(date: moment.Moment | null) => {
+                    isEditing.current = false;
+                    if (date && date.isValid()) {
+                        commit(date);
                     }
-                    if (uglyConvertToLocalTime(selectedDate).isSame(date)) {
-                        return;
-                    }
-
-                    onSelectDate(date);
                 }}
                 ampm={ampm}
                 format={format}
                 label={label}
-                openTo={showDate ? 'date' : 'hours'}
+                openTo={showDate ? 'day' : 'hours'}
             />
         );
     }

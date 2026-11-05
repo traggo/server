@@ -4,19 +4,19 @@ export const stripTypename = <T>(value: T): T => {
     }
 
     if (Array.isArray(value)) {
-        // tslint:disable-next-line:no-any
-        return (value as any).map((x: any) => stripTypename(x));
+        return value.map((x) => stripTypename(x)) as unknown as T;
     }
 
     if (typeof value !== 'object') {
         return value;
     }
 
-    Object.values(value).forEach(stripTypename);
-    if ('__typename' in value) {
-        // @ts-ignore
-        delete value.__typename;
+    const result: Record<string, unknown> = {};
+    for (const [key, entry] of Object.entries(value)) {
+        if (key !== '__typename') {
+            result[key] = stripTypename(entry);
+        }
     }
 
-    return value;
+    return result as T;
 };

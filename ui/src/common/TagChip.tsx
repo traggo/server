@@ -1,8 +1,10 @@
-import Chip from '@material-ui/core/Chip';
+import Chip from '@mui/material/Chip';
 import * as React from 'react';
-// @ts-ignore
+// @ts-expect-error no type declarations for this package
 import bestContrast from 'get-best-contrast-color';
-import {makeStyles, Theme} from '@material-ui/core';
+import {Theme} from '@mui/material';
+
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme: Theme) => ({
     chip: {

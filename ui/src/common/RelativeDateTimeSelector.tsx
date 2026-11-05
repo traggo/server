@@ -1,7 +1,7 @@
 import * as React from 'react';
-import {TextField} from '@material-ui/core';
+import {TextField} from '@mui/material';
 import {parseRelativeTime} from '../utils/time';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import useTimeout from '@rooks/use-timeout';
 
 interface RelativeDateTimeSelectorProps {
@@ -52,9 +52,7 @@ export const RelativeDateTimeSelector: React.FC<RelativeDateTimeSelectorProps> =
             }}
             error={error !== ''}
             helperText={
-                small ? (
-                    undefined
-                ) : errVisible ? (
+                small ? undefined : errVisible ? (
                     <Typography color={'secondary'} variant={'caption'}>
                         {error}
                     </Typography>
