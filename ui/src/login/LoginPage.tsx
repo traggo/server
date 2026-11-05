@@ -8,8 +8,14 @@ import * as gqlVersion from '../gql/version';
 import {useQuery} from '@apollo/react-hooks';
 import {Version} from '../gql/__generated__/Version';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import {useOidcInfo} from './oidc';
 
 const useStyles = makeStyles(() => ({
+    divider: {
+        margin: '16px 0',
+    },
     footerLink: {
         margin: '0 2px',
     },
@@ -17,6 +23,7 @@ const useStyles = makeStyles(() => ({
 
 export const LoginPage = () => {
     const classes = useStyles();
+    const oidc = useOidcInfo();
     const {data: {version = gqlVersion.VersionDefault.version} = gqlVersion.VersionDefault} = useQuery<Version>(
         gqlVersion.Version
     );
@@ -27,7 +34,22 @@ export const LoginPage = () => {
                     <Typography variant="h1" component="h1" gutterBottom={true}>
                         traggo
                     </Typography>
-                    <LoginForm />
+                    {oidc === undefined ? null : (
+                        <>
+                            {oidc.passwordLogin ? <LoginForm /> : null}
+                            {oidc.enabled && oidc.passwordLogin ? <Divider className={classes.divider} /> : null}
+                            {oidc.enabled ? (
+                                <Button
+                                    fullWidth
+                                    size="large"
+                                    variant={oidc.passwordLogin ? 'outlined' : 'contained'}
+                                    color="primary"
+                                    href={oidc.loginUrl}>
+                                    Login with SSO
+                                </Button>
+                            ) : null}
+                        </>
+                    )}
                 </DefaultPaper>
             </Grid>
             <div style={{position: 'absolute', bottom: 10, display: 'flex'}}>
