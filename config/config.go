@@ -28,6 +28,59 @@ type Config struct {
 	PassStrength       int      `default:"10" split_words:"true"`
 	DatabaseDialect    string   `default:"sqlite3" split_words:"true"`
 	DatabaseConnection string   `default:"data/traggo.db" split_words:"true"`
+
+	// OIDC is the optional OpenID Connect login, it is disabled unless TRAGGO_OIDC_ISSUER is set.
+	OIDC OIDC `envconfig:"oidc"`
+}
+
+// Secret is a string which is masked when marshalled or printed, so it does not end up in logs.
+type Secret string
+
+// MarshalJSON masks the value.
+func (Secret) MarshalJSON() ([]byte, error) { return []byte(`"***"`), nil }
+
+// String masks the value.
+func (Secret) String() string { return "***" }
+
+// OIDC holds the OpenID Connect settings.
+type OIDC struct {
+	// Issuer is the issuer URL, the discovery document is fetched from <issuer>/.well-known/openid-configuration.
+	Issuer       string   `split_words:"true"`
+	ClientID     string   `envconfig:"client_id"`
+	ClientSecret Secret   `envconfig:"client_secret"`
+	RedirectURL  string   `envconfig:"redirect_url"`
+	Scopes       []string `default:"openid,profile,email"`
+	// UsernameClaim is the ID token claim which is matched with the traggo user name.
+	UsernameClaim string `envconfig:"username_claim" default:"preferred_username"`
+	// AdminClaim and AdminValue make users admins if the claim equals / contains the value, both empty: admin flag is not managed.
+	AdminClaim string `envconfig:"admin_claim"`
+	AdminValue string `envconfig:"admin_value"`
+	// AutoRegister creates users which do not exist yet.
+	AutoRegister bool `envconfig:"auto_register"`
+	// DisablePasswordLogin rejects the username/password login.
+	DisablePasswordLogin bool `envconfig:"disable_password_login"`
+}
+
+// Enabled returns true when OIDC is configured.
+func (o OIDC) Enabled() bool {
+	return o.Issuer != ""
+}
+
+// Validate checks that all required values are set when OIDC is enabled.
+func (o OIDC) Validate() error {
+	if !o.Enabled() {
+		if o.DisablePasswordLogin {
+			return fmt.Errorf("TRAGGO_OIDC_DISABLE_PASSWORD_LOGIN requires TRAGGO_OIDC_ISSUER")
+		}
+		return nil
+	}
+	if o.ClientID == "" || o.RedirectURL == "" {
+		return fmt.Errorf("TRAGGO_OIDC_CLIENT_ID and TRAGGO_OIDC_REDIRECT_URL are required when TRAGGO_OIDC_ISSUER is set")
+	}
+	if (o.AdminClaim == "") != (o.AdminValue == "") {
+		return fmt.Errorf("TRAGGO_OIDC_ADMIN_CLAIM and TRAGGO_OIDC_ADMIN_VALUE must be set together")
+	}
+	return nil
 }
 
 // Get loads the application config.
@@ -65,6 +118,12 @@ func Get() (Config, []FutureLog) {
 		logs = append(logs, FutureLog{
 			Level: zerolog.FatalLevel,
 			Msg:   fmt.Sprintf("cannot parse env params: %s", err)})
+	}
+
+	if err := config.OIDC.Validate(); err != nil {
+		logs = append(logs, FutureLog{
+			Level: zerolog.FatalLevel,
+			Msg:   fmt.Sprintf("invalid oidc config: %s", err)})
 	}
 
 	return config, logs

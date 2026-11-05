@@ -2,6 +2,7 @@ module github.com/traggo/server
 
 require (
 	github.com/99designs/gqlgen v0.17.85
+	github.com/coreos/go-oidc/v3 v3.14.1
 	github.com/gorilla/mux v1.8.1
 	github.com/jinzhu/copier v0.4.0
 	github.com/jinzhu/gorm v1.9.2
@@ -14,6 +15,7 @@ require (
 	github.com/stretchr/testify v1.11.1
 	github.com/vektah/gqlparser/v2 v2.5.31
 	golang.org/x/crypto v0.46.0
+	golang.org/x/oauth2 v0.30.0
 )
 
 require (
@@ -22,6 +24,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20181014144952-4e0d7dc8888f // indirect
 	github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5 // indirect
+	github.com/go-jose/go-jose/v4 v4.0.5 // indirect
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/gofrs/uuid v3.1.0+incompatible // indirect

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"os"
@@ -157,4 +158,43 @@ func TestGet_checksAbsoluteFiles(t *testing.T) {
 	}}
 	assert.Equal(t, expected, logs)
 	assert.Equal(t, 7777, conf.Port)
+}
+
+func TestOIDC_env(t *testing.T) {
+	t.Setenv("TRAGGO_OIDC_ISSUER", "https://idp.example.com")
+	t.Setenv("TRAGGO_OIDC_CLIENT_ID", "cid")
+	t.Setenv("TRAGGO_OIDC_CLIENT_SECRET", "synthetic-secret")
+	t.Setenv("TRAGGO_OIDC_REDIRECT_URL", "https://traggo.example.com/auth/oidc/callback")
+	t.Setenv("TRAGGO_OIDC_AUTO_REGISTER", "true")
+	t.Setenv("TRAGGO_OIDC_ADMIN_CLAIM", "groups")
+	t.Setenv("TRAGGO_OIDC_ADMIN_VALUE", "traggo-admins")
+
+	conf, logs := Get()
+	for _, l := range logs {
+		assert.NotEqual(t, zerolog.FatalLevel, l.Level, l.Msg)
+	}
+	assert.True(t, conf.OIDC.Enabled())
+	assert.Equal(t, "cid", conf.OIDC.ClientID)
+	assert.Equal(t, Secret("synthetic-secret"), conf.OIDC.ClientSecret)
+	assert.Equal(t, []string{"openid", "profile", "email"}, conf.OIDC.Scopes)
+	assert.Equal(t, "preferred_username", conf.OIDC.UsernameClaim)
+	assert.True(t, conf.OIDC.AutoRegister)
+	assert.False(t, conf.OIDC.DisablePasswordLogin)
+
+	out, err := json.Marshal(conf)
+	assert.Nil(t, err)
+	assert.NotContains(t, string(out), "synthetic-secret")
+}
+
+func TestOIDC_disabledByDefault(t *testing.T) {
+	conf, _ := Get()
+	assert.False(t, conf.OIDC.Enabled())
+	assert.Nil(t, conf.OIDC.Validate())
+}
+
+func TestOIDC_validate(t *testing.T) {
+	assert.NotNil(t, OIDC{DisablePasswordLogin: true}.Validate())
+	assert.NotNil(t, OIDC{Issuer: "https://i"}.Validate())
+	assert.NotNil(t, OIDC{Issuer: "https://i", ClientID: "a", RedirectURL: "https://r", AdminClaim: "groups"}.Validate())
+	assert.Nil(t, OIDC{Issuer: "https://i", ClientID: "a", RedirectURL: "https://r"}.Validate())
 }

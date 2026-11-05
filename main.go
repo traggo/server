@@ -15,6 +15,7 @@ import (
 	"github.com/traggo/server/graphql"
 	"github.com/traggo/server/logger"
 	"github.com/traggo/server/model"
+	"github.com/traggo/server/oidc"
 	"github.com/traggo/server/server"
 	"github.com/traggo/server/ui"
 	"github.com/traggo/server/user/password"
@@ -54,7 +55,10 @@ func main() {
 
 	stopCleanUp := initCleanUp(db)
 
-	router := initRouter(db, conf, version)
+	router, err := initRouter(db, conf, version)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to initialize the router")
+	}
 
 	log.Info().Int("port", conf.Port).Msg("Start listening")
 	if err := server.Start(router, conf.Port); err != nil {
@@ -63,17 +67,24 @@ func main() {
 	stopCleanUp <- true
 }
 
-func initRouter(db *gorm.DB, conf config.Config, version model.Version) *mux.Router {
+func initRouter(db *gorm.DB, conf config.Config, version model.Version) (*mux.Router, error) {
+	var resolverOpts []graphql.Option
+	if conf.OIDC.DisablePasswordLogin {
+		resolverOpts = append(resolverOpts, graphql.WithPasswordLoginDisabled())
+	}
 	gqlHandler := graphql.Handler(
 		"/graphql",
-		graphql.NewResolver(db, conf.PassStrength, version),
+		graphql.NewResolver(db, conf.PassStrength, version, resolverOpts...),
 		graphql.NewDirective())
 
 	router := mux.NewRouter()
 	router.Use(auth.Middleware(db))
 	router.HandleFunc("/graphql", gqlHandler)
+	if err := oidc.Register(router, db, conf.OIDC, conf.PassStrength); err != nil {
+		return nil, err
+	}
 	ui.Register(router)
-	return router
+	return router, nil
 }
 
 func initDatabase(conf config.Config) *gorm.DB {
