@@ -55,6 +55,7 @@ may be able to read it. Have a look at our [Install Guide](https://traggo.net/in
 
 [Install](https://traggo.net/install/) ᛫
 [Configuration](https://traggo.net/config/) ᛫
+[OpenID Connect login](./docs/oidc.md) ᛫
 [Setup Dev Environment](https://traggo.net/dev/setup/)
 
 ## Versioning
