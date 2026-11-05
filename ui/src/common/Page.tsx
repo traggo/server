@@ -1,41 +1,38 @@
 import * as React from 'react';
-import AppBar from '@material-ui/core/AppBar';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Divider from '@material-ui/core/Divider';
-import Drawer from '@material-ui/core/Drawer';
-import Hidden from '@material-ui/core/Hidden';
-import IconButton from '@material-ui/core/IconButton';
-import UsersIcon from '@material-ui/icons/SupervisorAccount';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import MenuIcon from '@material-ui/icons/Menu';
-import SettingsIcon from '@material-ui/icons/Settings';
-import DevicesIcon from '@material-ui/icons/DevicesOther';
-import LabelIcon from '@material-ui/icons/Label';
-import DashboardManageIcon from '@material-ui/icons/ListAlt';
-import TimeLineIcon from '@material-ui/icons/Timeline';
-import CalendarIcon from '@material-ui/icons/CalendarToday';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import {ListSubheader, Menu} from '@material-ui/core';
-import HrefLink from '@material-ui/core/Link';
+import AppBar from '@mui/material/AppBar';
+import CssBaseline from '@mui/material/CssBaseline';
+import Divider from '@mui/material/Divider';
+import Drawer from '@mui/material/Drawer';
+import Hidden from '@mui/material/Hidden';
+import IconButton from '@mui/material/IconButton';
+import UsersIcon from '@mui/icons-material/SupervisorAccount';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import MenuIcon from '@mui/icons-material/Menu';
+import SettingsIcon from '@mui/icons-material/Settings';
+import DevicesIcon from '@mui/icons-material/DevicesOther';
+import LabelIcon from '@mui/icons-material/Label';
+import DashboardManageIcon from '@mui/icons-material/ListAlt';
+import TimeLineIcon from '@mui/icons-material/Timeline';
+import CalendarIcon from '@mui/icons-material/CalendarToday';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import {ListSubheader, Menu} from '@mui/material';
+import HrefLink from '@mui/material/Link';
 import * as gqlUser from '../gql/user';
 import * as gqlVersion from '../gql/version';
-import Button from '@material-ui/core/Button';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import {Link} from 'react-router-dom';
-import MenuItem from '@material-ui/core/MenuItem';
-import {useMutation, useQuery} from '@apollo/react-hooks';
-import {Logout} from '../gql/__generated__/Logout';
-import {Version} from '../gql/__generated__/Version';
-import {CurrentUser} from '../gql/__generated__/CurrentUser';
+import Button from '@mui/material/Button';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import {Link, matchPath, useLocation} from 'react-router-dom';
+import MenuItem from '@mui/material/MenuItem';
+import {useMutation, useQuery} from '@apollo/client';
+import {LogoutMutation, VersionQuery, CurrentUserQuery, DashboardsQuery} from '../gql/__generated__';
 import * as gqlDashboard from '../gql/dashboard';
-import {Dashboards} from '../gql/__generated__/Dashboards';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import {Route, RouteChildrenProps, Switch} from 'react-router';
+import {Dashboard} from '../gql/types';
+import makeStyles from '@mui/styles/makeStyles';
 
 const drawerWidth = 240;
 
@@ -95,26 +92,54 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-// tslint:disable-next-line:no-any
+// MUI's `component` prop isn't polymorphism-typed against an arbitrary forwardRef component.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const routerLink = (to: string): any => {
-    return React.forwardRef<HTMLAnchorElement>((props, ref) => <Link innerRef={ref} to={to} {...props} />);
+    return React.forwardRef<HTMLAnchorElement>((props, ref) => <Link ref={ref} to={to} {...props} />);
 };
 
-export const Page: React.FC = ({children}) => {
-    const classes = useStyles();
-    const {data} = useQuery<CurrentUser>(gqlUser.CurrentUser);
+const staticPageTitles: Array<{path: string; title: string}> = [
+    {path: '/timesheet/list', title: 'Timesheet / List'},
+    {path: '/timesheet/calendar', title: 'Timesheet / Calendar'},
+    {path: '/user/settings', title: 'User / Settings'},
+    {path: '/user/devices', title: 'User / Devices'},
+    {path: '/user/tags', title: 'User / Tags'},
+    {path: '/admin/users', title: 'Admin / Users'},
+    {path: '/dashboards', title: 'Dashboards / Manage'},
+];
+
+const getPageTitle = (pathname: string, dashboards: Dashboard[]): string => {
+    for (const {path, title} of staticPageTitles) {
+        if (matchPath(path, pathname)) {
+            return title;
+        }
+    }
+    const dashboardMatch = matchPath('/dashboard/:id/*', pathname);
+    if (dashboardMatch && dashboardMatch.params.id) {
+        const db = dashboards.find((dashboard) => dashboard.id === parseInt(dashboardMatch.params.id!, 10));
+        return 'Dashboards / ' + (db ? db.name : '...');
+    }
+    return '';
+};
+
+export const Page: React.FC<React.PropsWithChildren> = ({children}) => {
+    const classes = useStyles({});
+    const {data} = useQuery<CurrentUserQuery>(gqlUser.CurrentUser);
 
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [userMenuOpen, setUserMenuOpen] = React.useState<null | HTMLElement>(null);
-    const [logout] = useMutation<Logout>(gqlUser.Logout, {refetchQueries: [{query: gqlUser.CurrentUser}]});
-    const {data: {version = gqlVersion.VersionDefault.version} = gqlVersion.VersionDefault} = useQuery<Version>(
+    const [logout] = useMutation<LogoutMutation>(gqlUser.Logout, {refetchQueries: [{query: gqlUser.CurrentUser}]});
+    const {data: {version = gqlVersion.VersionDefault.version} = gqlVersion.VersionDefault} = useQuery<VersionQuery>(
         gqlVersion.Version
     );
-    const dashboardsQuery = useQuery<Dashboards>(gqlDashboard.Dashboards);
+    const dashboardsQuery = useQuery<DashboardsQuery>(gqlDashboard.Dashboards);
     const dashboards = (dashboardsQuery.data && dashboardsQuery.data.dashboards) || [];
 
     const username = (data && data.user && data.user.name) || 'unknown';
     const admin = data && data.user && data.user.admin;
+
+    const location = useLocation();
+    const pageTitle = getPageTitle(location.pathname, dashboards);
 
     const drawer = (
         <div>
@@ -214,41 +239,12 @@ export const Page: React.FC = ({children}) => {
                         color="inherit"
                         aria-label="Open drawer"
                         onClick={() => setMobileOpen(!mobileOpen)}
-                        className={classes.menuButton}>
+                        className={classes.menuButton}
+                        size="large">
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" color="inherit" noWrap>
-                        <Switch>
-                            <Route exact path="/timesheet/list">
-                                Timesheet / List
-                            </Route>
-                            <Route exact path="/timesheet/calendar">
-                                Timesheet / Calendar
-                            </Route>
-                            <Route exact path="/user/settings">
-                                User / Settings
-                            </Route>
-                            <Route exact path="/user/devices">
-                                User / Devices
-                            </Route>
-                            <Route exact path="/user/tags">
-                                User / Tags
-                            </Route>
-                            <Route exact path="/admin/users">
-                                Admin / Users
-                            </Route>
-                            <Route exact path="/dashboards">
-                                Dashboards / Manage
-                            </Route>
-                            <Route exact path="/dashboard/:id/:name">
-                                {(props: RouteChildrenProps<{id: string}>) => {
-                                    const db = dashboards.find(
-                                        (dashboard) => dashboard.id === parseInt(props.match!.params.id, 10)
-                                    );
-                                    return 'Dashboards / ' + (db ? db.name : '...');
-                                }}
-                            </Route>
-                        </Switch>
+                        {pageTitle}
                     </Typography>
                     <div className={classes.grow} />
                     <div className={classes.sectionDesktop}>
@@ -288,7 +284,7 @@ export const Page: React.FC = ({children}) => {
                         {drawer}
                     </Drawer>
                 </Hidden>
-                <Hidden smDown implementation="js">
+                <Hidden mdDown implementation="js">
                     <Drawer
                         classes={{
                             paper: classes.drawerPaper,

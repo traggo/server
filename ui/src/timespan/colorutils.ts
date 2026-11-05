@@ -1,4 +1,3 @@
-// @ts-ignore
 import colorHash from 'color-hash';
 
 const dark = new colorHash({saturation: 0.35, lightness: 0.35});
