@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"crypto/tls"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -164,7 +165,7 @@ func TestMiddleware_createSession_setsCookie(t *testing.T) {
 	GetCreateSession(ctx)("new token", 60)
 
 	cookieHeader := recorder.Header().Get("Set-Cookie")
-	assert.Equal(t, `traggo="new token"; Max-Age=60`, cookieHeader)
+	assert.Equal(t, `traggo="new token"; Path=/; Max-Age=60; HttpOnly; SameSite=Lax`, cookieHeader)
 }
 
 func TestMiddleware_noCallbackExecuted_noCookieSet(t *testing.T) {
@@ -193,7 +194,7 @@ func TestMiddleware_destroySession_destroysCookie(t *testing.T) {
 	GetDestroySession(ctx)()
 
 	cookieHeader := recorder.Header().Get("Set-Cookie")
-	assert.Equal(t, "traggo=; Max-Age=0", cookieHeader)
+	assert.Equal(t, "traggo=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax", cookieHeader)
 }
 
 func TestMiddleware_impersonate_no_admin(t *testing.T) {
@@ -325,4 +326,26 @@ type requestSpy struct {
 
 func (s *requestSpy) ServeHTTP(_ http.ResponseWriter, req *http.Request) {
 	s.req = req
+}
+
+func TestMiddleware_createSession_secureWhenHttps(t *testing.T) {
+	db := test.InMemoryDB(t)
+	defer db.Close()
+
+	for name, mod := range map[string]func(*http.Request){
+		"forwarded proto": func(r *http.Request) { r.Header.Set("X-Forwarded-Proto", "https") },
+		"tls":             func(r *http.Request) { r.TLS = &tls.ConnectionState{} },
+	} {
+		t.Run(name, func(t *testing.T) {
+			spy := &requestSpy{}
+			recorder := httptest.NewRecorder()
+			request := httptest.NewRequest("GET", "/test", nil)
+			mod(request)
+			Middleware(db.DB)(spy).ServeHTTP(recorder, request)
+
+			GetCreateSession(spy.req.Context())("token", 60)
+
+			assert.Equal(t, `traggo=token; Path=/; Max-Age=60; HttpOnly; Secure; SameSite=Lax`, recorder.Header().Get("Set-Cookie"))
+		})
+	}
 }
