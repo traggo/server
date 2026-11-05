@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error no type declarations for this package
 import colorHash from 'color-hash';
 
 const dark = new colorHash({saturation: 0.35, lightness: 0.35});

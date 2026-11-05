@@ -143,9 +143,7 @@ export const DateRanges: React.FC<Props> = ({changeMode, dashboard, ranges, setR
                                             </IconButton>
                                         </Typography>
                                     </>
-                                ) : (
-                                    undefined
-                                )}
+                                ) : undefined}
                                 {openMenu && openMenu[1] === range.id ? (
                                     <Menu
                                         key="uff"
@@ -184,9 +182,7 @@ export const DateRanges: React.FC<Props> = ({changeMode, dashboard, ranges, setR
                                             {range.editable ? 'make static' : 'make editable'}
                                         </MenuItem>
                                     </Menu>
-                                ) : (
-                                    undefined
-                                )}
+                                ) : undefined}
                             </Paper>
                         </React.Fragment>
                     );
@@ -205,9 +201,7 @@ export const DateRanges: React.FC<Props> = ({changeMode, dashboard, ranges, setR
                         <PlusIcon />
                     </IconButton>
                 </Paper>
-            ) : (
-                undefined
-            )}
+            ) : undefined}
         </>
     );
 };
