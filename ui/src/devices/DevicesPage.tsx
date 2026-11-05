@@ -1,10 +1,10 @@
 import * as React from 'react';
 import Paper from '@material-ui/core/Paper';
 import {makeStyles} from '@material-ui/core/styles';
-import {useMutation, useQuery} from '@apollo/react-hooks';
+import {useMutation, useQuery} from '@apollo/client';
 import * as gqlDevice from '../gql/device';
 import * as gqlUser from '../gql/user';
-import {Devices} from '../gql/__generated__/Devices';
+import {DevicesQuery} from '../gql/__generated__';
 import {CenteredSpinner} from '../common/CenteredSpinner';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -17,13 +17,13 @@ import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
-import {RemoveDevice, RemoveDeviceVariables} from '../gql/__generated__/RemoveDevice';
-import {UpdateDevice, UpdateDeviceVariables} from '../gql/__generated__/UpdateDevice';
+import {RemoveDeviceMutation, RemoveDeviceMutationVariables} from '../gql/__generated__';
+import {UpdateDeviceMutation, UpdateDeviceMutationVariables} from '../gql/__generated__';
 import {useSnackbar} from 'notistack';
 import {TextField} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import {AddDeviceDialog} from './AddDeviceDialog';
-import {DeviceType} from '../gql/__generated__/globalTypes';
+import {DeviceType} from '../gql/__generated__';
 import {deviceTypeToString} from './typeutils';
 import Select from '@material-ui/core/NativeSelect';
 
@@ -40,17 +40,17 @@ const useStyles = makeStyles((theme) => ({
 
 export const DevicesPage = () => {
     const classes = useStyles();
-    const {data, loading} = useQuery<Devices>(gqlDevice.Devices);
+    const {data, loading} = useQuery<DevicesQuery>(gqlDevice.Devices);
     const refetch = {refetchQueries: [{query: gqlDevice.Devices}, {query: gqlUser.CurrentUser}]};
     const {enqueueSnackbar} = useSnackbar();
-    const [removeDevice] = useMutation<RemoveDevice, RemoveDeviceVariables>(gqlDevice.RemoveDevice, refetch);
+    const [removeDevice] = useMutation<RemoveDeviceMutation, RemoveDeviceMutationVariables>(gqlDevice.RemoveDevice, refetch);
     const [[editId, editName, editDeviceType], setEditing] = React.useState<[number, string, DeviceType]>([
         -1,
         '',
         DeviceType.NoExpiry,
     ]);
     const [addActive, setAddActive] = React.useState(false);
-    const [updateDevice] = useMutation<UpdateDevice, UpdateDeviceVariables>(gqlDevice.UpdateDevice, refetch);
+    const [updateDevice] = useMutation<UpdateDeviceMutation, UpdateDeviceMutationVariables>(gqlDevice.UpdateDevice, refetch);
     if (loading || !data || !data.currentDevice || !data.devices) {
         return <CenteredSpinner />;
     }

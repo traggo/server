@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Paper from '@material-ui/core/Paper';
 import {makeStyles} from '@material-ui/core/styles';
-import {useMutation, useQuery} from '@apollo/react-hooks';
+import {useMutation, useQuery} from '@apollo/client';
 import * as gqlTag from '../gql/tags';
 import * as gqlDashboard from '../gql/dashboard';
 import {CenteredSpinner} from '../common/CenteredSpinner';
@@ -18,9 +18,9 @@ import IconButton from '@material-ui/core/IconButton';
 import {useSnackbar} from 'notistack';
 import {TextField} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import {Tags} from '../gql/__generated__/Tags';
-import {RemoveTag, RemoveTagVariables} from '../gql/__generated__/RemoveTag';
-import {UpdateTag, UpdateTagVariables} from '../gql/__generated__/UpdateTag';
+import {TagsQuery} from '../gql/__generated__';
+import {RemoveTagMutation, RemoveTagMutationVariables} from '../gql/__generated__';
+import {UpdateTagMutation, UpdateTagMutationVariables} from '../gql/__generated__';
 import {AddTagDialog} from './AddTagDialog';
 import {SliderPicker} from 'react-color';
 import {TagChip} from '../common/TagChip';
@@ -40,14 +40,14 @@ const useStyles = makeStyles((theme) => ({
 
 export const TagPage = () => {
     const classes = useStyles();
-    const {data, loading} = useQuery<Tags>(gqlTag.Tags);
+    const {data, loading} = useQuery<TagsQuery>(gqlTag.Tags);
     const [removeTagConfirm, setRemoveTagConfirm] = React.useState('');
     const refetch = {refetchQueries: [{query: gqlTag.Tags}, {query: gqlDashboard.Dashboards}]};
     const {enqueueSnackbar} = useSnackbar();
-    const [removeTag] = useMutation<RemoveTag, RemoveTagVariables>(gqlTag.RemoveTag, refetch);
+    const [removeTag] = useMutation<RemoveTagMutation, RemoveTagMutationVariables>(gqlTag.RemoveTag, refetch);
     const [[editKey, editKeyNew, editColor], setEditing] = React.useState<[string, string, string]>(['', '', '']);
     const [addActive, setAddActive] = React.useState(false);
-    const [updateTag] = useMutation<UpdateTag, UpdateTagVariables>(gqlTag.UpdateTag, refetch);
+    const [updateTag] = useMutation<UpdateTagMutation, UpdateTagMutationVariables>(gqlTag.UpdateTag, refetch);
     if (loading || !data || !data.tags) {
         return <CenteredSpinner />;
     }

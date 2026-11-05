@@ -9,11 +9,11 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import {SliderPicker} from 'react-color';
 import {InputLabel} from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
-import {MutationFetchResult} from 'react-apollo';
-import {AddTag, AddTagVariables} from '../gql/__generated__/AddTag';
+import {FetchResult} from '@apollo/client';
+import {AddTagMutation, AddTagMutationVariables} from '../gql/__generated__';
 import * as gqlTags from '../gql/tags';
 import {TagSelectorEntry} from './tagSelectorEntry';
-import {useMutation} from '@apollo/react-hooks';
+import {useMutation} from '@apollo/client';
 import {useSnackbar} from 'notistack';
 import {handleError} from '../utils/errors';
 
@@ -29,11 +29,13 @@ export const AddTagDialog: React.FC<AddTagDialogProps> = ({close, open, initialN
     const [color, setColor] = React.useState('#e6b3b3');
     const {enqueueSnackbar} = useSnackbar();
 
-    const [addTag] = useMutation<AddTag, AddTagVariables>(gqlTags.AddTag, {refetchQueries: [{query: gqlTags.Tags}]});
+    const [addTag] = useMutation<AddTagMutation, AddTagMutationVariables>(gqlTags.AddTag, {
+        refetchQueries: [{query: gqlTags.Tags}],
+    });
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         addTag({variables: {name, color}})
-            .then((result: MutationFetchResult<AddTag> | void) => {
+            .then((result: FetchResult<AddTagMutation> | void) => {
                 close();
                 if (result && result.data && result.data.createTag) {
                     onAdded(result.data.createTag);

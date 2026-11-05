@@ -1,6 +1,6 @@
-import {Stats_stats} from '../../gql/__generated__/Stats';
 import * as React from 'react';
-import {StatsInterval} from '../../gql/__generated__/globalTypes';
+import {StatsInterval} from '../../gql/__generated__';
+import {StatsRangeEntries} from '../../gql/types';
 import moment from 'moment';
 import {Table, TableBody, TableCell, TableRow} from '@material-ui/core';
 import TableHead from '@material-ui/core/TableHead';
@@ -8,7 +8,7 @@ import {ofInterval} from './dateformat';
 import prettyMs from 'pretty-ms';
 
 interface DashboardTableProps {
-    entries: Stats_stats[];
+    entries: StatsRangeEntries[];
     interval: StatsInterval;
     mode: 'vertical' | 'horizontal';
     total: boolean;

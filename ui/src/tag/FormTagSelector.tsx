@@ -12,7 +12,7 @@ interface FormTagSelectorProps extends TagSelectorProps {
 export const FormTagSelector = ({label, required = false, ...props}: FormTagSelectorProps) => {
     return (
         <Box mt={1}>
-            <FormControl fullWidth required>
+            <FormControl fullWidth required={required}>
                 <Box pt={2}>
                     <InputLabel shrink> {label} </InputLabel>
                     <Box className="MuiInput-underline">

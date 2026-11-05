@@ -4,27 +4,30 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import {Paper} from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import {Dashboards_dashboards_items} from '../../gql/__generated__/Dashboards';
-import {useMutation} from '@apollo/react-hooks';
+import {DashboardItem} from '../../gql/types';
+import {useMutation} from '@apollo/client';
 import * as gqlDashboard from '../../gql/dashboard';
-import {UpdateDashboardEntry, UpdateDashboardEntryVariables} from '../../gql/__generated__/UpdateDashboardEntry';
+import {UpdateDashboardEntryMutation, UpdateDashboardEntryMutationVariables} from '../../gql/__generated__';
 import {Fade} from '../../common/Fade';
 import {DashboardEntryForm, isValidDashboardEntry} from './DashboardEntryForm';
 import {handleError} from '../../utils/errors';
 import {useSnackbar} from 'notistack';
 
 interface EditPopupProps {
-    entry: Dashboards_dashboards_items;
+    entry: DashboardItem;
     anchorEl: HTMLElement;
-    onChange: (entry: Dashboards_dashboards_items | null) => void;
+    onChange: (entry: DashboardItem | null) => void;
     doPreview: (preview: boolean) => void;
     preview: boolean;
     ranges: Record<number, string>;
 }
 export const EditPopup: React.FC<EditPopupProps> = ({entry, anchorEl, onChange: setEdit, doPreview, preview, ranges}) => {
-    const [updateEntry] = useMutation<UpdateDashboardEntry, UpdateDashboardEntryVariables>(gqlDashboard.UpdateDashboardEntry, {
-        refetchQueries: [{query: gqlDashboard.Dashboards}],
-    });
+    const [updateEntry] = useMutation<UpdateDashboardEntryMutation, UpdateDashboardEntryMutationVariables>(
+        gqlDashboard.UpdateDashboardEntry,
+        {
+            refetchQueries: [{query: gqlDashboard.Dashboards}],
+        }
+    );
     const valid = isValidDashboardEntry(entry);
 
     const {enqueueSnackbar} = useSnackbar();

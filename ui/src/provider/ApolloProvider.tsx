@@ -1,16 +1,11 @@
-import ApolloClient from 'apollo-boost';
 import * as React from 'react';
-import {ApolloProvider as Provider} from 'react-apollo';
-import {ApolloProvider as ApolloProviderHooks} from '@apollo/react-hooks';
+import {ApolloClient, ApolloProvider as Provider, HttpLink, InMemoryCache} from '@apollo/client';
 
 const client = new ApolloClient({
-    uri: './graphql',
+    link: new HttpLink({uri: './graphql'}),
+    cache: new InMemoryCache(),
 });
 
 export const ApolloProvider: React.FC = ({children}) => {
-    return (
-        <Provider client={client}>
-            <ApolloProviderHooks client={client}>{children}</ApolloProviderHooks>
-        </Provider>
-    );
+    return <Provider client={client}>{children}</Provider>;
 };
