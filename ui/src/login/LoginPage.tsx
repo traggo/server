@@ -1,13 +1,13 @@
 import * as React from 'react';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
 import {LoginForm} from './LoginForm';
-import Link from '@material-ui/core/Link';
+import Link from '@mui/material/Link';
 import {DefaultPaper} from '../common/DefaultPaper';
 import * as gqlVersion from '../gql/version';
-import {useQuery} from '@apollo/react-hooks';
-import {Version} from '../gql/__generated__/Version';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import {useQuery} from '@apollo/client';
+import {VersionQuery} from '../gql/__generated__';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles(() => ({
     footerLink: {
@@ -17,11 +17,11 @@ const useStyles = makeStyles(() => ({
 
 export const LoginPage = () => {
     const classes = useStyles();
-    const {data: {version = gqlVersion.VersionDefault.version} = gqlVersion.VersionDefault} = useQuery<Version>(
+    const {data: {version = gqlVersion.VersionDefault.version} = gqlVersion.VersionDefault} = useQuery<VersionQuery>(
         gqlVersion.Version
     );
     return (
-        <Grid container={true} direction="row" alignItems="center" justify="center" style={{height: '95%'}}>
+        <Grid container={true} direction="row" alignItems="center" justifyContent="center" style={{height: '95%'}}>
             <Grid item>
                 <DefaultPaper>
                     <Typography variant="h1" component="h1" gutterBottom={true}>

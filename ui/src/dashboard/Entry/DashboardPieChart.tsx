@@ -1,13 +1,13 @@
-import {Stats_stats_entries} from '../../gql/__generated__/Stats';
+import {StatEntry} from '../../gql/types';
 import {Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, TooltipProps} from 'recharts';
 import * as React from 'react';
 import {Colors} from './colors';
-import {Typography} from '@material-ui/core';
+import {Typography} from '@mui/material';
 import prettyMs from 'pretty-ms';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 
 interface DashboardPieChartProps {
-    entries: Stats_stats_entries[];
+    entries: StatEntry[];
 }
 
 export const DashboardPieChart: React.FC<DashboardPieChartProps> = ({entries}) => {
@@ -19,7 +19,9 @@ export const DashboardPieChart: React.FC<DashboardPieChartProps> = ({entries}) =
                     isAnimationActive={false}
                     dataKey="timeSpendInSeconds"
                     nameKey={(entry) => {
-                        // tslint:disable-next-line:no-any
+                        // recharts' own types don't allow nameKey to be a function returning a
+                        // composite string; the runtime accepts it fine.
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         return (entry.key + ':' + entry.value) as any;
                     }}
                     data={entries}
