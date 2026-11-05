@@ -33,20 +33,25 @@ func Middleware(db *gorm.DB) mux.MiddlewareFunc {
 	}
 }
 
+// sessionCookie builds the session cookie. It is not readable by scripts, only sent with same-site requests or
+// top-level navigations and, if the request was made over https (also behind a proxy), only sent over https.
+func sessionCookie(request *http.Request, token string, maxAge int) *http.Cookie {
+	return &http.Cookie{
+		Name:     traggoSession,
+		Value:    token,
+		MaxAge:   maxAge,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		Secure:   request.TLS != nil || request.Header.Get("X-Forwarded-Proto") == "https",
+	}
+}
+
 func sessionCallbacks(request *http.Request, writer http.ResponseWriter) *http.Request {
 	createSession := func(token string, maxAge int) {
-		http.SetCookie(writer, &http.Cookie{
-			Name:   traggoSession,
-			Value:  token,
-			MaxAge: maxAge,
-		})
+		http.SetCookie(writer, sessionCookie(request, token, maxAge))
 	}
 	destroySession := func() {
-		http.SetCookie(writer, &http.Cookie{
-			Name:   traggoSession,
-			Value:  "",
-			MaxAge: -1,
-		})
+		http.SetCookie(writer, sessionCookie(request, "", -1))
 	}
 	return request.WithContext(WithDestroySession(WithCreateSession(request.Context(), createSession), destroySession))
 }
@@ -95,8 +100,7 @@ func reqisterUser(request *http.Request, writer http.ResponseWriter, db *gorm.DB
 		db.Save(device)
 
 		if cookie, err := request.Cookie(traggoSession); err == nil && cookie != nil {
-			cookie.MaxAge = device.Type.Seconds()
-			http.SetCookie(writer, cookie)
+			http.SetCookie(writer, sessionCookie(request, cookie.Value, device.Type.Seconds()))
 		}
 	}
 
