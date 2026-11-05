@@ -123,12 +123,14 @@ export const DoneTrackers: React.FC<DoneTrackersProps> = ({addTagsToTracker}) =>
     );
 };
 
-const DatedTimeSpans: React.FC<{
-    name: string;
-    setHeight: (cb: (height: Record<string, number>) => Record<string, number>) => void;
-    height: number;
-    timeSpans: TimeSpanProps[];
-} & DoneTrackersProps> = ({name, timeSpans, addTagsToTracker, setHeight, height}) => {
+const DatedTimeSpans: React.FC<
+    {
+        name: string;
+        setHeight: (cb: (height: Record<string, number>) => Record<string, number>) => void;
+        height: number;
+        timeSpans: TimeSpanProps[];
+    } & DoneTrackersProps
+> = ({name, timeSpans, addTagsToTracker, setHeight, height}) => {
     const ref = React.useRef<HTMLDivElement | null>();
     React.useEffect(() => {
         const currentHeight = ref.current && ref.current.getBoundingClientRect().height;

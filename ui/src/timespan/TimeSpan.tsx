@@ -126,7 +126,7 @@ export const TimeSpan: React.FC<TimeSpanProps> = React.memo(
                 let oldData: TimeSpans | null = null;
                 try {
                     oldData = cache.readQuery<TimeSpans>({query: gqlTimeSpan.TimeSpans});
-                } catch (e) {}
+                } catch {}
 
                 const oldTrackers = cache.readQuery<Trackers>({query: gqlTimeSpan.Trackers});
                 if (!data || !data.removeTimeSpan) {

@@ -25,20 +25,19 @@ export const toTimeSpanProps = (timers: Trackers_timers[], tags: Tags_tags[]): T
 };
 
 type GroupedByIndex = Record<string, TimeSpans_timeSpans_timeSpans[]>;
-const group = (startOfTomorrow: moment.Moment, startOfToday: moment.Moment, startOfYesterday: moment.Moment) => (
-    a: GroupedByIndex,
-    current: TimeSpans_timeSpans_timeSpans
-): GroupedByIndex => {
-    const startTime = moment(current.oldStart || current.start);
-    let date = `${startTime.format('dddd')}, ${startTime.format('LL')}`;
-    if (startTime.isBetween(startOfToday, startOfTomorrow)) {
-        date = `${date} (today)`;
-    } else if (startTime.isBetween(startOfYesterday, startOfToday)) {
-        date = `${date} (yesterday)`;
-    }
-    a[date] = [...(a[date] || []), current];
-    return a;
-};
+const group =
+    (startOfTomorrow: moment.Moment, startOfToday: moment.Moment, startOfYesterday: moment.Moment) =>
+    (a: GroupedByIndex, current: TimeSpans_timeSpans_timeSpans): GroupedByIndex => {
+        const startTime = moment(current.oldStart || current.start);
+        let date = `${startTime.format('dddd')}, ${startTime.format('LL')}`;
+        if (startTime.isBetween(startOfToday, startOfTomorrow)) {
+            date = `${date} (today)`;
+        } else if (startTime.isBetween(startOfYesterday, startOfToday)) {
+            date = `${date} (yesterday)`;
+        }
+        a[date] = [...(a[date] || []), current];
+        return a;
+    };
 
 export type GroupedTimeSpanProps = Array<{key: string; timeSpans: TimeSpanProps[]}>;
 
@@ -49,13 +48,9 @@ export const toGroupedTimeSpanProps = (
 ): GroupedTimeSpanProps => {
     const datesWithTimeSpans: GroupedByIndex = timeSpans.reduce(
         group(
-            moment(now)
-                .add(1, 'day')
-                .startOf('day'),
+            moment(now).add(1, 'day').startOf('day'),
             moment(now).startOf('day'),
-            moment(now)
-                .subtract(1, 'day')
-                .startOf('day')
+            moment(now).subtract(1, 'day').startOf('day')
         ),
         {}
     );

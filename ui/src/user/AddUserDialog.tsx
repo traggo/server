@@ -61,11 +61,7 @@ export const AddUserDialog: React.FC<AddTagDialogProps> = ({close, open}) => {
                         onChange={(e) => setPass(e.target.value)}
                     />
                     <FormControlLabel
-                        control={
-                            <Checkbox checked={admin} onChange={(e) => setAdmin(e.target.checked)}>
-                                Admin
-                            </Checkbox>
-                        }
+                        control={<Checkbox checked={admin} onChange={(e) => setAdmin(e.target.checked)} />}
                         label="Admin"
                     />
                 </DialogContent>
