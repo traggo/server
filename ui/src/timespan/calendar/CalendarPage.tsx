@@ -31,7 +31,7 @@ import ClickAwayListener from '@mui/material/ClickAwayListener';
 import {TimeSpan} from '../TimeSpan';
 import {toTagSelectorEntry} from '../../tag/tagSelectorEntry';
 import {FullCalendarStyling} from './FullCalendarStyling';
-import useInterval from '@rooks/use-interval';
+import {useInterval} from '../../utils/hooks';
 import {
     addTimeSpanInRangeToCache,
     addTimeSpanToCache,

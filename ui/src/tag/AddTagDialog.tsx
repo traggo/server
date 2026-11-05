@@ -6,7 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import {SliderPicker} from 'react-color';
+import {HexColorPicker} from 'react-colorful';
 import {InputLabel} from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import {FetchResult, useMutation} from '@apollo/client';
@@ -64,7 +64,7 @@ export const AddTagDialog: React.FC<AddTagDialogProps> = ({close, open, initialN
                             Color
                         </InputLabel>
                         <div id="color-picker" style={{marginTop: 25}}>
-                            <SliderPicker onChange={(c) => setColor(c.hex)} color={color} />
+                            <HexColorPicker onChange={setColor} color={color} />
                         </div>
                     </FormControl>
                 </DialogContent>
