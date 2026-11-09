@@ -1,0 +1,199 @@
+name: image-oidc
+
+# Rebuilds the container image of the fork branch (default
+# ghcr-image-split-oidc; its root Dockerfile builds the UI and the Go binary
+# into a scratch image) and pushes it to GHCR as ghcr.io/goliathlabs/server.
+# Scheduled workflows run only from the default branch, which is why this
+# file lives here and checks the branch out. Branch pushes do not start it:
+# run it by hand (force) after changing the branch.
+#
+# A daily run builds without cache, but publishes only if the golang base
+# image (its tag moves; the Go toolchain and the CA bundle in the image come
+# from it) changed since the published image was built. Otherwise the digest
+# of the published tags stays as it is. The image has no OS packages to
+# upgrade.
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch to build
+        required: false
+        type: string
+        default: ghcr-image-split-oidc
+      force:
+        description: Rebuild and publish even if nothing changed
+        required: false
+        type: boolean
+        default: false
+  schedule:
+    # Not at minute 0: GitHub delays or drops scheduled runs at the start of
+    # the hour.
+    - cron: "53 3 * * *"
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  BRANCH: ${{ inputs.branch || 'ghcr-image-split-oidc' }}
+
+jobs:
+  decide:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    outputs:
+      push: ${{ steps.decide.outputs.push }}
+      no_cache: ${{ steps.decide.outputs.no_cache }}
+      tag: ${{ steps.decide.outputs.tag }}
+      base_name: ${{ steps.decide.outputs.base_name }}
+      base_digest: ${{ steps.decide.outputs.base_digest }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          ref: ${{ env.BRANCH }}
+
+      - name: Login to GHCR
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Decide
+        id: decide
+        env:
+          FORCE: ${{ inputs.force }}
+          IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        run: |
+          IMAGE="${IMAGE,,}"  # registry names are lowercase
+          tag="${BRANCH//\//-}"  # the moving tag is the branch name
+          # The golang stage of the Dockerfile and what its tag points at
+          # today (digest of the index).
+          base_name=$(sed -n 's/^FROM \(golang:[^ ]*\)\( .*\)\{0,1\}$/\1/p' Dockerfile | head -n1)
+          [ -n "$base_name" ] || { echo "No golang stage in the Dockerfile" >&2; exit 1; }
+          base_name="docker.io/library/$base_name"
+          raw=$(docker buildx imagetools inspect --raw "$base_name") || exit 1
+          base_digest="sha256:$(printf '%s' "$raw" | sha256sum | cut -d' ' -f1)"
+          push=true no_cache=false
+
+          if [ "$GITHUB_EVENT_NAME" = schedule ] || [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            no_cache=true
+            if [ "$FORCE" = true ]; then
+              echo "Forced"
+            elif ! out=$(docker pull --quiet --platform linux/amd64 "$IMAGE:$tag" 2>&1); then
+              if grep -qiE 'not found|manifest unknown' <<< "$out"; then
+                echo "Nothing published yet"
+              else
+                echo "Cannot pull $IMAGE:$tag: $out" >&2
+                exit 1
+              fi
+            else
+              built_from=$(docker inspect --format '{{ index .Config.Labels "org.opencontainers.image.base.digest" }}' "$IMAGE:$tag")
+              echo "Base digest: published ${built_from:-none}, current $base_digest"
+              if [ "$built_from" = "$base_digest" ]; then
+                echo "up to date"
+                push=false
+              fi
+            fi
+          fi
+
+          {
+            echo "push=$push"
+            echo "no_cache=$no_cache"
+            echo "tag=$tag"
+            echo "base_name=$base_name"
+            echo "base_digest=$base_digest"
+          } >> "$GITHUB_OUTPUT"
+
+  publish:
+    needs: decide
+    if: needs.decide.outputs.push == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    # Two runs probing the same -rN would overwrite each other's tag.
+    concurrency:
+      group: publish
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          ref: ${{ env.BRANCH }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
+
+      - name: Login to GHCR
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # The first unused sha-<short>-rN, found by asking the registry. Only a
+      # "not found" answer means the tag is free; any other error fails the
+      # job rather than risk overwriting an immutable tag.
+      - name: Rebuild number
+        id: rebuild
+        env:
+          IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        run: |
+          IMAGE="${IMAGE,,}"  # registry names are lowercase
+          short=$(git rev-parse --short=7 HEAD)
+          n=1
+          while true; do
+            if out=$(docker buildx imagetools inspect "$IMAGE:sha-$short-r$n" 2>&1); then
+              n=$((n + 1))
+            elif grep -qiE 'not found|manifest unknown' <<< "$out"; then
+              break
+            else
+              echo "Cannot probe $IMAGE:sha-$short-r$n: $out" >&2
+              exit 1
+            fi
+          done
+          echo "n=$n" >> "$GITHUB_OUTPUT"
+          echo "short=$short" >> "$GITHUB_OUTPUT"
+
+      - name: Build date
+        id: date
+        run: echo "value=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+
+      # The branch tag and sha-<short> move with every rebuild;
+      # sha-<short>-rN stays.
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ needs.decide.outputs.tag }}
+            type=raw,value=sha-${{ steps.rebuild.outputs.short }}
+            type=raw,value=sha-${{ steps.rebuild.outputs.short }}-r${{ steps.rebuild.outputs.n }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.created=${{ steps.date.outputs.value }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.base.name=${{ needs.decide.outputs.base_name }}
+            org.opencontainers.image.base.digest=${{ needs.decide.outputs.base_digest }}
+
+      # amd64 only. A scheduled or manual build ignores the cache: a cached
+      # stage would keep the old toolchain and CA bundle.
+      - name: Build and push
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          no-cache: ${{ needs.decide.outputs.no_cache == 'true' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          provenance: false
+          build-args: |
+            VERSION=${{ env.BRANCH }}
+            COMMIT=${{ github.sha }}
+            DATE=${{ steps.date.outputs.value }}
