@@ -42,6 +42,11 @@ export const DashboardBarChart: React.FC<DashboardPieChartProps> = ({entries, in
     }, 0);
     const unit = ofSeconds(dataMax);
     const dateFormat = ofInterval(interval);
+    const indexedKeys = indexedEntries[0] ? Object.keys(indexedEntries[0].data) : null
+    if (indexedKeys) {
+        indexedKeys.sort()
+    }
+
     return (
         <ResponsiveContainer>
             <BarChart data={indexedEntries}>
@@ -51,18 +56,17 @@ export const DashboardBarChart: React.FC<DashboardPieChartProps> = ({entries, in
                 <Legend />
                 <XAxis dataKey={(entry) => dateFormat(moment(entry.start))} interval={'preserveStartEnd'} />
 
-                {indexedEntries[0] &&
-                    Object.keys(indexedEntries[0].data).map((key, index) => {
-                        return (
-                            <Bar
-                                key={key}
-                                dataKey={(entry) => unit.toUnit(entry.data[key])}
-                                fill={Colors[index % Colors.length]}
-                                stackId={type === 'stacked' ? 'a' : undefined}
-                                name={key}
-                            />
-                        );
-                    })}
+                {indexedKeys && indexedKeys.map((key, index) => {
+                    return (
+                        <Bar
+                            key={key}
+                            dataKey={(entry) => unit.toUnit(entry.data[key])}
+                            fill={Colors[index % Colors.length]}
+                            stackId={type === 'stacked' ? 'a' : undefined}
+                            name={key}
+                        />
+                    );
+                })}
             </BarChart>
         </ResponsiveContainer>
     );
